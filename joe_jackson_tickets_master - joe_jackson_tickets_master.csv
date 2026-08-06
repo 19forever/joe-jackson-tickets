@@ -1,0 +1,623 @@
+ID_LISTKU,ZDROJOVY_SOUBOR,TURNE,INFO_TEXT,ZDROJ_POSKYTNUL,SOUBOR_SKEN
+TICKET_0001,konzert-joe-jackson-2010.html,Tour 2010,"1st October 2010 - Groningen, Netherlands - De Oosterpoort, Grote Zaal","Bert Bos, Netherlands",kk-joe-jackson-2010-10-01.jpg
+TICKET_0002,konzert-joe-jackson-2010.html,Tour 2010,"1st October 2010 - Groningen, Netherlands - De Oosterpoort, Grote Zaal Computer Ticket","Steve Whitbread, U.K.",kk-joe-jackson-2010-10-01-computer.jpg
+TICKET_0003,konzert-joe-jackson-2010.html,Tour 2010,"3rd October 2010 - Eindhoven, Netherlands - Airport Zaal","Johan Manders, Netherlands",kk-joe-jackson-2010-10-03.jpg
+TICKET_0004,konzert-joe-jackson-2010.html,Tour 2010,"3rd October 2010 - Eindhoven, Netherlands - Airport Zaal","Johan Manders, Netherlands",kk-joe-jackson-2010-10-03-one-more-time.jpg
+TICKET_0005,konzert-joe-jackson-2010.html,Tour 2010,"3rd October 2010 - Eindhoven, Netherlands - Airport Zaal Computer Ticket","Steve Whitbread, U.K.",kk-joe-jackson-2010-10-03-computer.jpg
+TICKET_0006,konzert-joe-jackson-2010.html,Tour 2010,"4th October 2010 - Rotterdam, Netherlands - De Doelen","brievb, Netherlands",kk-joe-jackson-2010-10-04-original.jpg
+TICKET_0007,konzert-joe-jackson-2010.html,Tour 2010,"4th October 2010 - Rotterdam, Netherlands - De Doelen","Steve Whitbread, U.K.",kk-joe-jackson-2010-10-04-computer.jpg
+TICKET_0008,konzert-joe-jackson-2010.html,Tour 2010,"4th October 2010 - Rotterdam, Netherlands - De Doelen","Marielle de Bruijn, Netherlands",kk-joe-jackson-2010-10-04.jpg
+TICKET_0009,konzert-joe-jackson-2010.html,Tour 2010,"6th October 2010 - Cleon, France - La Traverse","Gert Schaumlöffel, Germany",kk-joe-jackson-2010-10-06.jpg
+TICKET_0010,konzert-joe-jackson-2010.html,Tour 2010,"8th October 2010 - Paris, France - La Cigale - Gert Schaumlöffel, Germany","Olivier Popincourt, France","kk-joe-jackson-2010-10-08.jpg, kk-joe-jackson-2010-10-08-op.jpg"
+TICKET_0011,konzert-joe-jackson-2010.html,Tour 2010,"10th October 2010, Brussels, Belgium - Ancienne Belgique","Els Pannecoucque, Belgium",kk-joe-jackson-2010-10-10.jpg
+TICKET_0012,konzert-joe-jackson-2010.html,Tour 2010,"22nd October 2010 - Alençon, France - La Luciole","Fredunzel Joffe, France",kk-joe-jackson-2010-10-22.jpg
+TICKET_0013,konzert-joe-jackson-2010.html,Tour 2010,"25th October 2010 - Terville, France - Le 112","Gert Schaumlöffel, Germany",kk-joe-jackson-2010-10-25.jpg
+TICKET_0014,konzert-joe-jackson-2010.html,Tour 2010,"30th October 2010 - Maastricht, Netherlands - MECC Jazz Maastricht","Gert Schaumlöffel, Germany",kk-joe-jackson-2010-10-30.jpg
+TICKET_0015,konzert-joe-jackson-2010.html,Tour 2010,"31th October 2010 - Basel, Switzerland  - Messe Basel, Festsaal","Andreas Wostrack, Germany",kk-joe-jackson-2010-10-31.jpg
+TICKET_0016,konzert-joe-jackson-2010.html,Tour 2010,"2nd November 2010 - Mainz, Germany - Phönix-Halle","Barnie Rupprecht, Germany",kk-joe-jackson-2010-11-02.jpg
+TICKET_0017,konzert-joe-jackson-2010.html,Tour 2010,"3rd November 2010 - Amsterdam, Netherlands - Paradiso, Grote Zaal","Yvonne Bot, Netherlands",kk-joe-jackson-2010-11-03.jpg
+TICKET_0018,konzert-joe-jackson-2010.html,Tour 2010,"7th November 2010 - Amsterdam, Netherlands - Paradiso, Grote Zaal","Bert Bos, Netherlands",kk-joe-jackson-2010-11-07.jpg
+TICKET_0019,konzert-joe-jackson-2010.html,Tour 2010,"8th November 2010 - Köln (Cologne), Germany - Gloria-Theater","Gert Schaumlöffel, Germany",kk-joe-jackson-2010-11-08.jpg
+TICKET_0020,konzert-joe-jackson-2010.html,Tour 2010,"10th November 2010 - Hamburg, Germany - Fabrik","Rolf Thalmann, Germany",kk-joe-jackson-2010.jpg
+TICKET_0021,konzert-joe-jackson-2010.html,Tour 2010,"10th November 2010 - Hamburg, Germany - Fabrik","Oliver Bittner, Germany",kk-joe-jackson-2010-11-10-variante.jpg
+TICKET_0022,konzert-joe-jackson-2010.html,Tour 2010,"11th November 2010 - Berlin, Germany - Fritzclub im Postbahnhof","Gert Schaumlöffel, Germany",kk-joe-jackson-2010-11-11.jpg
+TICKET_0023,konzert-joe-jackson-2010.html,Tour 2010,"14th November 2010 - München (= Munich), Germany - Muffathalle","Andreas Wostrack, Germany",kk-joe-jackson-2010-11-14.jpg
+TICKET_0024,konzert-joe-jackson-2010.html,Tour 2010,Tourpasses - 2010,"Gert Schaumlöffel, Germany","kk-joe-jackson-2010-pass.jpg, kk-joe-jackson-2010-11-11-pass.jpg"
+TICKET_0025,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"13th June 2006 - Glenside, U.S.A. - Keswick Theatre","John Nyman, U.S.A.",kk-joe-jackson-2006-06-13.jpg
+TICKET_0026,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"15th June 2006 - Chicago, IL, U.S.A. Vic Theatre","Erica Eisner Kosova, U.S.A.",kk-joe-jackson-2006-06-15.jpg
+TICKET_0027,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"28th June 2006 - Somerville, U.S.A. - Somerville Theatre","Tom Robinson, U.S.A.",kk-joe-jackson-2006-06-28.jpg
+TICKET_0028,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"29th June 2006 - New York, U.S.A. - Town Hall - Steve Whitbread, England","Gert Schaumlöffel, Germany","kk-joe-jackson-2006-06-29.jpg, kk-joe-jackson-2006-06-29-2.jpg"
+TICKET_0029,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"30th June 2006 - New York, U.S.A. - Town Hall","John Nyman, U.S.A.",kk-joe-jackson-2006-06-30.jpg
+TICKET_0030,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"6th July 2006 - London, England - Shepherds Bush Empire","Mike Baggaley, England",kk-joe-jackson-2006-07-06.jpg
+TICKET_0031,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"7th July 2006 - Paris, France - Le Bataclan - 7th July 2006 - Paris, France - Le Bataclan - with support - Hervé Lenoach, France","Steve Whitbread, England","kk-hl-joe-jackson-2006-07-07.jpg, kk-joe-jackson-2006-07-07-support.jpg"
+TICKET_0032,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"9th July 2006 - Weert, Netherlands - Sportpark Boshoven Ticket for three days","Mike Philippens, Netherlands",kk-joe-jackson-2006-07-09.jpg
+TICKET_0033,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"9th July 2006 - Weert, Netherlands - Sportpark Boshoven Ticket for sunday","Steve Whitbread, England",kk-joe-jackson-2006-07-09-sunday.jpg
+TICKET_0034,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"10th July 2006 - Antwerp, Belgium - Rivierenhof","John Jaspers, Netherlands",kk-joe-jackson-2006-07-10.jpg
+TICKET_0035,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"12th July 2006 - Hamburg, Germany - Fabrik - Rolf Thalmann, Germany - 12th July 2006 - Hamburg, Germany - Fabrik","Oliver Bittner, Germany","kk-joe-jackson-the-man-is-back-in-town.jpg, kk-joe-jackson-2006-07-12.jpg"
+TICKET_0036,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"14th July 2006 - Leipzig, Germany - Parkbühne (Clara Zetkin Park)","Steve Whitbread, England",kk-joe-jackson-2006-07-14.jpg
+TICKET_0037,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"15th July 2006 - Mainz, Germany - Frankfurter Hof","Steve Whitbread, England",kk-joe-jackson-2006-07-15.jpg
+TICKET_0038,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"15th July 2006 - Mainz, Germany - Frankfurter Hof - Marco Emmel, Germany",Signed by Graham Maby & Dave Houghton,kk-joe-jackson-2006-07-15-2.jpg
+TICKET_0039,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"17th July 2006 - Köln ( = Cologne ), Germany - Live Music Hall - Steve Whitbread, England - 17th July 2006 - Köln ( = Cologne ), Germany - Live Music Hall","Gert Schaumlöffel, Germany","kk-joe-jackson-2006-07-17.jpg, kk-gs-joe-jackson-2006-07-17.jpg"
+TICKET_0040,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"19th July 2006 - Amsterdam, Netherlands - Paradiso","Lammert Veen, Netherlands",kk-joe-jackson-2006-07-19.jpg
+TICKET_0041,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"20th July 2006 - Karlsruhe, Germany - Zeltival (Kulturzentrum Tollhaus) - Andreas Wiethoff, Germany - 20th July 2006 - Karlsruhe, Germany - Zeltival (Kulturzentrum Tollhaus)","Steve Whitbread, England","kk-joe-jackson-2006-07-20.jpg, kk-joe-jackson-2006-07-20-neu.jpg"
+TICKET_0042,konzert-joe-jackson-2006.html,JOE JACKSON TRIO Tour,"25th July 2006 - Luzern, Switzerland - Kultur- und Kongresszentrum - Konzertsaal","Andreas Wostrack, Germany",kk-aw-joe-jackson-2006-07-25.jpg
+TICKET_0043,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"2nd November 1997 - Los Angeles, California, U.S.A. - El Rey Theatre","Jenniffer Woodson, U.S.A.",kk-jw-04.jpg
+TICKET_0044,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"3rd November 1997 - Los Angeles, California, U.S.A. - El Rey Theatre","Jenniffer Woodson, U.S.A.",kk-jw-08.jpg
+TICKET_0045,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"10th November 1997 - New York City, New York, U.S.A. - The Supper Club",Jackie Litle DeWitt,kk-joe-jackson-1997-11-10.jpg
+TICKET_0046,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"10th November 1997 - New York City, New York, U.S.A. - The Supper Club","Benjamin Davis, U.S.A.",kk-joe-jackson-1997-11-10-2.jpg
+TICKET_0047,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"11th November 1997 - New York, U.S.A. -  The Supper Club","John Nyman, U.S.A.",kk-jn-18.jpg
+TICKET_0048,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"15th November 1997 - Washington, DC, U.S.A. - Lincoln Theatre","Jenniffer Woodson, U.S.A.",kk-jw-02.jpg
+TICKET_0049,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"19th November 1997 - Somerville, MA, U.S.A. - Somerville Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1997-11-19.jpg
+TICKET_0050,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"24th November 1997 - Amsterdam, Netherlands - Paradiso","Bert Bos, Netherlands",kk-joe-jackson-1997-11-24.jpg
+TICKET_0051,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"7th December 1997 - London, England - Queen Elizabeth Hall","Mike Baggaley, England",kk-joe-jackson-1997-12-07.jpg
+TICKET_0052,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"8th December 1997 - London, England - Queen Elizabeth Hall","Steve Whitbread, England",kk-joe-jackson-1997-12-08.jpg
+TICKET_0053,konzert-joe-jackson-1997.html,HEAVEN & HELL Tour,"11th December 1997 - Hamburg, Germany - Musikhalle","Gert Schaumlöffel, Germany",kk-joe-jackson-1997-12-11.jpg
+TICKET_0054,konzert-joe-jackson-1981.html,JUMPIN' JIVE Tour,"29th June 1981 - The Venue - London, U.K.",Andy Bilton,kk-joe-jackson-1981-06-29.jpg
+TICKET_0055,konzert-joe-jackson-1981.html,JUMPIN' JIVE Tour,"8th July 1981 New York, NY, U.S.A. The Savoy","Gert Schaumlöffel, Germany",kk-joe-jackson-1981-07-08.jpg
+TICKET_0056,konzert-joe-jackson-1981.html,JUMPIN' JIVE Tour,"16th July 1981 Lido Beach, NY, U.S.A. Malibu Beach Club","Gert Schaumlöffel, Germany",kk-joe-jackson-1981-07-16.jpg
+TICKET_0057,konzert-joe-jackson-1981.html,JUMPIN' JIVE Tour,"Front - Back - 23rd July 1981 - Los Angeles, CA, U.S.A. - Roxy","Gert Schaumlöffel, Germany","kk-joe-jackson-1981-07-23-front.jpg, kk-joe-jackson-1981-07-23-back.jpg"
+TICKET_0058,konzert-joe-jackson-1981.html,JUMPIN' JIVE Tour,"24th July 1981 - Hollywood, CA, U.S.A. - Florentine Gardens","Gert Schaumlöffel, Germany",kk-joe-jackson-1981-07-24.jpg
+TICKET_0059,konzert-joe-jackson-1981.html,JUMPIN' JIVE Tour,"26th August 1981 Sheffield, England Top Rank","Peter Exley, England",kk-joe-jackson-1981-08-26.jpg
+TICKET_0060,konzert-joe-jackson-1981.html,JUMPIN' JIVE Tour,"1st September 1981 - Portsmouth, U.K. - Locarno","Oliver Gray, U.K.",kk-joe-jackson-1981-09-01.jpg
+TICKET_0061,konzert-joe-jackson-1981.html,JUMPIN' JIVE Tour,"7th September 1981 - London, U.K. - Hammersmith Palais - not in JJ Archive","Gert Schaumlöffel, Germany",kk-joe-jackson-1981-09-07.jpg
+TICKET_0062,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"15th February 1980 - Passaic, NJ, U.S.A. - Capitol Theatre","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-1980-02-15.jpg
+TICKET_0063,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"Gert Schaumlöffel, Germany - 16th February 1980 - Boston, MA, U.S.A. - Orpheum Theatre - Gert Schaumlöffel, Germany","Patrick Sullivan, U.S.A.","kk-joe-jackson-1980-02-16-1.jpg, kk-joe-jackson-1980-02-16-2.jpg, kk-joe-jackson-1980-02-16-3.jpg"
+TICKET_0064,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"9th March 1980 - Nogent sur Marne, France - Pavillon Baltard","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-03-09.jpg
+TICKET_0065,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"12th March 1980 München / Munich, Germany Schwabinger Bräu","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-03-12.jpg
+TICKET_0066,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"13 th March 1980 Wiesbaden, Germany Wartburg Music Hall","Björn Krüger, Germany",kk-bk-008.jpg
+TICKET_0067,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"14th March 1980 - Köln (Cologne), Germany - WDR Studio A","Björn Krüger, Germany",kk-bk-007.jpg
+TICKET_0068,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"26th March 1980 - Hagondange, France - Salle Paul Lamm","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-03-26.jpg
+TICKET_0069,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"29th March 1980 - Le Mans, France - Parc Expositions, Hall B","François Huguet, France",kk-joe-jackson-1980-03-29.jpg
+TICKET_0070,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"21st April 1980 -  Mailand (Milano), Italy - Palalido","John Nyman, U.S.A.",kk-jn-24.jpg
+TICKET_0071,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"28th April 1980 - Montpeller, France Grande Odéon","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-04-28.jpg
+TICKET_0072,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"3rd May 1980 - Porto, Portugal - Pavilhão Infante Sagres","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-05-03.jpg
+TICKET_0073,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"4th May 1980 - Cascais, Portugal - Pavilhão Dramático","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-05-04.jpg
+TICKET_0074,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"20th May 1980 - Sunderland, England -  Mecca Centre - The Mayfair Suite","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-1980-05-20.jpg
+TICKET_0075,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"23rd May 1980 - Leicester, England - De Montfort Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-05-23.jpg
+TICKET_0076,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"30th May 1980 - Hanley, England Victoria Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-05-30.jpg
+TICKET_0077,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"7th June 1980 - London, England - Crystal Palace Concert Bowl - Open Air","Colin Phipps, England",kk-joe-jackson-1980-06-07-2.jpg
+TICKET_0078,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"1st August 1980 - New York, NY, U.S.A. - Wollman Skating Rink, Central Park Dr. Pepper Music Festival","Gary Gelb, U.S.A.",kk-joe-jackson-1980-08-01.jpg
+TICKET_0079,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"9th August 1980 - Asbury Park, NJ, U.S.A. - Convention Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-08-09.jpg
+TICKET_0080,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"11th August 1980 - Poplar Creek, IL, U.S.A - Poplar Creek Music Theatre","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-1980-08-11.jpg
+TICKET_0081,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"5th October 1980 -  Cardiff, U.K. - Cardiff Top Rank","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-10-05.jpg
+TICKET_0082,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"10th October 1980 -  Edinburgh, U.K. - Playhouse Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-10-10.jpg
+TICKET_0083,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"11th October 1980 -  Sheffield, U.K. - City Hall","Peter Exley, U.K.",kk-joe-jackson-1980-10-11.jpg
+TICKET_0084,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"15th October 1980 -  Manchester, U.K. - Apollo Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-10-15.jpg
+TICKET_0085,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"16th October 1980 -  Glasgow, U.K. - Tiffanys","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-10-16.jpg
+TICKET_0086,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"27th October 1980 -  London, England - Hammersmith Palais","Clare Garner, England",kk-joe-jackson-1980-10-27.jpg
+TICKET_0087,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"28th October 1980 -  London, England - Hammersmith Palais","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-10-28.jpg
+TICKET_0088,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"3rd November 1980 - Birmingham, England - Odeon Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-11-03.jpg
+TICKET_0089,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"21st November 1980 - Hamburg, Germany - University Auditorium Maximum","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-11-21.jpg
+TICKET_0090,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"22nd November 1980 - Hannover, Germany - Kurhaus","Björn Krüger, Germany",kk-bk-025.jpg
+TICKET_0091,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"27st November 1980 - Frankfurt, Germany - Volksbildungsheim","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-11-27.jpg
+TICKET_0092,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"2nd December 1980 - Turin (Torino), Italy - Palasport","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-12-02.jpg
+TICKET_0093,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"13th December 1980 - Lille, France Foire Commerciale","Gert Schaumlöffel, Germany",kk-joe-jackson-1980-12-13.jpg
+TICKET_0094,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"15th December 1980 - Utrecht, Netherlands - Muziekcentrum Vredenburg","Ton, Netherlands",kk-joe-jackson-1980-12-15.jpg
+TICKET_0095,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"15th December 1980 - Utrecht, Netherlands - Muziekcentrum Vredenburg","Dominique Maassen, Netherlands",kk-joe-jackson-1980-12-15-2.jpg
+TICKET_0096,konzert-joe-jackson-1980.html,BEAT CRAZY Tour,"Gert Schaumlöffel, Germany - Gert Schaumlöffel, Germany - John Nyman, U.S.A.",1980 - Passes,"kk-joe-jackson-1980-02-12-pass.jpg, kk-joe-jackson-1980-05-23-pass.jpg, kk-joe-jackson-1980-08-09-pass.jpg, kk-jn-23.jpg"
+TICKET_0097,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"20th April 1979 New York, NY, U.S.A. The Bottom Line","Gary Gelb, U.S.A.",kk-joe-jackson-1979-04-20.jpg
+TICKET_0098,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"21st April 1979 -  New York, NY, U.S.A. - The Bottom Line","Gert Schaumlffel, Germany",kk-joe-jackson-1979-04-21.jpg
+TICKET_0099,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"30th April 1979 -  Hampstead, NY, U.S.A. - Calderone Concert Hall",not in JJ Archive,kk-joe-jackson-1979-04-30.jpg
+TICKET_0100,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"1st May 1979 - Dallas, TX, U.S.A. -  Palladium of Dallas","Gert Schaumlffel, Germany",kk-joe-jackson-1979-05-01.jpg
+TICKET_0101,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"2nd May 1979 - Austin, TX, U.S.A. -  Armadillo World Headquaters","Gert Schaumlffel, Germany",kk-joe-jackson-1979-05-02.jpg
+TICKET_0102,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"6th May 1979 - Denver, Colorado, U.S.A. - Rainbow Music Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-05-06.jpg
+TICKET_0103,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"14th May 1979 8:00 P.M. - San Francisco, CA, U.S.A. - Old Waldorf - 14th May 1979 11:00 P.M. - San Francisco, CA, U.S.A. - Old Waldorf","Gert Schaumlöffel, Germany","kk-joe-jackson-1979-05-14.jpg, kk-joe-jackson-1979-05-14-late-show.jpg"
+TICKET_0104,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"20th May 1979 Grosse Pointe Farms, MI, U.S.A. Punch & Judy Theatre","Gert Schaumlffel, Germany",kk-joe-jackson-1979-05-20.jpg
+TICKET_0105,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"24th May 1979 - Syracuse, NY, U.S.A. - Uncle Sam's","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-05-24.jpg
+TICKET_0106,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"1st June 1979 - New York, New York, U.S.A. - Palladium","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-06-01.jpg
+TICKET_0107,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"21st June 1979 - Paris, France - Le Bataclan","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-06-21.jpg
+TICKET_0108,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"Portsmouth, England - The Locarno - 5th July 1979","Martin Ayling, England",kk-joe-jackson-1979-07-05.jpg
+TICKET_0109,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"20st August 1979 - Edinburgh, G.B. - Tiffanys","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-08-20.jpg
+TICKET_0110,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"31th August 1979 - Hempstead, NY, U.S.A. - Calderone Concert Hall","Gary Gelb, U.S.A.",kk-joe-jackson-1979-08-31.jpg
+TICKET_0111,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"1st September 1979 - Asbury Park, NJ, U.S.A. - Paramount Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-09-01.jpg
+TICKET_0112,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"6th September 1979 West Hartford, CT, U.S.A. Stage West","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-09-06.jpg
+TICKET_0113,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"8th September 1979 College Park, MD, U.S.A. - Ritchie Coliseum","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-09-08.jpg
+TICKET_0114,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"20th September 1979 Syracuse, NY, U.S.A. Landmark Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-09-20.jpg
+TICKET_0115,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"22th September 1979 South Orange, NJ, U.S.A. University - Walsh Gym","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-09-22.jpg
+TICKET_0116,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"28th September 1979 - Upper Darby, PA, U.S.A. - Tower Theater","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-09-28.jpg
+TICKET_0117,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"30th September 1979 - New York, U.S.A. - Palladium","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-09-30.jpg
+TICKET_0118,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"12th October 1979 Montreal, Canada Thtre Saint-Denis","Gary Katsof, Canada",kk-joe-jackson-1979-10-12.jpg
+TICKET_0119,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"3rd November 1979 - Victoria, BC, Canada - University Centre Auditorium","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-11-03.jpg
+TICKET_0120,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"9th November 1979 - Santa Monica, CA. U.S.A. - Santa Monica Civic Auditorium","Gert Schaumlöffel, Germany","kk-joe-jackson-1979-11-09-1.jpg, kk-joe-jackson-1979-11-09-2.jpg"
+TICKET_0121,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"3rd December 1979 Glasgow, Scottland - Apollo Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-12-03.jpg
+TICKET_0122,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"5th December 1979 - Newcastle, England - City Hall","Bjrn Krger, Germany",kk-joe-jackson-1979-12-05.jpg
+TICKET_0123,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"9th December 1979 - London, England - Empire Ballroom","Gert Schaumlöffel, Germany",kk-joe-jackson-1979-12-09.jpg
+TICKET_0124,konzert-joe-jackson-1979.html,LOOK SHARP Tour,"Portsmouth, England - The Guildhall - 14th December 1979","Martin Ayling, England",kk-joe-jackson-1979-12-14.jpg
+TICKET_0125,konzert-joe-jackson-1979.html,LOOK SHARP Tour,1979 - Passes,"Gert Schaumlöffel, Germany","kk-joe-jackson-1979-09-28-pass.jpg, kk-joe-jackson-1979-12-14-pass.jpg, kk-joe-jackson-1979.jpg"
+TICKET_0126,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"5th May 2007 - Berlin, Germany - Passionskirche","Björn Krüger, Germany",kk-joe-jackson-2007-05-05.jpg
+TICKET_0127,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"6th May 2007 - Bremen, Germany - Pier 2","Rolf Thalmann, Germany",kk-joe-jackson-my-bremen-ticket-2007.jpg
+TICKET_0128,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"9th May 2007 - München (Munich), Germany - Georg Elser Hallen","Robert Keller, Germany",kk-joe-jackson-2007-05-09.jpg
+TICKET_0129,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"11th May 2007 - Bielefeld, Germany - Ringlokschuppen","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-2007-05-11.jpg
+TICKET_0130,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"12th May 2007 - Düsseldorf, Germany - PhilipsHalle","Marielle de Bruijn, Netherlands",kk-joe-jackson-2007-05-12.jpg
+TICKET_0131,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"17th May 2007 - Utrecht, Netherlands - Vredenburg","Marielle de Bruijn, Netherlands",kk-joe-jackson-2007-05-17.jpg
+TICKET_0132,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"18th May 2007 - Groningen, Netherlands - De Oosterpoort","Bert Bos, Netherlands",kk-joe-jackson-groningen-2007.jpg
+TICKET_0133,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"21st May 2007 - Nottingham, England - Rock City","Mike Baggaley, England",kk-joe-jackson-2007-05-21.jpg
+TICKET_0134,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"24th May 2007 - London, England - Carling Academy Islington","Alex Wilde, England",kk-joe-jackson-2007-05-24.jpg
+TICKET_0135,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"3rd June 2007 - Dublin, Ireland - Olympia Theatre","Martin Foyle, Ireland - Digital Ticket -",kk-joe-jackson-2007-06-03-digital.jpg
+TICKET_0136,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"3rd June 2007 - Dublin, Ireland - Olympia Theatre","John Foyle, Ireland",kk-joe-jackson-2007-06-03.jpg
+TICKET_0137,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"5th June 2007 - Amsterdam, Netherlands - Paradiso","Annelies Kanbier, Netherlands",kk-joe-jackson-2007-06-05.jpg
+TICKET_0138,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"6th June 2007 - Paris, France - Casino de Paris","Mathieu Chartier, France",kk-joe-jackson-2007-06-06.jpg
+TICKET_0139,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"6th June 2007 - Paris, France - Casino de Paris","Lars A. Larsson, Sweden",kk-joe-jackson-2007-06-06-2.jpg
+TICKET_0140,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"Els Pannecoucque, Belgium - The complete adress was removed - - 7th June 2007 - Antwerpen, Belgium - Koningin Elisabethzaal","Gert Schaumlöffel, Germany","kk-joe-jackson-2007-06-07.jpg, kk-joe-jackson-2007-06-07-2.jpg"
+TICKET_0141,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,"11th June 2007 - Barcelona, Spain - Bikini","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-2007-06-11.jpg
+TICKET_0142,konzert-joe-jackson-2007.html,JOE JACKSON TRIO Tour 2,Front ----- Pass 2007 ----- back,"Gert Schaumlöffel, Germany","kk-joe-jackson-2007-pass-front.jpg, kk-joe-jackson-2007-pass-back.jpg"
+TICKET_0143,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"18th May 1991 - Münster, Germany - Halle Münsterland","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-05-18.jpg
+TICKET_0144,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"23th May 1991 - Manchester, England - Apollo Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-05-23.jpg
+TICKET_0145,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"London, England - Hammersmith Odeon - 27th May 1991 - 28th May 1991 - Steve Whitbread, England","Gert Schaumlöffel, Germany","kk-joe-jackson-1991-05-27.jpg, kk-joe-jackson-1991-05-28.jpg"
+TICKET_0146,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"31st May 1991 - Hamburg, Germany, CCH 1 - Another Scan","Björn Krüger, Germany",kk-bk-022.jpg
+TICKET_0147,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"2nd June 1991 - Rotterdam, Netherlands -  de Doelen","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-06-02.jpg
+TICKET_0148,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"6th June 1991 - Paris, France - Zénith","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-06-06.jpg
+TICKET_0149,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"11th June 1991 - Milano, Italy - Teatro Smeraldo","Bob Smith, Italy",kk-joe-jackson-1991-06-11.jpg
+TICKET_0150,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"15th June 1991 - Düsseldorf, Germany - Philipshalle - Björn Krüger, Germany - Oliver Pasch, Germany","Gert Schaumlöffel, Germany","kk-bk-010.jpg, kk-joe-jackson-1991-06-15-2.jpg, kk-joe-jackson-1991-06-15-3.jpg"
+TICKET_0151,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"16th June 1991 - Stuttgart, Germany - Liederhalle, Beethovensaal","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-06-16.jpg
+TICKET_0152,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"17th June 1991 München (Munich), Germany - Circus Krone","Robert Keller, Germany",kk-joe-jackson-1991-06-17.jpg
+TICKET_0153,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"23rd June 1991 - Toulouse, France - Palais des Sports","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-06-23.jpg
+TICKET_0154,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"28th June 1991 - Nice, France - Théatre de Verdure","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-1991-06-28.jpg
+TICKET_0155,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"29th June 1991 - Belfort, France - Eurockéennes Festival","Steve Whitbread, England",kk-joe-jackson-1991-06-29.jpg
+TICKET_0156,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"10th July 1991 - Atlanta, GA, U.S.A. - Fabulous Fox Thratre - not in JJ Archive","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-07-10.jpg
+TICKET_0157,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"21st July 1991 - Lowell, MA, U.S.A. - Lowell Memorial Auditorium","Ken Van Tassell, U.S.A.",kk-joe-jackson-1991-07-21.jpg
+TICKET_0158,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"23rd July 1991 - Montreal, Canada - Théâtre St-Denis","Jason Glazer, Canada",kk-joe-jackson-1991-07-23.jpg
+TICKET_0159,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"27th July 1991 - Chicago, IL, U.S.A. - Chicago Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-07-27.jpg
+TICKET_0160,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"28th July 1991 - Chicago, IL, U.S.A. - Chicago Theatre - Gert Schaumlöffel, Germany","Judd Nissen, U.S.A.","kk-joe-jackson-1991-07-28.jpg, kk-joe-jackson-1991-07-28-2.jpg"
+TICKET_0161,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"3rd August 1991 - Berkeley, CA, U.S.A. - Greek Theatre (open air)","Gert Schaumlöffel, Germany","kk-gs-joe-jackson-1991-08-03.jpg, kk-joe-jackson-1991-08-03.jpg"
+TICKET_0162,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"6th August 1991 - Universal City, CA, U.S.A. - Universal Amphitheatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-08-06.jpg
+TICKET_0163,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"7th August 1991 - Hollywood, CA, U.S.A. - Roxy Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1991-08-07.jpg
+TICKET_0164,konzert-joe-jackson-1991.html,LAUGHTER & LUST  Tour,"John Nyman, U.S.A. - Gert Schaumlöffel, Germany - Gert Schaumlöffel, Germany - Gert Schaumlöffel, Germany","Gert Schaumlöffel, Germany","kk-jn-08.jpg, kk-joe-jackson-1991-3.jpg, kk-gs-joe-jackson-1991-07-21.jpg, kk-joe-jackson-1991-4.jpg, kk-joe-jackson-1991-1.jpg, kk-joe-jackson-1991-2.jpg, kk-joe-jackson-1991-5.jpg"
+TICKET_0165,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"5th February 2016 - Dublin, Ireland - Olympia Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-2016-02-05.jpg
+TICKET_0166,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"8th February 2016 - Gateshead, England - The Sage","Gert Schaumlöffel, Germany",kk-joe-jackson-2016-02-08.jpg
+TICKET_0167,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"11th February 2016 - Birmingham, England - O2 Institute","Mike Baggaley, England",kk-joe-jackson-2016-02-11.jpg
+TICKET_0168,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"13th February 2016 - London, England - Palladium","Stefan Kunze, Germany",kk-joe-jackson-2016-02-13.jpg
+TICKET_0169,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"15th February 2016 - Essen, Germany - Lichtburg - Barnie Rupprecht, Germany","Gert Schaumlöffel, Germany","kk-joe-jackson-2016-02-15.jpg, kk-joe-jackson-2016-02-15-2.jpg"
+TICKET_0170,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"18th February 2016 - Paris, France - L'Olympia","Olivier Popincourt, France",kk-joe-jackson-2016-02-18-op.jpg
+TICKET_0171,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"21st February 2016 - Groningen, Netherlands - De Oosterpoort, Grote Zaal","Bert Bos, Netherlands",kk-joe-jackson-2016-02-21.jpg
+TICKET_0172,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"22nd February 2016 - Brussels, Belgium - Ancienne Belgique - Hans Dessauvagie, Netherlands","Olivier Popincourt, France","kk-joe-jackson-2016-02-22.jpg, kk-joe-jackson-2016-02-22-op.jpg"
+TICKET_0173,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"23th February 2016 - Lille, France - Théâtre Sébastopol","Claude Chantemarque, France",kk-joe-jackson-2016-02-23.jpg
+TICKET_0174,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"25th February 2016 - Nijmegen, Netherlands - De Vereeniging Grote Zaal","Gert Schaumlöffel, Germany",kk-joe-jackson-2016-02-25.jpg
+TICKET_0175,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"26th February 2016 - Amsterdam, Netherlands - Theater Carr - Astrid Zimmerman, Netherlands","Hans Gordijn, Netherlands","kk-joe-jackson-2016-02-26.jpg, kk-joe-jackson-2016-02-26-2.jpg"
+TICKET_0176,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"27th February 2016 - Amsterdam, Netherlands - Theater Carr","Hans Dessauvagie, Netherlands",kk-joe-jackson-2016-02-27.jpg
+TICKET_0177,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"1st March 2016 - Frankfurt, Germany - Alte Oper","Klaus Scherer, Germany",kk-joe-jackson-2016-03-01.jpg
+TICKET_0178,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"7th March 2016 - Rome, Italy Teatro Brancaccio","Roberto Palumbo, Italy",kk-joe-jackson-2016-03-07.jpg
+TICKET_0179,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"8th March 2016 - Milan, Italy - Teatro Dal Verme","Giulio Cardini, Italy",kk-joe-jackson-2016-03-08.jpg
+TICKET_0180,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"10th March 2016 - Marseille, France - Le Silo","Linda Grijn, Netherlands",kk-joe-jackson-2016-03-10.jpg
+TICKET_0181,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"13th March 2016 - Eindhoven, Netherlands - Muziekgebouw","Barnie Rupprecht, Germany",kk-joe-jackson-2016-03-13.jpg
+TICKET_0182,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"15th March 2016 - Hamburg, Germany - Fabrik - Rolf Thalmann, Germany","Thomas Collin, Germany","kk-joe-jackson-2016-03-15.jpg, kk-joe-jackson-2016-03-15-2.jpg"
+TICKET_0183,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"16th March 2016 - Berlin, Germany - Konzertsaal der Universität der Künste","Gert Schaumlöffel, Germany",kk-joe-jackson-2016-03-16.jpg
+TICKET_0184,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,"18th March 2016 - Rotterdam, Netherlands - Nieuwe Luxor Theater","Bert Bos, Netherlands",kk-joe-jackson-2016-03-18.jpg
+TICKET_0185,konzert-joe-jackson-2016.html,Fast Forward Tour 2016,Tourpasses - 2016,"Gert Schaumlöffel, Germany","kk-joe-jackson-2016-pass.jpg, kk-joe-jackson-2016-backstage-2.jpg"
+TICKET_0186,konzert-joe-jackson-2000.html,Night AND DAY II Tour,"12th December 2000 - Los Angeles, CA, U.S.A. - Wiltern Theatre","Jenniffer Woodson, U.S.A.",kk-jw-03.jpg
+TICKET_0187,konzert-joe-jackson-2000.html,Night AND DAY II Tour,"16th December 2000 - Boston, MA, U.S.A. - Orpheum Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-2000-12-16.jpg
+TICKET_0188,konzert-joe-jackson-2000.html,Night AND DAY II Tour,"18th December 2000 - Toronto, Canada - Massey Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-2000-12-18.jpg
+TICKET_0189,konzert-joe-jackson-2000.html,Night AND DAY II Tour,"20th December 2000 - New York, NY, U.S.A. Beacon Theatre","Erica Eisner Kosova, U.S.A.",kk-joe-jackson-2000-12-20.jpg
+TICKET_0190,konzert-joe-jackson-2000.html,Night AND DAY II Tour,"20th December 2000 - New York, NY, U.S.A. - Beacon Theatre","Benjamin Davis, U.S.A.",kk-joe-jackson-2000-12-20-2.jpg
+TICKET_0191,konzert-joe-jackson-2000.html,Night AND DAY II Tour,Pass - 2000 / 2001,"Gert Schaumlöffel, Germany",kk-joe-jackson-2000-pass.jpg
+TICKET_0192,konzert-joe-jackson-2017.html,Fast Forward Tour 2017,"Fort Lauderdale, FL, U.S.A. - Parker Playhouse - 31st May 2017","Lisa Caplan, U.S.A.",kk-joe-jackson-2017-05-31.jpg
+TICKET_0193,konzert-joe-jackson-2017.html,Fast Forward Tour 2017,"Orlando, FL, U.S.A.  - The Plaza Live Theatre Orlando - 2nd June 2017","Anne Wisniewski Brooks, U.S.A.",kk-joe-jackson-2017-06-02.jpg
+TICKET_0194,konzert-joe-jackson-2017.html,Fast Forward Tour 2017,"Morristown, NJ, U.S.A.  - Mayo Performing Arts Center - 8th June 2017","Gert Schaumlöffel, Germany",kk-joe-jackson-2017-06-08-2.jpg
+TICKET_0195,konzert-joe-jackson-2017.html,Fast Forward Tour 2017,"Wilmington, DE, U.S.A.  - The Grand Opera House - 9th June 2017","John Nyman, U.S.A.",kk-joe-jackson-2017-06-09.jpg
+TICKET_0196,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"Ticket - Day 1 - Ticket - Day 2 - Ticket - Day 3 - Sheva Golkow, U.S.A. - David Baron, U.S.A. - SCMusicman, U.S.A. - 23rd, 24th, 25th January 1986 - New York City, NY, U.S.A. - Roundabout Theatre - ← Introductions on every seat Anouncement → - Sheva Golkow, U.S.A. - Thanks to all !","Andreas Wostrak, Germany","kk-joe-jackson-1986-01-23.jpg, kk-joe-jackson-1986-01-24.jpg, kk-joe-jackson-1986-01-25-www.jpg, kk-joe-jackson-1986-01-23-1.jpg, kk-joe-jackson-1986-01-23-25.jpg"
+TICKET_0197,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"1st May 1986 - Stockholm, Sweden - Göta Lejon (Cinema)","Magnus Hjort, Sweden",kk-mh-1.jpg
+TICKET_0198,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"4th May 1986 Düsseldorf, Germany - Philipshalle - 9th May 1986 Frankfurt, Germany - Eissporthalle - 10th May 1986 Hamburg, Germany - Sporthalle - Oliver Pasch, Germany","Gert Schaumlöffel, Germany","kk-joe-jackson-1986-05-04-2.jpg, kk-joe-jackson-1986-05-09.jpg, kk-joe-jackson-1986-05-10.jpg"
+TICKET_0199,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"12th May 1986 - Milan, Italy - Teatro Tenda","Dino Cattaneo, Italy",kk-joe-jackson-1986-05-12.jpg
+TICKET_0200,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"17th May 1986 - Paris, France - Le Zenith","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-05-17.jpg
+TICKET_0201,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"19th May 1986 - Brussels (Brüssel), Belgium - Forest National","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-05-19.jpg
+TICKET_0202,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"21st May 1986 - Rotterdam, Netherlands - Ahoy","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-05-21.jpg
+TICKET_0203,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"22th May 1986 - Rotterdam, Netherlands -  Ahoy","Lammert Veen, Netherlands",kk-joe-jackson-1986-05-22.jpg
+TICKET_0204,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"24th May 1986 - London, England - Wembley Arena","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-05-24.jpg
+TICKET_0205,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"27th May 1986 - Birmingham, England - Odeon Theatre - Clare Garner, England","Nick Gould, England Gert Schaumlöffel, Germany",kk-joe-jackson-1986-05-27-mix.jpg
+TICKET_0206,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"28th May 1986 - Manchester, England - Apollo Theatre - Mike Baggaley, England - 28th May 1986 - Manchester, England - Apollo Theatre - Gert Schaumlöffel, Germany","Alex Wilde, England","kk-joe-jackson-1986-05-28.jpg, kk-joe-jackson-1986-05-28b.jpg, kk-joe-jackson-1986-05-28c.jpg"
+TICKET_0207,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"13th June 1986 - Toronto, Canada -  Kingswood Music Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-06-13.jpg
+TICKET_0208,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"14th June 1986 - Clarkston, MI, U.S.A. - Pine Knob Music Theatre (open air)","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-06-14.jpg
+TICKET_0209,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"15th June 1986 - Poplar Creek, IL, U.S.A. - Poplar Creek Music Theater","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-06-15.jpg
+TICKET_0210,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"20th June 1986 - Vancouver, Canada - Expo 1986 World's Fair - Gert Schaumlöffel, Germany","Doug Collett, Canada","kk-joe-jackson-1986-06-20.jpg, kk-joe-jackson-1986-06-20-2.jpg"
+TICKET_0211,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"22nd June 1986 - Seattle, WA, U.S.A. - Seattle Center Arena","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-06-22.jpg
+TICKET_0212,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"27th June 1986 - Universal City, CA, U.S.A. - Universal Amphitheatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-06-27.jpg
+TICKET_0213,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"5th July 1986 - Dallas, TX, U.S.A. - Bronco Bowl","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-07-05.jpg
+TICKET_0214,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"6th July 1986 - Houston, TX, U.S.A. - Southern Star Amphitheater","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-07-06.jpg
+TICKET_0215,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"12th July 1986 - Columbia, MD, U.S.A. - Merriweather Post Pavilion","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-07-12.jpg
+TICKET_0216,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"14th July 1986 - Mansfield, MA, U.S.A. - Great Woods Performing Arts Center (open air)","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-07-14.jpg
+TICKET_0217,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"15th July 1986 - Philadelphia, PA, U.S.A. - The Spectrum","Lisa Caplan, U.S.A.",kk-joe-jackson-1986-07-15.jpg
+TICKET_0218,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"17th July 1986 - New York, NY, U.S.A. - Radio City Music Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-07-17.jpg
+TICKET_0219,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"18th July 1986 - New York, NY, U.S.A. - Radio City Music Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-07-18.jpg
+TICKET_0220,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"19th July 1986 - New York, NY, U.S.A. - Radio Music City Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-07-19.jpg
+TICKET_0221,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"10th November 1986 - Berlin, Germany - Eissporthalle","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-11-10.jpg
+TICKET_0222,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"12th November 1986 - Münster, Germany - Münsterlandhalle","Andreas Wiethoff, Germany",kk-aw-03.jpg
+TICKET_0223,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"17th November 1986 - Quimper, France - Salle Omnisports","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-11-17.jpg
+TICKET_0224,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"20th November 1986 - Barcelona, Spain - Studio 54","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-11-20.jpg
+TICKET_0225,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"25th November 1986 - Lyon, France - Bourse du Travail","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-11-25.jpg
+TICKET_0226,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"27nd November 1986 - Nice, France - Théatre de Verdure","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-11-27.jpg
+TICKET_0227,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"2nd December 1986 - Rome, Italy","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-12-02.jpg
+TICKET_0228,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"9th December 1986 - Stuttgart, Germany - Liederhalle","Gabs, Tübingen, Germany",kk-joe-jackson-1986-12-09.jpg
+TICKET_0229,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"10th December 1986 - Ludwigshafen, Germany - Friedrich-Ebert-Halle","Gert Schaumlöffel, Germany",kk-joe-jackson-1986-12-10.jpg
+TICKET_0230,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"13th December 1986 - Arnhem, Netherlands -  Rijnhal","Dominique Maassen, Netherlands",kk-joe-jackson-1986-12-13.jpg
+TICKET_0231,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"14th December 1986 - Arnhem, Netherlands -  Rijnhal","Lammert Veen, Netherlands",kk-joe-jackson-1986-12-14.jpg
+TICKET_0232,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,"14th December 1986 - Arnhem, Netherlands - Rijnhal","Harry Koekkoek, Netherlands",kk-hkk-02.jpg
+TICKET_0233,konzert-joe-jackson-1986.html,BIG WORLD RECORDING,Passes - 1986,"Gert Schaumlöffel, Germany","kk-joe-jackson-1986-pass.jpg, kk-joe-jackson-1986-07-05-pass.jpg"
+TICKET_0234,konzert-joe-jackson-1990.html,LAUGHTER & LUST  Tour (Workshop),"15th September 1990 - Boston, MA, U.S.A - Citi Club","Gert Schaumlöffel, Germany",kk-joe-jackson-1990-09-15.jpg
+TICKET_0235,konzert-joe-jackson-1990.html,LAUGHTER & LUST  Tour (Workshop),"18th September 1990 Poughkeepsie, NY, U.S.A. The Chance","John Nyman, U.S.A.",kk-jn-15.jpg
+TICKET_0236,konzert-joe-jackson-1990.html,LAUGHTER & LUST  Tour (Workshop),"25th September 1990 -  Toronto, Canada - Diamond","Gert Schaumlöffel, Germany",kk-joe-jackson-1990-09-25.jpg
+TICKET_0237,konzert-joe-jackson-1990.html,LAUGHTER & LUST  Tour (Workshop),"29th September 1990 -  Detroit, MI, U.S.A. - St. Andrew's Hall","Art Fernandez, U.S.A.",kk-joe-jackson-1990-09-29.jpg
+TICKET_0238,konzert-joe-jackson-1990.html,LAUGHTER & LUST  Tour (Workshop),"9th October 1990 - Columbus, OH, U.S.A. - Newport Music Hall",thepassenger,kk-joe-jackson-1990-10-09.jpg
+TICKET_0239,konzert-joe-jackson-1990.html,LAUGHTER & LUST  Tour (Workshop),"11th October 1990 Pittsburgh, PA, U.S.A. Metropol","Björn Krüger, Germany",kk-bk-012.jpg
+TICKET_0240,konzert-joe-jackson-1990.html,LAUGHTER & LUST  Tour (Workshop),"18th October 1990 - New York, NY, U.S.A. - The Marquee","Gary Gelb, U.S.A.",kk-joe-jackson-1990-10-18.jpg
+TICKET_0241,konzert-joe-jackson-1990.html,LAUGHTER & LUST  Tour (Workshop),"20th October 1990 - New York, NY, U.S.A. - Bottom Line","Gert Schaumlöffel, Germany",kk-joe-jackson-1990-10-20.jpg
+TICKET_0242,konzert-joe-jackson-2001.html,,"6th January 2001 - Leipzig, Germany - Gewandhaus - FREE Ticket","Björn Krüger, Germany",kk-bk-013.jpg
+TICKET_0243,konzert-joe-jackson-2001.html,,"8th January 2001 - Düsseldorf, Germany -  Philipshalle","Gert Schaumlöffel, Germany",kk-joe-jackson-2001-01-08.jpg
+TICKET_0244,konzert-joe-jackson-2001.html,,"10th January 2001 - Frankfurt, Germany - Alte Oper","Andreas Wiethoff, Germany",kk-aw-04.jpg
+TICKET_0245,konzert-joe-jackson-2001.html,,"13th January 2001 - Bielefeld, Germany - Stadthalle - Gert Schaumlöffel, Germany","Thomas Collin, Germany","kk-joe-jackson-2001-01-13-2.jpg, kk-joe-jackson-2001-01-13.jpg"
+TICKET_0246,konzert-joe-jackson-2001.html,,"14th January 2001 - Hamburg, Germany - CCH Saal 2","Rolf Thalmann, Germany",kk-joe-jackson-2001-01-14.jpg
+TICKET_0247,konzert-joe-jackson-2001.html,,"16th January 2001 - Berlin, Germany - ICC Saal 2","Steve Whitbread, England",kk-joe-jackson-2001-01-16.jpg
+TICKET_0248,konzert-joe-jackson-2001.html,,"18th January 2001 - Paris, France - Olympia - Mathieu Chartier, France - Gert Schaumlöffel, Germany - 18th January 2001 - Paris, France - Olympia - Signed by Bandmembers","Olivier Popincourt, France","kk-sm-2.jpg, kk-joe-jackson-2001-01-18.jpg, kk-joe-jackson-2001-01-18-op.jpg"
+TICKET_0249,konzert-joe-jackson-2001.html,,"20th January 2001 - Lyon, France - La Bourse du Travail","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-2001-01-20.jpg
+TICKET_0250,konzert-joe-jackson-2001.html,,"31st January 2001 - München (Munich), Germany - Philharmonie","Robert Keller, Germany",kk-joe-jackson-2001-01-31.jpg
+TICKET_0251,konzert-joe-jackson-2001.html,,"12th February 2001 - Amsterdam, Netherlands -  Carre","Lammert Veen, Netherlands",kk-joe-jackson-2001-02-12.jpg
+TICKET_0252,konzert-joe-jackson-2001.html,,"13th February 2001 - Rotterdam, Netherlands - de Doelen","Hans Gordijn, Netherlands",kk-joe-jackson-2001-02-13.jpg
+TICKET_0253,konzert-joe-jackson-2001.html,,"17th February 2001 - London, England - Royal Festival Hall","Steve Whitbread, England",kk-joe-jackson-2001-02-17.jpg
+TICKET_0254,konzert-joe-jackson-2001.html,,"19th February 2001 - Birmingham, England - Symphony Hall","Mike Baggaley, England",kk-joe-jackson-2001-02-19.jpg
+TICKET_0255,konzert-joe-jackson-2001.html,,"20th February 2001 - Manchester, England - Apollo","Gert Schaumlöffel, Germany",kk-joe-jackson-2001-02-20.jpg
+TICKET_0256,konzert-joe-jackson-2001.html,,"12th March 2001 - Washington, DC, U.S.A. - Warner Theatre","Norm Friedlander, U.S.A.",kk-joe-jackson-2001-03-12.jpg
+TICKET_0257,konzert-joe-jackson-2001.html,,"13th March 2001 - Upper Darby, PA, U.S.A. - Tower Theater","Sheva Golkow, U.S.A.",kk-joe-jackson-2001-03-13.jpg
+TICKET_0258,konzert-joe-jackson-2001.html,,"15th March 2001 - New York, NY, U.S.A. - Tribeca Performing Arts Center (acoustic show)","Gert Schaumlöffel, Germany",kk-joe-jackson-2001-03-15.jpg
+TICKET_0259,konzert-joe-jackson-2001.html,,"15th March 2001 New York, NY, U.S.A. Tribeca Performing Arts Center (acoustic show)","John Nyman, U.S.A.",kk-jn-17.jpg
+TICKET_0260,konzert-joe-jackson-2001.html,,"17th March 2001 Red Bank, NJ, U.S.A. - Count Basie Theatre","John Nyman, U.S.A.",kk-jn-04.jpg
+TICKET_0261,konzert-joe-jackson-2001.html,,"17th March 2001 - Red Bank, NJ, U.S.A. - Count Basie Theatre","Benjamin Davis, U.S.A.",kk-joe-jackson-2001-03-17-2.jpg
+TICKET_0262,konzert-joe-jackson-2001.html,,"29th March 2001 - Chicago, IL, U.S.A. - The Riviera","Gert Schaumlöffel, Germany",kk-joe-jackson-2001-03-29.jpg
+TICKET_0263,konzert-joe-jackson-2001.html,,"31th March 2001 - Minneapolis, MN, U.S.A. - Historic State Theatre","Shan Lines, U.S.A.",kk-joe-jackson-2001-03-31.jpg
+TICKET_0264,konzert-joe-jackson-2001.html,,"1st April 2001 - Milwaukee, WI, U.S.A. - Riverside Theatre","Ian Bowes, South Africa",kk-joe-jackson-2001-04-01.jpg
+TICKET_0265,konzert-joe-jackson-2001.html,,"3rd April 2001 - Boulder, CO, U.S.A. - Boulder Theatre","Ian Bowes, South Africa",kk-joe-jackson-2001-04-03.jpg
+TICKET_0266,konzert-joe-jackson-2001.html,,"15th April 2001 - San Diego, CA, U.S.A. - 4th & B","Jenniffer Woodson, U.S.A.",kk-jw-07.jpg
+TICKET_0267,konzert-joe-jackson-2001.html,,"16th April 2001 - Los Angeles, CA, U.S.A. - John Anson Ford Theatre (open air)","Jenniffer Woodson, U.S.A.",kk-jw-05.jpg
+TICKET_0268,konzert-joe-jackson-2001.html,,"20th April 2001 - New York, NY, U.S.A. - Beacon Theatre","John Nyman, U.S.A.",kk-jn-05.jpg
+TICKET_0269,konzert-joe-jackson-2001.html,,Pass - 2000 / 2001,"Gert Schaumlöffel, Germany",kk-joe-jackson-2000-pass.jpg
+TICKET_0270,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"29th June 1989 - Münster, Germany -  Jovel","Gert Schaumlöffel, Germany",kk-jj-gs-1989-06-29.jpg
+TICKET_0271,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"2nd August 1989 - Boston, MA, U.S.A. - Orpheum Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-08-02.jpg
+TICKET_0272,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"6th August 1989 - Columbia, MD, U.S.A. - Merriweather Post Pavilion","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-08-06.jpg
+TICKET_0273,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"9th August 1989 New York, NY, U.S.A. - Beacon Theatre","John Nyman, U.S.A.",kk-jn-16.jpg
+TICKET_0274,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"12th August 1989 - Royal Oak, MI, U.S.A. - Royal Oak Music Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-08-12.jpg
+TICKET_0275,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"13th August 1989 - Chicago, IL, U.S.A. - Chicago Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-08-13.jpg
+TICKET_0276,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"19th August 1989 - Berkeley, CA, U.S.A. - Gr","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-08-19.jpg
+TICKET_0277,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"25th August 1989 - Berkeley, CA, U.S.A. - Greek Theatre (open air)","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-08-25.jpg
+TICKET_0278,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"26th August 1989 - San Diego, CA, U.S.A. - San Diego State Open Air Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-08-26.jpg
+TICKET_0279,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"28th August 1989 - 30th August 1989 - Los Angeles, CA, U.S.A. - The Wiltern Theatre","Gert Schaumlöffel, Germany","kk-joe-jackson-1989-08-28.jpg, kk-joe-jackson-1989-08-30.jpg"
+TICKET_0280,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"13th September 1989 - Minneapolis, MN, U.S.A. - Orpheum Theatre","Shan Lines, U.S.A.",kk-joe-jackson-1989-09-13.jpg
+TICKET_0281,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"14th September 1989 - Milwaukee, WI, U.S.A. - Riverside Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-09-14.jpg
+TICKET_0282,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"20th September 1989 - Poughkeepsie, NY, U.S.A. - Hudson Civic Center","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-09-20.jpg
+TICKET_0283,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"25th September 1989 New Brunswick, NJ U.S.A. Rutgers University","John Nyman, U.S.A.",kk-jn-01.jpg
+TICKET_0284,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"13th October 1989 - 14th October 1989 - London, England - Hammersmith Odeon - Mike Baggaley, England","Gert Schaumlöffel, Germany","kk-joe-jackson-1989-10-13.jpg, kk-joe-jackson-1989-10-14.jpg"
+TICKET_0285,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"17th Octoberber 1989 - Zürich, Suisse - Kongresshaus Zürich","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-10-17.jpg
+TICKET_0286,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"18th October 1989 - München (Munich), Germany - Deutsches Museum","Robert Keller, Germany",kk-joe-jackson-1989-10-18.jpg
+TICKET_0287,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"19th October 1989 - Milan, Italy - Teatro Smeraldo","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-10-19.jpg
+TICKET_0288,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"27 th October 1989 - Hamburg, Germany - CCH 1","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-10-27.jpg
+TICKET_0289,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"3rd November 1989 Düsseldorf, Germany -  Philipshalle","Gert Schaumlöffel, Germany",kk-joe-jackson-1989-11-03.jpg
+TICKET_0290,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"4th November 1989 - Rotterdam, Netherlands - Ahoy Sportpalais","Gert Schaumlöffel, Germany","kk-joe-jackson-1989-11-04-1.jpg, kk-joe-jackson-1989-11-04-2.jpg"
+TICKET_0291,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"6th November 1989 - Paris, France -  Olympia - Björn Krüger, Germany - 7th November 1989 - Paris, France -  Olympia - 1989 - Paris, France -  Backside","Gert Schaumlöffel, Germany","kk-joe-jackson-1989-11-06.jpg, kk-joe-jackson-1989-paris-back.jpg, kk-joe-jackson-1989-11-07.jpg"
+TICKET_0292,konzert-joe-jackson-1989.html,BLAZE OF GLORY Tour,"John Nyman, U.S.A. - Gert Schaumlöffel, Germany - Gert Schaumlöffel, Germany - Gert Schaumlöffel, Germany",Tourpasses - 1989,"kk-jn-09.jpg, kk-joe-jackson-1989-pass-2.jpg, kk-joe-jackson-1989-pass-4.jpg, kk-joe-jackson-1989-pass-3.jpg, kk-joe-jackson-1989-pass-1.jpg, kk-joe-jackson-1989-pass-5.jpg"
+TICKET_0293,konzert-joe-jackson-2022.html,"Sing, You Sinners! - Tour 2022","Frankfurt, Germany - Alte Oper - 4th April 2022 - CANCELLED  ➛  24th July 2022","Andreas Wostrack, Germany",kk-joe-jackson-2022-04-04.jpg
+TICKET_0294,konzert-joe-jackson-2022.html,"Sing, You Sinners! - Tour 2022","Berlin, Germany - Theater am Potsdamer Platz - 8th April 2022 - CANCELLED  ➛  19th July 2022","Rolf Thalmann, Germany - Couldn't use it ...",kk-joe-jackson-2022-04-08.jpg
+TICKET_0295,konzert-joe-jackson-2022.html,"Sing, You Sinners! - Tour 2022","Allentown, PA, U.S.A. - Miller Symphony Hall - 13th May 2022","John Nyman, U.S.A.",kk-joe-jackson-2022-05-13.jpg
+TICKET_0296,konzert-joe-jackson-2022.html,"Sing, You Sinners! - Tour 2022","Phoenix, AZ, U.S.A. - Celebrity Theatre 11th June 2022","Kevin Walsh, U.S.A.",kk-joe-jackson-2022-06-11.jpg
+TICKET_0297,konzert-joe-jackson-2022.html,"Sing, You Sinners! - Tour 2022","Bordeaux, France - Theatre Femina - 5th July 2022","Kike Morey, Spain",kk-joe-jackson-2022-07-05.jpg
+TICKET_0298,konzert-joe-jackson-2022.html,"Sing, You Sinners! - Tour 2022","Stuttgart, Germany - Altes Schloss - 8th July 2022","Andreas Wostrack, Germany",kk-joe-jackson-2022-07-08.jpg
+TICKET_0299,konzert-joe-jackson-2022.html,"Sing, You Sinners! - Tour 2022","Brussels, Belgium - Ancienne Belgique, Grote Zaal - 10th July 2022","Marc Alsemgeest, Netherlands",kk-joe-jackson-2022-07-10.jpg
+TICKET_0300,konzert-joe-jackson-2022.html,"Sing, You Sinners! - Tour 2022","Hamburg, Germany - Stadtpark Open Air - 21th July 2022","Rolf Thalmann, Germany",kk-joe-jackson-2022-07-21.jpg
+TICKET_0301,konzert-joe-jackson-2022.html,"Sing, You Sinners! - Tour 2022","Frankfurt, Germany - Jahrhunderthalle - 24th July 2022 - Andreas Wostrack, Germany","Barcode blurred, will be shown after the concert!",kk-joe-jackson-2022-07-24.jpg
+TICKET_0302,konzert-joe-jackson-1973.html,Edward Bear,"14th December 1973 - Technical High School, Portsmouth, England","Tom-Robarts Arnold, England",kk-edward-bear-1973.jpg
+TICKET_0303,konzert-joe-jackson-2002.html,VOLUME 4 Tour,"Brighton, England - Concorde 2 - 19th September 2002","Martin Ayling, England",kk-joe-jackson-2002-09-19.jpg
+TICKET_0304,konzert-joe-jackson-2002.html,VOLUME 4 Tour,"21st September 2002 - Oxford, U.K. - The Zodiac","Bert Bos, Netherlands",kk-joe-jackson-2002-09-21.jpg
+TICKET_0305,konzert-joe-jackson-2002.html,VOLUME 4 Tour,"23rd September 2002 - Portsmouth, U.K. - Wedgewood Rooms","Gert Schaumlöffel, Germany",kk-joe-jackson-2002-09-23.jpg
+TICKET_0306,konzert-joe-jackson-2002.html,VOLUME 4 Tour,"26th September 2002 - London, U.K. - The Marquee","Gert Schaumlöffel, Germany",kk-joe-jackson-2002-09-26.jpg
+TICKET_0307,konzert-joe-jackson-2002.html,VOLUME 4 Tour,"27th September 2002 - Northampton, U.K. - Soundhaus","Mike Baggaley, England",kk-joe-jackson-2002-09-27.jpg
+TICKET_0308,konzert-joe-jackson-2002.html,VOLUME 4 Tour,Pass - 2002 - Front - Pass - 2002 - Back,"Gert Schaumlöffel, Germany","kk-joe-jackson-2002-pass-front.jpg, kk-joe-jackson-2002-pass-back.jpg"
+TICKET_0309,konzert-joe-jackson-1985.html,,"Tokyo Symphony Orchestra performing: SHIJIN NO IE (HOUSE OF THE POET) 17th March 1985 - Tsubuka, Japan - Opening EXPO 85",,kk-joe-jackson-1985-03-17.jpg
+TICKET_0310,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"3rd April 1984 - Dublin, Ireland - R.D.S. - Main Hall - Gert Schaumlöffel, Germany","John Foyle, Ireland","kk-joe-jackson-1984-04-03.jpg, kk-joe-jackson-1984-04-03-2.jpg"
+TICKET_0311,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"7th April 1984 - Manchester, U.K. - Apollo Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-04-07.jpg
+TICKET_0312,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"8th April 1984 - Birmingham, U.K. - Odeon Theatre","Mike Baggaley, England",kk-joe-jackson-1984-04-08.jpg
+TICKET_0313,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"11th April 1984 - London, England -  Hammersmith Odeon","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-04-11.jpg
+TICKET_0314,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"12th April 1984 - London, England -  Hammersmith Odeon - Gert Schaumlöffel, Germany - 12th April 1984 - London, England -  Hammersmith Odeon - Gert Schaumlöffel, Germany","Alex Wilde, England","kk-gs-joe-jackson-1984-04-12.jpg, kk-joe-jackson-1984-04-12-b.jpg, kk-joe-jackson-1984-04-12-c.jpg"
+TICKET_0315,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"14th April 1984 - Rotterdam, Netherlands -  Ahoy","Lammert Veen, Netherlands",kk-jj-1984-04-14.jpg
+TICKET_0316,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"15th April 1984 - Rotterdam, Netherlands - Ahoy","Harry Koekkoek, Netherlands",kk-hkk-01.jpg
+TICKET_0317,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"21st April 1984 - Lyon, France - Palais des Sports","Tommy Mariano, France","kk-joe-jackson-1984-04-21-front.jpg, kk-joe-jackson-1984-04-21-back.jpg"
+TICKET_0318,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"25th April 1984 - Stuttgart, Germany - Liederhalle","Barnie Rupprecht, Germany",kk-joe-jackson-1984-04-25.jpg
+TICKET_0319,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"26th April 1984 - Offenbach, Germany - Stadthalle","Gert Schaumlöffel, Germany",kk-jj-gs-1984-04-26.jpg
+TICKET_0320,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"30th April 1984 - Düsseldorf, Germany - Philipshalle","Tommy Mariano, France",kk-joe-jackson-1984-04-30.jpg
+TICKET_0321,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"29th April 1984 - Ludwigshafen, Germany - Friedrich-Ebert-Halle","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-04-29.jpg
+TICKET_0322,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"2nd May 1984 - Berlin, Germany - ICC","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-05-02.jpg
+TICKET_0323,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"3rd May 1984 - Hamburg, Germany - Congress Centrum Saal 1",Idon'twantmynameininternet,kk-joe-jackson-1984-05-03.jpg
+TICKET_0324,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"5th May 1984 - Lille, France -  Foire Commerciale","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-05-05.jpg
+TICKET_0325,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"7th May 1984 - Paris, France - Le Zenith","Björn Krüger, Germany",kk-joe-jackson-1984-05-07.jpg
+TICKET_0326,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"14th May 1984 - Vancouver, Canada - Queen Elisabeth Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-05-14.jpg
+TICKET_0327,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"15th May 1984 - Seattle, WA, U.S.A. - Paramount Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-05-15.jpg
+TICKET_0328,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"25th May 1984 - Santa Barbara, CA, U.S.A. - Santa Barbara County Bowl","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-05-25.jpg
+TICKET_0329,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"2nd June 1984 - Dallas, TX, U.S.A. - State Fair Band Shell","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-06-02.jpg
+TICKET_0330,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"10th June 1984 - Poplar Creek, IL, U.S.A. - Poplar Creek Music Theater (open air)","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-06-10.jpg
+TICKET_0331,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"18th June 1984 - Toronto, Canada - CNE Bandshell","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-06-18.jpg
+TICKET_0332,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"21st June 1984 - New York, NY, U.S.A. - Madison Square Garden - Gert Schaumlöffel, Germany","Gregory D'Anna, U.S.A.","kk-joe-jackson-1984-06-21.jpg, kk-joe-jackson-1984-06-21-II.jpg"
+TICKET_0333,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"23rd June 1984 - Columbia, MD, U.S.A. - Merriweather Post Pavilion","Gert Schaumlöffel, Germany",kk-joe-jackson-1984-06-23.jpg
+TICKET_0334,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"Gert Schaumlöffel, Germany - Rain Date: 26th June 1984 - Boston, MA, U.S.A. - Boston Common","Gil Bliss, USA","kk-gs-joe-jackson-1984-06-26.jpg, kk-joe-jackson-1984-06-26-backstage.jpg, kk-joe-jackson-1984-06-26-right-side.jpg"
+TICKET_0335,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"7th July 1984 - Torhout, Belgium - Humo Festival - Hervé Lenoach, France","Gert Schaumlöffel, Germany","kk-joe-jackson-1984-07-07.jpg, kk-joe-jackson-1984-07-07-2.jpg"
+TICKET_0336,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"8th July 1984 - Werchter, Belgium - Humo Festival - Barnie Rupprecht, Germany","Gert Schaumlöffel, Germany","kk-joe-jackson-1984-07-08.jpg, kk-joe-jackson-1984-07-08-2.jpg"
+TICKET_0337,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"10th July 1984 - Milan, Italy - Palazzo Dello Sport - 12th July 1984 - Rome, Italy - Ex Mattatoio","Gert Schaumlöffel, Germany","kk-joe-jackson-1984-07-10.jpg, kk-joe-jackson-1984-07-12.jpg"
+TICKET_0338,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,"6th August 1984 - Osaka, Japan","Shiro Miyata , Japan",kk-joe-jackson-1984-08-06.jpg
+TICKET_0339,konzert-joe-jackson-1984.html,BODY AND SOUL Tour,1984 - Passes,"Gert Schaumlöffel, Germany","kk-joe-jackson-pass-1984-hamburg.jpg, kk-joe-jackson-1984-05-26-pass.jpg, kk-joe-jackson-1984-05-29-pass.jpg"
+TICKET_0340,konzert-joe-jackson-2003.html,,"21st March 2003 - Los Angeles, CA, U.S.A. - El Rey Theatre - 22nd March 2003 - Los Angeles, CA, U.S.A. - El Rey Theatre - YAHOO Group - Joe Jackson","Craig Codding, U.S.A.","kk-sm-5.jpg, kk-joe-jackson-2003-03-22.jpg"
+TICKET_0341,konzert-joe-jackson-2003.html,,"24th March 2003 - San Francisco, CA, U.S.A. - The Fillmore","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-03-24.jpg
+TICKET_0342,konzert-joe-jackson-2003.html,,"27th March 2003 - Boulder, CO, U.S.A. - Fox Theatre","Ian Bowes, South Africa",kk-joe-jackson-2003-03-27.jpg
+TICKET_0343,konzert-joe-jackson-2003.html,,"29th March 2003 - Minneapolis, MN, U.S.A. - First Avenue","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-03-29.jpg
+TICKET_0344,konzert-joe-jackson-2003.html,,"30th March 2003 - Chicago, IL, U.S.A. - Vic Theatre","Ian Bowes, South Africa",kk-joe-jackson-2003-03-30.jpg
+TICKET_0345,konzert-joe-jackson-2003.html,,"8th April 2003 Philadelphia, PA, U.S.A. - Theatre of Living Arts","John Nyman, U.S.A.",kk-jn-02.jpg
+TICKET_0346,konzert-joe-jackson-2003.html,,"11th April 2003 - New York, NY, U.S.A. - Irving Plaza","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-04-11-2.jpg
+TICKET_0347,konzert-joe-jackson-2003.html,,"12th April 2003 - Brooklyn, NY, U.S.A. - Warsaw","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-04-12.jpg
+TICKET_0348,konzert-joe-jackson-2003.html,,"13th April 2003 New York, NY, U.S.A. - Bowery Ballroom","John Nyman, U.S.A.",kk-jn-06.jpg
+TICKET_0349,konzert-joe-jackson-2003.html,,"22nd April 2003 - Hellendoorn, Netherlands - Lantaarn","Lammert Veen, Netherlands",kk-jj-gs-2003-04-22.jpg
+TICKET_0350,konzert-joe-jackson-2003.html,,"24th April 2003 - Köln (=Cologne), Germany - Live Music Hall - Gert Schaumlöffel, Germany","Eric Thelen, Germany","kk-joe-jackson-2003-04-24.jpg, kk-eric.jpg"
+TICKET_0351,konzert-joe-jackson-2003.html,,"25th April 2003 - Hamburg, Germany - Markthalle","Rolf Thalmann, Germany",kk-joe-jackson-2003-04-25.jpg
+TICKET_0352,konzert-joe-jackson-2003.html,,"27th April 2003 - Berlin, Germany - Universal Hall","Björn Krüger, Germany",kk-bk-019.jpg
+TICKET_0353,konzert-joe-jackson-2003.html,,"28th April 2003 - Frankfurt, Germany - Batschkapp","Andreas Wiethoff, Germany",kk-aw-01.jpg
+TICKET_0354,konzert-joe-jackson-2003.html,,"2nd May 2003 - Strasbourg, France - La Laiterie - Grande Salle","François Herrb, France",kk-joe-jackson-2003-05-02.jpg
+TICKET_0355,konzert-joe-jackson-2003.html,,"6th May 2003 - Marseille, France - Le Moulin","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-05-06.jpg
+TICKET_0356,konzert-joe-jackson-2003.html,,"21st May 2003 - Utrecht, Netherlands - Vredenburg","Mike Philippens, Netherlands",kk-joe-jackson-2003-05-21.jpg
+TICKET_0357,konzert-joe-jackson-2003.html,,"23rd May 2003 - Groningen, Netherlands - Oosterpoort","Lammert Veen, Netherlands",kk-reint-1.jpg
+TICKET_0358,konzert-joe-jackson-2003.html,,"24th May 2003 - Amsterdam, Netherlands - Paradiso","Lammert Veen, Netherlands",kk-jj-gs-2003-05-24.jpg
+TICKET_0359,konzert-joe-jackson-2003.html,,"26th May 2003 - Paris, France - Le Bataclan","Hervé Lenoach, France",kk-jj-hl-3.jpg
+TICKET_0360,konzert-joe-jackson-2003.html,,"26th May 2003 - Paris, France - Le Bataclan","Hubert Duhautois, France",kk-hudu-01.jpg
+TICKET_0361,konzert-joe-jackson-2003.html,,"27th May 2003 - Paris, France - Le Bataclan","Mathieu Chartier, France",kk-sm-3.jpg
+TICKET_0362,konzert-joe-jackson-2003.html,,"28th May 2003 - Euralille, France - L'Aéronef","Claude Chantemarque, France",kk-joe-jackson-2003-05-28.jpg
+TICKET_0363,konzert-joe-jackson-2003.html,,"27th May 2003 - Paris, France - Le Bataclan","Hubert Duhautois, France",kk-hudu-02.jpg
+TICKET_0364,konzert-joe-jackson-2003.html,,"30th May 2003 - Amsterdam, Netherlands - Pepsi Stage","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-05-30.jpg
+TICKET_0365,konzert-joe-jackson-2003.html,,"1st June 2003 - Tilburg, Netherlands - 013 Popcentrum","Annelies Kanbier, Netherlands",kk-joe-jackson-2003-06-01.jpg
+TICKET_0366,konzert-joe-jackson-2003.html,,"4th June 2003 - London, England - Shepherds Bush Empire","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-06-04.jpg
+TICKET_0367,konzert-joe-jackson-2003.html,,"6th June 2003 - Portsmouth, England - Guildhall","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-06-06.jpg
+TICKET_0368,konzert-joe-jackson-2003.html,,"8th June 2003 - Manchester, England - Academy","Björn Krüger, Germany",kk-joe-jackson-2003-06-08.jpg
+TICKET_0369,konzert-joe-jackson-2003.html,,"12th June 2003 - Dublin, Ireland - Vicar Street","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-06-12.jpg
+TICKET_0370,konzert-joe-jackson-2003.html,,"24th June 2003 - Bristol, England - Carling Academy","Alex Wilde, England",kk-joe-jackson-2003-06-24.jpg
+TICKET_0371,konzert-joe-jackson-2003.html,,"2nd July 2003 - Amsterdam, Netherlands - Pepsi Stage","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-07-02.jpg
+TICKET_0372,konzert-joe-jackson-2003.html,,"10th July 2003 - München (Munich), Germany - Olympiapark Musik-Arena - Robert Keller, Germany","Björn Krüger, Germany","kk-joe-jackson-2003-07-10.jpg, kk-joe-jackson-2003-07-10-2.jpg"
+TICKET_0373,konzert-joe-jackson-2003.html,,"20th July 2003 - Rom (Roma), Italy - La Palma Club","Andreas Wostrack, Germany",kk-aw-joe-jackson-2003-07-20.jpg
+TICKET_0374,konzert-joe-jackson-2003.html,,"26th July 2003 - Hannover, Germany - Gilde Parkbühne","Thomas Collin, Germany",kk-joe-jackson-2003-07-26.jpg
+TICKET_0375,konzert-joe-jackson-2003.html,,"27th July 2003 - Herford, Germany -  Rathausplatz (open air) - Gert Schaumlöffel, Germany","Björn Krüger, Germany","kk-joe-jackson-2003-07-27.jpg, kk-bk-024.jpg"
+TICKET_0376,konzert-joe-jackson-2003.html,,"30th July 2003 - Hamburg, Germany Stadtpark","Thomas Collin, Germany",kk-joe-jackson-2003-07-30.jpg
+TICKET_0377,konzert-joe-jackson-2003.html,,"1st August 2003 - Mainz, Germany - Phönix-Halle - Peter Steidler, Germany","Gert Schaumlöffel, Germany","kk-joe-jackson-2003-08-01.jpg, kk-joe-jackson-2003-08-01-02.jpg"
+TICKET_0378,konzert-joe-jackson-2003.html,,"9th August 2003 Hartford, CT, U.S.A. - Webster Theatre","John Nyman, U.S.A.",kk-jn-03.jpg
+TICKET_0379,konzert-joe-jackson-2003.html,,"10th August 2003 - Boston, MA, U.S.A. - Avalon Ballroom","John Nyman, U.S.A.",kk-jn-07.jpg
+TICKET_0380,konzert-joe-jackson-2003.html,,"12th August 2003 - New York, NY, U.S.A. - Roseland Ballroom",YAHOO Group - Joe Jackson,kk-sm-4.jpg
+TICKET_0381,konzert-joe-jackson-2003.html,,"15th August 2003 - Atlanta, GA, U.S.A. - Roxy Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-08-15.jpg
+TICKET_0382,konzert-joe-jackson-2003.html,,"17th August 2003 - Chicago, IL, U.S.A. - Congress Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-08-17.jpg
+TICKET_0383,konzert-joe-jackson-2003.html,,"19th August 2003 - Englewood, CO, U.S.A. - Gothic Theatre",YAHOO Group - Joe Jackson,kk-sm-1.jpg
+TICKET_0384,konzert-joe-jackson-2003.html,,"27th August 2003 - San Francisco, CA, U.S.A. - The Warfield","Michael Weaver, U.S.A.",kk-joe-jackson-2003-08-27.jpg
+TICKET_0385,konzert-joe-jackson-2003.html,,"28th August 2003 - West Hollywood, CA, U.S.A. - House of Blues",YAHOO Group - Joe Jackson,kk-sm-6.jpg
+TICKET_0386,konzert-joe-jackson-2003.html,,"29th August 2003 - Anaheim, CA, U.S.A. - House of Blues",YAHOO Group - Joe Jackson,kk-sm-7.jpg
+TICKET_0387,konzert-joe-jackson-2003.html,,"31st August 2003 - San Diego, CA, U.S.A. - 4th & B","Jenniffer Woodson, U.S.A.",kk-jw-06.jpg
+TICKET_0388,konzert-joe-jackson-2003.html,,"16th September 2003 - Sydney, Australia - State Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-09-16.jpg
+TICKET_0389,konzert-joe-jackson-2003.html,,"17th September 2003 - Brisbane, Australia - Lyric Theatre","Thomas Collin, Germany",kk-joe-jackson-2003-09-17.jpg
+TICKET_0390,konzert-joe-jackson-2003.html,,"19th October 2003 Göttingen, Germany - Deutsches Theather - Bookreading with Heinz Rudolf Kunze","Gert Schaumlöffel, Germany",kk-joe-jackson-2003-10-19.jpg
+TICKET_0391,konzert-joe-jackson-2003.html,,Passes - 2003,"Gert Schaumlöffel, Germany","kk-joe-jackson-2003-pass.jpg, kk-joe-jackson-2003-09-17-pass.jpg, kk-joe-jackson-2003-07-18-pass.jpg, kk-joe-jackson-2003-09-15-pass.jpg"
+TICKET_0392,konzert-joe-jackson-2015.html,Fast Forward Tour 2015,"10th October 2015 - Dallas, TX, U.S.A. - Majestic Theatre","Peter Brennan, U.S.A.",kk-joe-jackson-2015-10-10.jpg
+TICKET_0393,konzert-joe-jackson-2015.html,Fast Forward Tour 2015,"Atlanta, GA, U.S.A. - Center Stage Theater - 15th October 2015","Shawn J., U.S.A.",kk-joe-jackson-2015-10-15.jpg
+TICKET_0394,konzert-joe-jackson-2015.html,Fast Forward Tour 2015,"17th October 2015 - Glenside, PA, U.S.A. - Keswick Theatre - John Nyman, U.S.A.",MISSING DATA! - please send again!,kk-joe-jackson-missing-2.html
+TICKET_0395,konzert-joe-jackson-2015.html,Fast Forward Tour 2015,"20th October 2015 - New York, NY - U.S.A. - Town Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-2015-10-20.jpg
+TICKET_0396,konzert-joe-jackson-2015.html,Fast Forward Tour 2015,"30th October 2015 - Toronto, Canada - Danforth Music Hall Computer ticket --- Signed after the show !","Gary Katsof, Canada",kk-joe-jackson-2015-10-30.jpg
+TICKET_0397,konzert-joe-jackson-2015.html,Fast Forward Tour 2015,"3rd November 2015 - Chicago, IL, U.S.A. - Thalia Hall - Marina Tang, U.S.A.",MISSING DATA! - please send again!,kk-joe-jackson-missing-4.html
+TICKET_0398,konzert-joe-jackson-2015.html,Fast Forward Tour 2015,"4th November 2015 - St. Paul, MN, U.S.A. - Fitzgerald Theater","Shan Lines, U.S.A.",kk-joe-jackson-2015-11-04.jpg
+TICKET_0399,konzert-joe-jackson-2015.html,Fast Forward Tour 2015,"14th November 2015 - Antwerp, Belgium - Sportpaleis - Reint Lubbers, Belgium","Gert Schaumlöffel, Germany","kk-joe-jackson-2015-11-14.jpg, kk-joe-jackson-2015-11-14-2.jpg"
+TICKET_0400,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"11th January 1983 - London, England - Hammersmith Odeon","Gert Schaumlöffel, Germany","kk-joe-jackson-1983-01-11-1.jpg, kk-joe-jackson-1983-01-11-2.jpg"
+TICKET_0401,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"14th January 1983 - Portsmouth, England - The Guildhall","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-01-14.jpg
+TICKET_0402,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"25th January 1983 - Milan, Italy - Rolling Stone","Dino Cattaneo, Italy",kk-joe-jackson-1983-01-25.jpg
+TICKET_0403,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"31st January 1983 - Paris, France - Casino de Paris & Invitation Ticket - Hervé Lenoach, France","Gert Schaumlöffel, Germany","kk-joe-jackson-12.jpg, kk-joe-jackson-1983-01-31.jpg"
+TICKET_0404,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"2nd February 1983 - Rouen, France - Parc des Expositions","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-02-02.jpg
+TICKET_0405,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"4th February 1983 - Brest, France - Hall de Penfeld","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-02-04.jpg
+TICKET_0406,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"9th February 1983 - Nijmegen, Netherlands - De Vereeniging","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-02-09.jpg
+TICKET_0407,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"21th February 1983 - Hamburg, Germany - Markthalle","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-02-21.jpg
+TICKET_0408,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"25th March 1983 - Richmond, VA, U.S.A. - Mosque not in JJ-Archive",,
+TICKET_0409,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"Flyer - 26th March 1983 - Charlottesville, VA, U.S.A. - University - not in JJ-Archive","Sheva Golkow, U.S.A.","kk-joe-jackson-1983-03-26.jpg, kk-joe-jackson-1983-03-26-flyer.jpg"
+TICKET_0410,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"30th March 1983 - Orlando, FL, U.S.A. - Bob Carr Performing Arts Centre","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-03-30.jpg
+TICKET_0411,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"31st March 1983 - St. Petersburg, FL, U.S.A.","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-03-31.jpg
+TICKET_0412,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"1st April 1983 - Miami, Florida, U.S.A. - James L. Knight International Center","Gert Schaumlöffel, Germany","kk-joe-jackson-1983-04-01-1.jpg, kk-joe-jackson-1983-04-01-2.jpg"
+TICKET_0413,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"8th April 1983 - Tokyo, Japan - Nakano Sun Plaza","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-04-08.jpg
+TICKET_0414,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"17th April 1983 - Essen, Germany - 12. Rockpalastnacht - Grugahalle","Michael Marsch @ Rockpalast Archiv, Germany",kk-joe-jackson-1983-04-17-1.jpg
+TICKET_0415,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"27th April 1983 - Melbourne, Australia - Melbourne Concert Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-04-27.jpg
+TICKET_0416,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,1983 - TOURPASS,"John Dix, New Zealand Gert Schaumlöffel, Germany",kk-joe-jackson-1983-pass.jpg
+TICKET_0417,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"14th December 1983 - Poughkeepsie, NY, U.S.A. - The Chance","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-12-14.jpg
+TICKET_0418,konzert-joe-jackson-1983.html,BODY AND SOUL Tour,"16th December 1983 - New Haven, CT, U.S.A. - Toad's Place","Gert Schaumlöffel, Germany",kk-joe-jackson-1983-12-16.jpg
+TICKET_0419,konzert-joe-jackson-2019.html,,"Knoxville, TN, U.S.A. - Bijou Theatre - 5th February 2019","Jeremy Hubbs, U.S.A.",kk-joe-jackson-2019-02-05.jpg
+TICKET_0420,konzert-joe-jackson-2019.html,,"Knoxville, TN, U.S.A. - Bijou Theatre - 5th February 2019","Joe Jackson (Same Name!), U.S.A.",kk-joe-jackson-2019-02-05-2.jpg
+TICKET_0421,konzert-joe-jackson-2019.html,,"Atlanta, GA, U.S.A. - Center Stage Theater - 7th February 2019","Shawn J., U.S.A.",kk-joe-jackson-2019-02-07.jpg
+TICKET_0422,konzert-joe-jackson-2019.html,,"Collingswood, NJ, U.S.A. - Scottish Rite Auditorium - 12th February 2019","Gregory Coben, U.S.A.",kk-joe-jackson-2019-02-12-best.jpg
+TICKET_0423,konzert-joe-jackson-2019.html,,"Collingswood, NJ, U.S.A. - Scottish Rite Auditorium - 12th February 2019","Sheva Golkow, U.S.A.",kk-joe-jackson-2019-02-12-2.jpg
+TICKET_0424,konzert-joe-jackson-2019.html,,"New York, NY, U.S.A. - Town Hall - 15th February 2019","Gary Gelb, U.S.A.",kk-joe-jackson-2019-02-15.jpg
+TICKET_0425,konzert-joe-jackson-2019.html,,"New York, NY, U.S.A. - Town Hall - 16th February 2019",Gert Schaumlöffel - Germany,kk-joe-jackson-2019-02-16-2.jpg
+TICKET_0426,konzert-joe-jackson-2019.html,,"San Francisco, CA, U.S.A. - The Masonic - 2nd March 2019","Kevin Walsh, U.S.A.","kk-joe-jackson-2019-03-02-1.jpg, kk-joe-jackson-2019-03-02-2.jpg, kk-joe-jackson-2019-03-02-3.jpg"
+TICKET_0427,konzert-joe-jackson-2019.html,,"Reint Lubbers, Netherlands - Antwerp, Belgium - De Roma - 16th March 2019 - Eugene Malikow, Russia","Ksenia Vorotyntseva, Russia","kk-joe-jackson-2019-03-16.jpg, kk-joe-jackson-2019-03-16-2.jpg, kk-joe-jackson-2019-03-16-3.jpg"
+TICKET_0428,konzert-joe-jackson-2019.html,,"Bert Bos, Netherlands - Groningen, Netherlands - De Oosterpoort - 17th March 2019 - Marc Alsemgeest, Netherlands","Gert Schaumlöffel, Germany","kk-joe-jackson-2019-03-17.jpg, kk-joe-jackson-2019-03-17-2.jpg, kk-joe-jackson-2019-03-17-3.jpg"
+TICKET_0429,konzert-joe-jackson-2019.html,,"Milano, Italy - Teatro Dal Verme - 22th March 2019","Alessandro Nespoli, Italy",kk-joe-jackson-2019-03-22.jpg
+TICKET_0430,konzert-joe-jackson-2019.html,,"Torino, Italy - Teatro Colosseo - 23th March 2019","Herve LE Noach, France",kk-joe-jackson-2019-03-23.jpg
+TICKET_0431,konzert-joe-jackson-2019.html,,"Zürich, Switzerland - Kaufleuten - 25th March 2019 - Carmen Rodriguez, Switzerland","Cornelia Wagner, Germany","kk-joe-jackson-2019-03-25.jpg, kk-joe-jackson-2019-03-25-2.jpg"
+TICKET_0432,konzert-joe-jackson-2019.html,,"Berlin, Germany - Admiralspalast - 28th March 2019","Beat C. Razy, Germany",kk-joe-jackson-2019-03-28.jpg
+TICKET_0433,konzert-joe-jackson-2019.html,,"Iris Thalmann, Germany - Bert Bos, Netherlands - Rolf Thalmann, Germany - Thomas Collin, Germany","Hamburg, Germany - Fabrik - 29th March 2019","kk-joe-jackson-2019-03-29-design.jpg, kk-joe-jackson-2019-03-29.jpg, kk-joe-jackson-2019-03-29-3.jpg, kk-joe-jackson-2019-03-29-4.jpg"
+TICKET_0434,konzert-joe-jackson-2019.html,,"Cornelia Wagner, Germany - Stuttgart, Germany - Liederhalle, Beethoven-Saal - 31st March 2019 - Gert Schaumlöffel, Germany","Klaus Scherer, Germany","kk-joe-jackson-2019-03-31-2.jpg, kk-joe-jackson-2019-03-31-3.jpg, kk-joe-jackson-2019-03-31.jpg"
+TICKET_0435,konzert-joe-jackson-2019.html,,"München (Munich), Germany - Muffathalle - 1st April 2019","Cornelia Wagner, Germany",kk-joe-jackson-2019-04-01.jpg
+TICKET_0436,konzert-joe-jackson-2019.html,,"Köln (Cologne), Germany - Gloria - 3rd April 2019 - Cornelia Wagner, Germany","Gert Schaumlöffel, Germany","kk-joe-jackson-2019-04-03.jpg, kk-joe-jackson-2019-04-03-2.jpg"
+TICKET_0437,konzert-joe-jackson-2019.html,,"Utrecht, Netherlands - Tivoli Vredenburg - 4th April 2019","Astrid Zimmerman, Netherlands",kk-joe-jackson-2019-04-04.jpg
+TICKET_0438,konzert-joe-jackson-2019.html,,"Amsterdam, Netherlands - Paradiso - 8th April 2019","Albert Holland, Netherlands",kk-joe-jackson-2019-04-08.jpg
+TICKET_0439,konzert-joe-jackson-2019.html,,"Marc Alsemgeest, Netherlands - Nijmegen, Netherlands - Concertgebouw De Vereeniging - 11th April 2019 - Geert Joosten, Netherlands","Linda Grijn, Netherlands","kk-joe-jackson-2019-04-11.jpg, kk-joe-jackson-2019-04-11-3.jpg, kk-joe-jackson-2019-04-11-2.jpg"
+TICKET_0440,konzert-joe-jackson-2019.html,,"Paris, France - L'Olympia - 14th April 2019 - Corné van de Ketterij, Netherlands","Olivier Popincourt, France","kk-joe-jackson-2019-04-14.jpg, kk-joe-jackson-2019-04-14-op.jpg"
+TICKET_0441,konzert-joe-jackson-2019.html,,"Brussels, Belgium - Ancienne Belgique - 15th April 2019","Sophie Tuyteleers, Belgium",kk-joe-jackson-2019-04-15.jpg
+TICKET_0442,konzert-joe-jackson-2019.html,,"London, England- Palladium - 17th April 2019 - Alex Wilde, England","Simon Gardner, England","kk-joe-jackson-2019-04-17.jpg, kk-joe-jackson-2019-04-17-2.jpg"
+TICKET_0443,konzert-joe-jackson-2019.html,,"Birmingham, England- The O2 Institute - 18th April 2019","Alex Wilde, England",kk-joe-jackson-2019-04-18.jpg
+TICKET_0444,konzert-joe-jackson-2019.html,,"Manchester, England - O2 Ritz - 21th April 2019","Helen Swallow, England",kk-joe-jackson-2019-04-21.jpg
+TICKET_0445,konzert-joe-jackson-2019.html,,"Cork, Ireland - Cork Opera House - 23th April 2019","Gert Schaumlöffel, Germany",kk-joe-jackson-2019-04-23.jpg
+TICKET_0446,konzert-joe-jackson-2019.html,,"Dublin, Ireland - Olympia Theatre - 24th April 2019","John Foyle, Ireland",kk-joe-jackson-2019-04-24.jpg
+TICKET_0447,konzert-joe-jackson-2019.html,,"Milwaukee, WI, U.S.A. The Pabst Theater 6th May 2019","Tracy Solomon, U.S.A.",kk-joe-jackson-2019-05-06-1.jpg
+TICKET_0448,konzert-joe-jackson-2019.html,,"Quebec, Canada - Palais Montcalm - 12th May 2019","Gert Schaumlöffel, Germany",kk-joe-jackson-2019-05-12.jpg
+TICKET_0449,konzert-joe-jackson-2019.html,,"Northhampton, MA, U.S.A. - The Academy Of Music Theatre - 15th May 2019","Jim Zoino, U.S.A.",kk-joe-jackson-2019-05-15.jpg
+TICKET_0450,konzert-joe-jackson-2019.html,,"New Brunswick, NJ, U.S.A. - State Theatre - 18th May 2019 - Sheva Golkow, U.S.A.","Gert Schaumlöffel, Germany","kk-joe-jackson-2019-05-18.jpg, kk-joe-jackson-2019-05-18-2.jpg"
+TICKET_0451,konzert-joe-jackson-2019.html,,"Austin, TX, U.S.A. - Paramount Theatre - 31th May 2019","Katy Costello Smith, U.S.A.",kk-joe-jackson-2019-05-31.jpg
+TICKET_0452,konzert-joe-jackson-2019.html,,"Dallas, TX, U.S.A. - Majestic Theatre - 1st June 2019","Lindsey Maglito Smith, U.S.A.",kk-joe-jackson-2019-06-01.jpg
+TICKET_0453,konzert-joe-jackson-2019.html,,"Rolf Thalmann, Germany - Hannover, Germany - Theater am Aegi - 27th June 2019 - Ralph Kortewille, Germany","Gert Schaumlöffel, Germany","kk-joe-jackson-2019-06-27.jpg, kk-joe-jackson-2019-06-27-2.jpg, kk-joe-jackson-2019-06-27-3.jpg"
+TICKET_0454,konzert-joe-jackson-2019.html,,"Karlsruhe, Germany - Tollhaus (Zeltival) - 29th Juny 2019","Klaus Scherer, Germany",kk-joe-jackson-2019-06-29.jpg
+TICKET_0455,konzert-joe-jackson-2019.html,,"Paris, France - Le Cigale - 2nd July 2019 - Sonja Granshaw","Olivier Popincourt, France","kk-joe-jackson-2019-07-02.jpg, kk-joe-jackson-2019-07-02-op.jpg"
+TICKET_0456,konzert-joe-jackson-2019.html,,"Lyon, France - Le Transbordeur - 5th July 2019 - Herve LE Noach, France","Gert Schaumlöffel, Germany","kk-joe-jackson-2019-07-05.jpg, kk-joe-jackson-2019-07-05-2.jpg"
+TICKET_0457,konzert-joe-jackson-2019.html,,"Bruges (Brügge), Belgium - Cactus Festival - 6th July 2019","Ksenia Vorotyntseva, Russia",kk-joe-jackson-2019-07-06.jpg
+TICKET_0458,konzert-joe-jackson-2019.html,,"Dresden, Germany - Alter Schlachthof - 11th July 2019","Henrik Konarkowski, Russia",kk-joe-jackson-2019-07-11.jpg
+TICKET_0459,konzert-joe-jackson-2019.html,,"Barcelona, Spain - Greg Festival de Barcelona, Barts - 24th July 2019",carbobueno - Spain,kk-joe-jackson-2019-07-24.jpg
+TICKET_0460,konzert-joe-jackson-2019.html,,"San Sebastin, Spain - Kursaal Donostia (Heineken Jazzaldia) - 25th July 2019",Kike Morey - Spain,kk-joe-jackson-2019-07-25.jpg
+TICKET_0461,konzert-joe-jackson-2019.html,,"Tourpass - Milwaukee - 2019 - Tourpass - Berlin - 2019 - Tracy Solomon, U.S.A.","Gert Schaumlöffel, Germany","kk-joe-jackson-2019-05-06-2.jpg, kk-joe-jackson-2019-pass-berlin.jpg"
+TICKET_0462,konzert-joe-jackson-2012.html,The Duke Tour 2012,"18th September 2012 - Glenside, PA, U.S.A. - Keswick Theatre","John Nyman, U.S.A.",kk-joe-jackson-2012-09-18.jpg
+TICKET_0463,konzert-joe-jackson-2012.html,The Duke Tour 2012,"21st September 2012 - New York, NY, U.S.A. - Town Hall - John Nyman, U.S.A.","Gert Schaumlöffel, Germany","kk-joe-jackson-2012-09-21.jpg, kk-joe-jackson-2012-09-21-2.jpg"
+TICKET_0464,konzert-joe-jackson-2012.html,The Duke Tour 2012,"22st September 2012 - New York, NY, U.S.A. - Town Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-2012-09-22.jpg
+TICKET_0465,konzert-joe-jackson-2012.html,The Duke Tour 2012,"25st September 2012 - Red Bank, NJ, U.S.A. - Count Basie Thtaetr","Gert Schaumlöffel, Germany",kk-joe-jackson-2012-09-25.jpg
+TICKET_0466,konzert-joe-jackson-2012.html,The Duke Tour 2012,"27th September 2012 - Ann Arbor, MI, U.S.A. - Michigan Theater","Gert Schaumlöffel, Germany",kk-joe-jackson-2012-09-27.jpg
+TICKET_0467,konzert-joe-jackson-2012.html,The Duke Tour 2012,"4th October 2012 - Saratoga, CA, U.S.A. - The Lilian Fontaine Garden Theatre at Montalvo","Gert Schaumlöffel, Germany",kk-joe-jackson-2012-10-04.jpg
+TICKET_0468,konzert-joe-jackson-2012.html,The Duke Tour 2012,"16th October 2012 - Köln (Cologne), Germany - Theater am Tanzbrunnen","Gert Schaumlöffel, Germany",kk-joe-jackson-2012-10-16.jpg
+TICKET_0469,konzert-joe-jackson-2012.html,The Duke Tour 2012,"19th October 2012 - München (Munich), Germany - Circus Krone","Stefan ?????, Germany",kk-joe-jackson-2012-10-19.jpg
+TICKET_0470,konzert-joe-jackson-2012.html,The Duke Tour 2012,"26th October 2012 - Strasbourg, France - La Laiterie","Gert Schaumlöffel, Germany",kk-joe-jackson-2012-10-26.jpg
+TICKET_0471,konzert-joe-jackson-2012.html,The Duke Tour 2012,"2nd November 2012 - Amsterdam, Netherlands - Melkweg","Lamert Veen, Netherlands",kk-joe-jackson-2012-11-02.jpg
+TICKET_0472,konzert-joe-jackson-2012.html,The Duke Tour 2012,"3rd November 2012 - Utrecht, Netherlands - Vredenburg Leidsche Rijn","Gert Schaumlöffel, Germany",kk-joe-jackson-2012-11-03.jpg
+TICKET_0473,konzert-joe-jackson-2012.html,The Duke Tour 2012,"4th November 2012 - Groningen, Netherlands - De Osterport, Grote Zaal","Bert Bos, Netherlands",kk-joe-jackson-2012-11-04.jpg
+TICKET_0474,konzert-joe-jackson-2012.html,The Duke Tour 2012,"6th November 2012 - Berlin, Germany - Admiralspalast","Rolf Thalmann, Germany",kk-joe-jackson-2012-11-06.jpg
+TICKET_0475,konzert-joe-jackson-2012.html,The Duke Tour 2012,"8th November 2012 - London, England - Cadogan Hall","Alex Wilde, England",kk-joe-jackson-2012-11-08.jpg
+TICKET_0476,konzert-joe-jackson-2012.html,The Duke Tour 2012,"10th November 2012 - London, England - Cadogan Hall","Mike Baggaley, England",kk-joe-jackson-2012-11-10.jpg
+TICKET_0477,konzert-joe-jackson-2012.html,The Duke Tour 2012,"11th November 2012 - Paris, France - L'Olympia","Olivier Popincourt, France",kk-joe-jackson-2012-11-11-op.jpg
+TICKET_0478,konzert-joe-jackson-2012.html,The Duke Tour 2012,"16th November 2012 - Antwerp, Belgium - Muziekcentrum Trix","Bert Bos, Netherlands",kk-joe-jackson-2012-11-16.jpg
+TICKET_0479,konzert-joe-jackson-2012.html,The Duke Tour 2012,"17th November 2012 - Amiens, France - Auditorium Mégacité","Gert Schaumlöffel, Germany",kk-joe-jackson-2012-11-17.jpg
+TICKET_0480,konzert-joe-jackson-2012.html,The Duke Tour 2012,2012 - Tourpasses,"Gert Schaumlöffel, Germany","kk-joe-jackson-2012-pass-2.jpg, kk-joe-jackson-2012-pass-1.jpg"
+TICKET_0481,konzert-joe-jackson-1995.html,,"20th January 1995 - Porthsmouth, England - Guildhall","Ian Bowes, South Africa",kk-joe-jackson-1995-01-20.jpg
+TICKET_0482,konzert-joe-jackson-1995.html,,"21th January 1995 - London, England - Hammersmith Apollo - Ian Bowes, South Africa","Gert Schaumlöffel, Germany","kk-joe-jackson-1995-01-21.jpg, kk-joe-jackson-1995-01-21-2.jpg"
+TICKET_0483,konzert-joe-jackson-1995.html,,"23rd January 1995 - Bristol, England - Colston Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-1995-01-23.jpg
+TICKET_0484,konzert-joe-jackson-1995.html,,"25th January 1995 - Nottingham, England - Royal Concert Hall","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-1995-01-25.jpg
+TICKET_0485,konzert-joe-jackson-1995.html,,"26th January 1995 - Newcastle, England - City Hall","Ian Bowes, South Africa",kk-joe-jackson-1995-01-26.jpg
+TICKET_0486,konzert-joe-jackson-1995.html,,"28th January 1995 - Manchester, England - Free Trade Hall","Mike Baggaley, England",kk-joe-jackson-1995-01-28.jpg
+TICKET_0487,konzert-joe-jackson-1995.html,,"29th January 1995 - Glasgow, Scottland - Royal Conert Hall","Ian Bowes, South Africa",kk-joe-jackson-1995-01-29.jpg
+TICKET_0488,konzert-joe-jackson-1995.html,,"3rd February 1995 - Strasbourg, France - Palais de la musique et des congres","Gert Schaumlöffel, Germany",kk-joe-jackson-1995-02-03.jpg
+TICKET_0489,konzert-joe-jackson-1995.html,,"4th February 1995 - Lyon, France - Auditorium Maurice Ravel","Gert Schaumlöffel, Germany",kk-joe-jackson-1995-02-04.jpg
+TICKET_0490,konzert-joe-jackson-1995.html,,"12th February 1995 Madrid, Spain Teatro Monumental","Gert Schaumlöffel, Germany",kk-joe-jackson-1995-02-12.jpg
+TICKET_0491,konzert-joe-jackson-1995.html,,"27th February 1995 - Berlin, Germany - ICC","Björn Krüger, Germany",kk-bk-016.jpg
+TICKET_0492,konzert-joe-jackson-1995.html,,"28th February 1995 - Hannover, Germany - Congress Centrum - Kuppelsaal","Marcus Rossberg, Germany",kk-joe-jackson-1995-02-28.jpg
+TICKET_0493,konzert-joe-jackson-1995.html,,"4th March 1995 - Stuttgart, Germany - Liederhalle, Beethovensaal","Björn Krüger, Germany",kk-joe-jackson-1995-03-04.jpg
+TICKET_0494,konzert-joe-jackson-1995.html,,"6th March 1995 - Amsterdam, Netherlands -  RAI Congrescentrum","Lammert Veen, Netherlands",kk-joe-jackson-1995-03-06.jpg
+TICKET_0495,konzert-joe-jackson-1995.html,,"12th March 1995 - München (Munich), Germany - Philharmonie","Robert Keller, Germany",kk-joe-jackson-1995-03-12.jpg
+TICKET_0496,konzert-joe-jackson-1995.html,,"13th March 1995 Düsseldorf, Germany - Philipshalle","Gert Schaumlöffel, Germany",kk-jj-gs-1995-03-13.gif
+TICKET_0497,konzert-joe-jackson-1995.html,,"16th March 1995 - Hamburg, Germany - Musikhalle","Björn Krüger, Germany",kk-bk-023.jpg
+TICKET_0498,konzert-joe-jackson-1995.html,,"24th March 1995 - London, England - Royal Festival Hall","Andreas Wiethoff, Germany",kk-aw-02.jpg
+TICKET_0499,konzert-joe-jackson-1995.html,,"17th April 1995 Portland, ME, U.S.A. - The State Theatre - Not in JJ Archive","Jason Curry, U.S.A.",kk-joe-jackson-1995-04-17.jpg
+TICKET_0500,konzert-joe-jackson-1995.html,,"30th April 1995 - San Francisco, CA, U.S.A. - The Warfield","Gert Schaumlöffel, Germany",kk-joe-jackson-1995-04-30.jpg
+TICKET_0501,konzert-joe-jackson-1995.html,,"3rd May 1995 - Los Angeles, CA, U.S.A. - House of Blues","Gert Schaumlöffel, Germany",kk-joe-jackson-1995-05-03.jpg
+TICKET_0502,konzert-joe-jackson-1995.html,,"23th May 1995 - Melbourne, Australia - State Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1995-05-23.jpg
+TICKET_0503,konzert-joe-jackson-1995.html,,"Gert Schaumlöffel, Germany - Gert Schaumlöffel, Germany - John Nyman, U.S.A. - John Nyman, U.S.A. - Gert Schaumlöffel, Germany - Gert Schaumlöffel, Germany",Tourpasses 1994 / 1995,"kk-joe-jackson-1994-pass-4.jpg, kk-joe-jackson-1994-pass-5.jpg, kk-jn-11.jpg, kk-jn-10.jpg, kk-joe-jackson-1994-pass-1.jpg, kk-joe-jackson-1994-pass-3.jpg"
+TICKET_0504,konzert-joe-jackson-2004.html,Tour WITH TODD RUNDGREN,"24th August 2004 - New York, NY, U.S.A. Delacorte Theater (open air)","John Nyman, U.S.A.",kk-jn-21.jpg
+TICKET_0505,konzert-joe-jackson-2009.html,RAIN Tour 2009,"15th June 2009 - Caen, France - Le Cargo - Hervé Lenoach, France","Gert Schaumlöffel, Germany","kk-joe-jackson-2009-06-15.jpg, kk-joe-jackson-2009-06-15-2.jpg"
+TICKET_0506,konzert-joe-jackson-2009.html,RAIN Tour 2009,"17th June 2009 - Nantes, France - Cité des Congrès","Gert Schaumlöffel, Germany",kk-joe-jackson-2009-06-17.jpg
+TICKET_0507,konzert-joe-jackson-2009.html,RAIN Tour 2009,"18th June 2009 - Tours, France - Vinci","Gert Schaumlöffel, Germany",kk-joe-jackson-2009-06-18.jpg
+TICKET_0508,konzert-joe-jackson-2009.html,RAIN Tour 2009,"20th June 2009 - Köln (Cologne), Germany - Gloria Theater","Rolf Thalmann, Germany",kk-joe-jackson-2009-06-20.jpg
+TICKET_0509,konzert-joe-jackson-2009.html,RAIN Tour 2009,"21th June 2009 - Utrecht, Netherlands - Vredenburg","Lammert Veen, Netherlands",kk-joe-jackson-2009-06-21.jpg
+TICKET_0510,konzert-joe-jackson-2009.html,RAIN Tour 2009,"25th June 2009 - Lille, France - Théâtre Sébastopol","Claude Chantemarque, France",kk-joe-jackson-2009-06-25.jpg
+TICKET_0511,konzert-joe-jackson-2009.html,RAIN Tour 2009,"7th July 2009 - Wien (Vienna),  Austria - WUK Saal","Thomas Wiesinger, Austria",kk-joe-jackson-2009-07-07.jpg
+TICKET_0512,konzert-joe-jackson-2009.html,RAIN Tour 2009,"15th July 2009 - Prague,  Czechia - Lucerna Music Bar","Marek Kraus, Czechia",kk-joe-jackson-2009-07-15.jpg
+TICKET_0513,konzert-joe-jackson-2009.html,RAIN Tour 2009,Tourpasses - 2009,"Gert Schaumlöffel, Germany","kk-joe-jackson-2009-pass-1.jpg, kk-joe-jackson-2009-pass-2.jpg, kk-joe-jackson-2009-pass-3.jpg"
+TICKET_0514,konzert-joe-jackson-1999.html,,"4th August 1999 - New York, NY, U.S.A. - Joe's Pub","John Nyman, U.S.A.",kk-jn-19.jpg
+TICKET_0515,konzert-joe-jackson-1999.html,,"7th August 1999 - New York, NY, U.S.A. - Joe's Pub","Martin Ayling, England",kk-joe-jackson-1999-08-07.jpg
+TICKET_0516,konzert-joe-jackson-1999.html,,"11th August 1999 - New York, NY, U.S.A. - Joe's Pub","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-1999-08-11.jpg
+TICKET_0517,konzert-joe-jackson-2008.html,RAIN Tour 2008,"29th February 2008 - Dublin, Ireland - The Olympia Theatre","Steve Whitbread, England",kk-joe-jackson-2008-02-29.jpg
+TICKET_0518,konzert-joe-jackson-2008.html,RAIN Tour 2008,"2nd March 2008 - London, England - Shepherds Bush Empire","Steve Whitbread, England",kk-joe-jackson-2008-03-02.jpg
+TICKET_0519,konzert-joe-jackson-2008.html,RAIN Tour 2008,"4th March 2008 - Paris, France - La Cigale","Mathieu Chartier, France",kk-joe-jackson-2008-03-04.jpg
+TICKET_0520,konzert-joe-jackson-2008.html,RAIN Tour 2008,"5th March 2008 - Brussels, Belgium - Ancienne Belgique","Gert Schaumlöffel, Germany",kk-joe-jackson-2008-03-05.jpg
+TICKET_0521,konzert-joe-jackson-2008.html,RAIN Tour 2008,"7th March 2008 - Amsterdam, Netherlands - Paradiso","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-2008-03-07.jpg
+TICKET_0522,konzert-joe-jackson-2008.html,RAIN Tour 2008,"8th March 2008 - Amsterdam, Netherlands - Paradiso","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-2008-03-08.jpg
+TICKET_0523,konzert-joe-jackson-2008.html,RAIN Tour 2008,"10th March 2008 - Hamburg, Germany - Fabrik","Rolf Thalmann, Germany",kk-joe-jackson-2008-03-10.jpg
+TICKET_0524,konzert-joe-jackson-2008.html,RAIN Tour 2008,"11th March 2008 - Berlin, Germany - Schiller Theater","Björn Krüger, Germany",kk-joe-jackson-2008-03-11.jpg
+TICKET_0525,konzert-joe-jackson-2008.html,RAIN Tour 2008,"14th March 2008 - Zürich, Switzerland - Kaufleuten","Robert Keller, Germany",kk-joe-jackson-2008-03-14.jpg
+TICKET_0526,konzert-joe-jackson-2008.html,RAIN Tour 2008,"19th March 2008 - Rome, Italy - Auditorium - Parco della musica","Bernardini, Italy",kk-joe-jackson-2008-03-19.jpg
+TICKET_0527,konzert-joe-jackson-2008.html,RAIN Tour 2008,"21st March 2008 - Vienna, Austria - Joe Zawinul's Birdland","Thomas Wiesinger, Austria",kk-joe-jackson-2008-03-21.jpg
+TICKET_0528,konzert-joe-jackson-2008.html,RAIN Tour 2008,"26th March 2008 - Tel Aviv, Israel - Hangar 11 - Arnon Friedman, Israel","Gert Schaumlöffel, Germany","kk-joe-jackson-2008-03-26.jpg, kk-joe-jackson-2008-03-26-2.jpg"
+TICKET_0529,konzert-joe-jackson-2008.html,RAIN Tour 2008,"1st April 2008 - Toronto, Canada - The Music Hall","John Wild, Canada",kk-joe-jackson-2008-04-01.jpg
+TICKET_0530,konzert-joe-jackson-2008.html,RAIN Tour 2008,"4th April 2008 - Glenside, PA, U.S.A. - Keswick Theatre - John Nyman, U.S.A.","Gert Schaumlöffel, Germany","kk-joe-jackson-2008-04-04.jpg, kk-joe-jackson-2008-04-04-2.jpg"
+TICKET_0531,konzert-joe-jackson-2008.html,RAIN Tour 2008,"5th April 2008 - Northampton, MA, U.S.A. - Calvin Theatre","Ken Van Tassell, U.S.A.",kk-joe-jackson-2008-04-05.jpg
+TICKET_0532,konzert-joe-jackson-2008.html,RAIN Tour 2008,"9th April 2008 - Red Bank, NJ, U.S.A. - Count Basie Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-2008-04-09.jpg
+TICKET_0533,konzert-joe-jackson-2008.html,RAIN Tour 2008,"12th April 2008 - Kingston, NY, U.S.A. - Ulster Performing Arts Center","Gert Schaumlöffel, Germany",kk-joe-jackson-2008-04-12.jpg
+TICKET_0534,konzert-joe-jackson-2008.html,RAIN Tour 2008,"15th April 2008 - New York, NY, U.S.A. - Apollo Theater","John Nyman, U.S.A.",kk-joe-jackson-2008-04-15.jpg
+TICKET_0535,konzert-joe-jackson-2008.html,RAIN Tour 2008,"16th April 2008 - New York, NY, U.S.A. - The Town Hall - John Nyman, U.S.A.","Gert Schaumlöffel, Germany","kk-joe-jackson-2008-04-16.jpg, kk-joe-jackson-2008-04-16-2.jpg"
+TICKET_0536,konzert-joe-jackson-2008.html,RAIN Tour 2008,"20th April 2008 - Ann Arbor, MI, U.S.A. - Michigan Theater","Gert Schaumlöffel, Germany",kk-joe-jackson-2008-04-20.jpg
+TICKET_0537,konzert-joe-jackson-2008.html,RAIN Tour 2008,"24th April 2008 - Chicago, IL, U.S.A. Vic Theatre","Erica Eisner Kosova, U.S.A.",kk-joe-jackson-2008-04-24.jpg
+TICKET_0538,konzert-joe-jackson-2008.html,RAIN Tour 2008,"1st May 2008 - Boulder, CO, U.S.A. - Boulder Theater","Patrick Sullivan, U.S.A.",kk-joe-jackson-2008-05-01.jpg
+TICKET_0539,konzert-joe-jackson-2008.html,RAIN Tour 2008,"5th May 2008 - Vancouver, Canada - Chan Shun Concert Hall","Richard Sheehy, Canada",kk-joe-jackson-2008-05-05.jpg
+TICKET_0540,konzert-joe-jackson-2008.html,RAIN Tour 2008,"11th May 2008 - San Diego, CA, U.S.A. - Humphreys","Jenniffer Woodson, U.S.A.",kk-joe-jackson-2008-05-11.jpg
+TICKET_0541,konzert-joe-jackson-2008.html,RAIN Tour 2008,"13th May 2008 - Los Angeles, CA, U.S.A. - Orpheum Theatre","Jenniffer Woodson, U.S.A.",kk-joe-jackson-2008-05-13.jpg
+TICKET_0542,konzert-joe-jackson-2008.html,RAIN Tour 2008,"20th May 2008 - Brisbane, Australia - Convention Centre","Anna (Nineteen forever), Australia",kk-joe-jackson-2008-05-20.jpg
+TICKET_0543,konzert-joe-jackson-2008.html,RAIN Tour 2008,"3rd June 2008 - Johannesburg, South Africa - Teatro Montecasino No concert this day ... sold in error !","Ian Bowes, South Africa",kk-joe-jackson-2008-06-03.jpg
+TICKET_0544,konzert-joe-jackson-2008.html,RAIN Tour 2008,"4th June 2008 - Johannesburg, South Africa - Teatro Montecasino","Ian Bowes, South Africa",kk-joe-jackson-2008-06-04.jpg
+TICKET_0545,konzert-joe-jackson-2008.html,RAIN Tour 2008,"5th June 2008 - Johannesburg, South Africa - Teatro Montecasino","Ian Bowes, South Africa",kk-joe-jackson-2008-06-05.jpg
+TICKET_0546,konzert-joe-jackson-2008.html,RAIN Tour 2008,"7th June 2008 - Cape Town, South Africa - Grand Arena, GrandWest","Ian Bowes, South Africa",kk-joe-jackson-2008-06-07.jpg
+TICKET_0547,konzert-joe-jackson-2008.html,RAIN Tour 2008,"16th June 2008 - Wolverhampton, England - Civic Hall","Mike Baggaley, England",kk-joe-jackson-2008-06-16.jpg
+TICKET_0548,konzert-joe-jackson-2008.html,RAIN Tour 2008,"19th June 2008 - Manchester, England - Bridgewater Hall - Mike Baggaley, England - 19th June 2008 - Manchester, England - Bridgewater Hall --- Ticket with special folder ---","Nick Gould, England","kk-joe-jackson-2008-06-19.jpg, kk-joe-jackson-2008-06-19-folder.jpg"
+TICKET_0549,konzert-joe-jackson-2008.html,RAIN Tour 2008,"21st June 2008 - Edinburgh, Scotland - The Queenshall","Gert Schaumlöffel (2), Germany","kk-joe-jackson-2008-06-21.jpg, kk-joe-jackson-2008-06-21-online.jpg"
+TICKET_0550,konzert-joe-jackson-2008.html,RAIN Tour 2008,"Gert Schaumlöffel, Germany - 22nd June 2008 - London, England - Cadogan Hall - 22nd June 2008 - London, England - Cadogan Hall - Julian Stanyer, England","Steve Whitbread, England","kk-joe-jackson-2008-06-22-3.jpg, kk-joe-jackson-2008-06-22.jpg, kk-joe-jackson-2008-06-22-2.jpg"
+TICKET_0551,konzert-joe-jackson-2008.html,RAIN Tour 2008,"2nd July 2008 - Freiburg, Germany - Festivalgelände am Mundenhof","Jürgen Haberer, Germany",kk-joe-jackson-2008-07-02.jpg
+TICKET_0552,konzert-joe-jackson-2008.html,RAIN Tour 2008,"9th July 2008 - Kassel, Germany - Kulturzelt","Gert Schaumlöffel, Germany",kk-joe-jackson-2008-07-09.jpg
+TICKET_0553,konzert-joe-jackson-2008.html,RAIN Tour 2008,"5th November 2008 - Tarrytown, NY, U.S.A. - Music Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-2008-11-05.jpg
+TICKET_0554,konzert-joe-jackson-2008.html,RAIN Tour 2008,"7th November 2008 - New York, NY, U.S.A. - Grand Ballroom at Manhattan Center - Computer printed ticket - Scanner code is destroyed","John Nyman, U.S.A.",kk-joe-jackson-2008-11-07.jpg
+TICKET_0555,konzert-joe-jackson-2008.html,RAIN Tour 2008,"15th November 2008 - Miami Beach, FL, U.S.A. - The Fillmore at the Jackie Gleason Theater","David Gartner, U.S.A.",kk-joe-jackson-2008-11-15.jpg
+TICKET_0556,konzert-joe-jackson-2008.html,RAIN Tour 2008,Tourpasses - 2008,"Gert Schaumlöffel, Germany","kk-joe-jackson-2008-pass-1.jpg, kk-joe-jackson-2008-pass-2.jpg, kk-joe-jackson-2008-pass-3.jpg"
+TICKET_0557,konzert-joe-jackson-1998.html,,"3rd February 1998 - Seattle, WA, U.S.A. - Moore Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1998-02-03.jpg
+TICKET_0558,konzert-joe-jackson-1998.html,,"15th February 1998 - Saint Paul, MN, U.S.A. - The O'Shaughnessy","Ian Bowes, South Africa",kk-joe-jackson-1998-02-15.jpg
+TICKET_0559,konzert-joe-jackson-1998.html,,"29th March 1998 - München (Munich), Germany - Prinzregententheater","Robert Keller, Germany",kk-joe-jackson-1998-03-29.jpg
+TICKET_0560,konzert-joe-jackson-1998.html,,"30th March 1998 - Köln (Cologne), Germany - Grzenich","Gert Schaumlöffel, Germany",kk-joe-jackson-1998-03-30.jpg
+TICKET_0561,konzert-joe-jackson-1998.html,,"1st April 1998 - Berlin, Germany - Hochschule der Künste","Björn Krüger, Germany",kk-bk-017.jpg
+TICKET_0562,konzert-joe-jackson-1998.html,,"13th April 1998 - Groningen, Netherlands -  De Oosterpoort","Johan Gerlach, Netherlands",kk-joe-jackson-1998-04-13.jpg
+TICKET_0563,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"13th April 2005 - Melbourne, FL, U.S.A. - King Center",Todd Rundgren Forum - Mockpo,kk-trf-01.jpg
+TICKET_0564,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"15th April 2005 - Clearwater, FL, U.S.A. Ruth Eckerd Hall","Gert Schaumlöffel, Germany",kk-joe-jackson-2005-04-15.jpg
+TICKET_0565,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"16th April 2005 - Pompano Beach, FL, U.S.A. - Pompano Beach Amphitheatre","Lisa Caplan, U.S.A.",kk-joe-jackson-2005-04-16.jpg
+TICKET_0566,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"23th April 2005 - Baltimore, MD, U.S.A. -  Rams Head Live","Richard Roys, U.S.A.",kk-joe-jackson-2005-04-23.jpg
+TICKET_0567,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"29th April 2005 - New Brunswick, NJ, U.S.A. - State Theatre","John Nyman, U.S.A.",kk-jn-22.jpg
+TICKET_0568,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"30th April 2005 Mashantucket, CT, U.S.A. - Foxwoods Casino",Todd Rundgren Forum - MikeB,kk-trf-03.jpg
+TICKET_0569,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"3rd May 2005 - Cleveland, OH, U.S.A. - Playhouse Square Center","Henri Dessauvagie, NL",kk-hd-01.jpg
+TICKET_0570,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"3rd May 2005 - Cleveland, OH, U.S.A. - Playhouse Square Center","Steve Whitbread, England",kk-joe-jackson-2005-05-03.jpg
+TICKET_0571,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"13th May 2005 - Milwaukee, WI, U.S.A. - Pabst Theater","Gert Schaumlöffel, Germany",kk-joe-jackson-2005-05-13.jpg
+TICKET_0572,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"14th May 2005 - Chicago, IL, U.S.A. Cadillac Palace Theatre","Erica Eisner Kosova, U.S.A.",kk-joe-jackson-2005-05-14.jpg
+TICKET_0573,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"17th May 2005 - Los Angeles, CA, U.S.A. - Wilshire Theatre","Jenniffer Woodson, U.S.A.",kk-jw-01.jpg
+TICKET_0574,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"30th May 2005 - Portsmouth, England - The Guildhall","Martin Ayling, England",kk-joe-jackson-2005-05-30.jpg
+TICKET_0575,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"5th June 2005 - London, England - Hammersmith Apollo","Steve Whitbread, England",kk-joe-jackson-2005-06-05.jpg
+TICKET_0576,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"6th June 2005 - Gateshead, England - The Sage","Gert Schaumlöffel, Germany",kk-joe-jackson-2005-06-06.jpg
+TICKET_0577,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"9th June 2005 - Liverpool, England - Philharmonic Hall","Mike Baggaley, England",kk-joe-jackson-2005-06-09.jpg
+TICKET_0578,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"11th June 2005 - Amsterdam, Netherlands - Carré","Henri Dessauvagie, NL",kk-hd-02.jpg
+TICKET_0579,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"12th June 2005 - Amsterdam, Netherlands - Carré","Henri Dessauvagie, NL",kk-hd-03.jpg
+TICKET_0580,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"14th June 2005 - Paris, France -  Bataclan","Hubert Duhautois, France",kk-hudu-03.jpg
+TICKET_0581,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"15th June 2005 - Paris, France -  Bataclan - Hubert Duhautois, France",Todd Rundgren Forum - lapino,"kk-hudu-04.jpg, kk-trf-02.jpg"
+TICKET_0582,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"16th June 2005 - Bochum, Germany - Jahrhunderthalle","Gert Schaumlöffel, Germany",kk-joe-jackson-2005-06-16.jpg
+TICKET_0583,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"18th June 2005 - Brussels, Belgium - Palais des Beaux-Arts","Els Pannecoucque, Belgium",kk-ep-01.jpg
+TICKET_0584,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"23rd June 2005 - München (Munich), Germany - Circus Krone","Robert Keller, Germany",kk-joe-jackson-2005-06-23.jpg
+TICKET_0585,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"25th June 2005 - Hamburg, Germany - Laeiszhalle (Musikhalle)",Rolf Thalmann,kk-rt-111.jpg
+TICKET_0586,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"26th June 2005 - Berlin, Germany - Universität der Künste","Björn Krüger, Germany",kk-bk-020.jpg
+TICKET_0587,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"26th June 2005 - Berlin, Germany - Universität der Künste","Steve Whitbread, England",kk-joe-jackson-2005-06-26.jpg
+TICKET_0588,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,"4th July 2005 - Barcelona, Spain - Barcelona Teatre Musical","Joan Farran, Spain",kk-joe-jackson-barcelona-2005.jpg
+TICKET_0589,konzert-joe-jackson-2005.html,Todd Rundgren Forum - Mockpo,Passes - 2005,"Gert Schaumlöffel, Germany","kk-joe-jackson-2005-pass-1.jpg, kk-joe-jackson-2005-pass-2.jpg"
+TICKET_0590,konzert-joe-jackson-1994.html,NIGHT MUSIC Tour,"25th November 1994 - Red Bank, NJ, U.S.A. - Count Basie Theatre - Gert Schaumlöffel, Germany","Benjamin Davis, U.S.A.","kk-joe-jackson-1994-11-25.jpg, kk-joe-jackson-1994-11-25-2.jpg"
+TICKET_0591,konzert-joe-jackson-1994.html,NIGHT MUSIC Tour,"28th November 1994 - New York, NY, U.S.A. - Beacon Theater - 29th November 1994 - New York, NY, U.S.A. - Beacon Theater - Gert Schaumlöffel, Germany","John Nyman, U.S.A.","kk-joe-jackson-1994-11-28.jpg, kk-jn-13.jpg"
+TICKET_0592,konzert-joe-jackson-1994.html,NIGHT MUSIC Tour,"5th December 1994 - Minneapolis, MN, U.S.A. - Guthrie Theater","Shan Lines, U.S.A.",kk-joe-jackson-1994-12-05.jpg
+TICKET_0593,konzert-joe-jackson-1994.html,NIGHT MUSIC Tour,"6th December 1994 - Chicago, IL, U.S.A. - Bismarck","Gert Schaumlöffel, Germany",kk-joe-jackson-1994-12-06.jpg
+TICKET_0594,konzert-joe-jackson-1994.html,NIGHT MUSIC Tour,"12th December 1994 - San Francisco, CA, U.S.A. - The Warfield","Gert Schaumlöffel, Germany",kk-gs-joe-jackson-1994-12-12.jpg
+TICKET_0595,konzert-joe-jackson-1994.html,NIGHT MUSIC Tour,"14th December 1994 - Los Angeles, CA, U.S.A. - The Wiltern Theatre",Idon'twantmynameininternet,kk-joe-jackson-1994-12-14.jpg
+TICKET_0596,konzert-joe-jackson-1994.html,NIGHT MUSIC Tour,"Gert Schaumlöffel, Germany - Gert Schaumlöffel, Germany - John Nyman, U.S.A. - John Nyman, U.S.A. - Gert Schaumlöffel, Germany - Gert Schaumlöffel, Germany",Tourpasses 1994 / 1995,"kk-joe-jackson-1994-pass-4.jpg, kk-joe-jackson-1994-pass-5.jpg, kk-jn-11.jpg, kk-jn-10.jpg, kk-joe-jackson-1994-pass-1.jpg, kk-joe-jackson-1994-pass-3.jpg"
+TICKET_0597,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"29th June 1982 - London, England - Dominion Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-06-29.jpg
+TICKET_0598,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"17th July 1982 - Saint-Pabu, France - Elixir Festival","Hervé Lenoach, France",kk-jj-hl-1.jpg
+TICKET_0599,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"25th July 1982 - Leeds, England Roundhay Park Arena Support for the Rolling Stones","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-07-25.jpg
+TICKET_0600,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"8th August 1982 Glasgow, Scotland - Pavilion Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-08-08.jpg
+TICKET_0601,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"Southampton, England - Gaumont Theatre 12th August 1982","Martin Ayling, England",kk-joe-jackson-1982-08-12.jpg
+TICKET_0602,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"Brighton, England - The Dome 13th August 1982","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-08-13.jpg
+TICKET_0603,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"15th August 1982 - London, England - Hammersmith Odeon - Front - Back","Gert Schaumlöffel, Germany","kk-joe-jackson-1982-08-15-1.jpg, kk-joe-jackson-1982-08-15-2.jpg"
+TICKET_0604,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"28th August 1982 - New York, NY, U.S.A. - Pier 84","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-08-28.jpg
+TICKET_0605,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"31th August 1982 - Columbia, MD, U.S.A. - Merriweather Post Pavilion","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-08-31.jpg
+TICKET_0606,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"6th September 1982 - Berkeley, CA, U.S.A. - Greek Theatere","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-09-06.jpg
+TICKET_0607,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"9th September 1982 - Concord, CA, U.S.A. - Concord Pavilion","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-09-09.jpg
+TICKET_0608,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"11th September 1982 - Seattle WA, U.S.A. - The Paramount","Björn Krüger, Germany",kk-joe-jackson-1982-09-11.jpg
+TICKET_0609,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"13th September 1982 - Vancouver, Canada - Queen Elizabeth Theatre","Doug Collett, Canada",kk-joe-jackson-1982-09-13.jpg
+TICKET_0610,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"24th September 1982 - Chicago, IL, U.S.A. - Aragon Ballroom","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-09-24.jpg
+TICKET_0611,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"1st October 1982 - Ann Arbor, MI, U.S.A. - Hill Auditorium","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-10-01.jpg
+TICKET_0612,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"9th October 1982 - Toronto, Canada - Exhibition Stadium - Support for THE WHO","Gert Schaumlöffel, Germany","kk-joe-jackson-1982-10-09.jpg, kk-joe-jackson-1982-10-09-2.jpg"
+TICKET_0613,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"15th October 1982 - Syracuse, NY, U.S.A. - Landmark Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-10-15.jpg
+TICKET_0614,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"23th October 1982 Millersville, PA, U.S.A. - Pucillo Gym","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-10-23.jpg
+TICKET_0615,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"1st November 1982, Boulder, CO, U.S.A. - Macky Auditorium","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-11-01.jpg
+TICKET_0616,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"6th November 1982, Berkeley, CA, U.S.A. - Community Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-11-06.jpg
+TICKET_0617,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"12th November 1982 - Tempe, AZ, U.S.A. - Gammage Center","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-11-12.jpg
+TICKET_0618,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"16th November 1982 - Austin, TX, U.S.A. - Austin Coliseum","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-11-16.jpg
+TICKET_0619,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"3rd December 1982 - Washington, DC, U.S.A. - Warner Theatre","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-12-03.jpg
+TICKET_0620,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"9th December 1982 - Boston, MA, U.S.A. - Orpheum Theatre","cr8ed, U.S.A.",kk-joe-jackson-1982-12-09.jpg
+TICKET_0621,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,"12th December 1982 - East Rutherford, NJ, U.S.A. - Brendan Byrne Arena","Gert Schaumlöffel, Germany",kk-joe-jackson-1982-12-12.jpg
+TICKET_0622,konzert-joe-jackson-1982.html,NIGHT AND DAY Tour,1982 - Passes,"Gert Schaumlöffel, Germany","kk-joe-jackson-1982-10-16-pass.jpg, kk-joe-jackson-1982-12-12-pass.jpg"
