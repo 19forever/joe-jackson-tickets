@@ -6,7 +6,7 @@
     <title>Joe Jackson Concert Ticket Archive (1977–2026)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PapaParse CDN for instant CSV file drag & drop loading -->
+    <!-- PapaParse CDN for instant CSV file drag & drop / fetch loading -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,10 +51,10 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <!-- CSV Upload Button -->
-                <label for="csvFileInput" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white px-3 py-2 rounded-lg text-xs font-medium border border-slate-700 transition-all flex items-center gap-2 shadow-sm">
+                <!-- Manual CSV Import Button -->
+                <label for="csvFileInput" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white px-3 py-2 rounded-lg text-xs font-medium border border-slate-700 transition-all flex items-center gap-2 shadow-sm" title="Override data with custom local CSV">
                     <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    <span>Import Master CSV</span>
+                    <span>Upload CSV</span>
                     <input type="file" id="csvFileInput" accept=".csv" class="hidden">
                 </label>
 
@@ -77,7 +77,7 @@
                 <div class="hidden sm:block"><span class="text-slate-500 uppercase tracking-wider font-semibold">Contributors / Donors:</span> <span id="statDonors" class="font-bold text-slate-200 font-mono text-sm ml-1">0</span></div>
             </div>
             <div id="dataSourceTag" class="text-slate-400 font-mono text-[11px] bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700/60">
-                Source: Built-in 1982 Demo Archive
+                Source: Loading dataset...
             </div>
         </div>
     </section>
@@ -111,9 +111,8 @@
 
                     <!-- Sort Select -->
                     <select id="sortSelect" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-                        <option value="DATE_ASC">Date (Oldest First)</option>
-                        <option value="DATE_DESC">Date (Newest First)</option>
-                        <option value="ID_ASC">Ticket ID (Ascending)</option>
+                        <option value="DATE_ASC">Date / ID (Ascending)</option>
+                        <option value="DATE_DESC">Date / ID (Descending)</option>
                     </select>
 
                     <!-- View Toggle Buttons -->
@@ -211,11 +210,11 @@
                 Scan Image Base Path Settings
             </h3>
             <p class="text-xs text-slate-400 leading-relaxed">
-                Specify the folder path or URL prefix where your ticket JPG scans are hosted (e.g., <code class="text-amber-300 font-mono">./scans/</code> or local relative path).
+                Specify the folder path or URL prefix where your ticket JPG scans are hosted (e.g., <code class="text-amber-300 font-mono">./scans/</code> or relative path).
             </p>
             <div>
                 <label class="block text-xs font-semibold text-slate-300 mb-1">Base Folder / Path Prefix</label>
-                <input type="text" id="imagePathInput" value="./" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-amber-500">
+                <input type="text" id="imagePathInput" value="./scans/" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-amber-500">
             </div>
             <div class="flex justify-end gap-2 pt-2">
                 <button id="saveConfigBtn" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors">Save Settings</button>
@@ -224,26 +223,18 @@
     </div>
 
     <script>
+        // Fallback demo dataset in case the hosted CSV file is not present yet
         const DEFAULT_DATASET = [
             { ID_LISTKU: 'TICKET_0001', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '29th June 1982 - London, England - Dominion Theatre', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-06-29.jpg' },
             { ID_LISTKU: 'TICKET_0002', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '17th July 1982 - Saint-Pabu, France - Elixir Festival', ZDROJ_POSKYTNUL: 'Hervé Lenoach, France', SOUBOR_SKEN: 'kk-jj-hl-1.jpg' },
             { ID_LISTKU: 'TICKET_0003', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '25th July 1982 - Leeds, England - Roundhay Park Arena - Support for the Rolling Stones', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-07-25.jpg' },
             { ID_LISTKU: 'TICKET_0004', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '8th August 1982 - Glasgow, Scotland - Pavilion Theatre', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-08-08.jpg' },
-            { ID_LISTKU: 'TICKET_0005', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '12th August 1982 - Southampton, England - Gaumont Theatre', ZDROJ_POSKYTNUL: 'Martin Ayling, England', SOUBOR_SKEN: 'kk-joe-jackson-1982-08-12.jpg' },
-            { ID_LISTKU: 'TICKET_0006', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '13th August 1982 - Brighton, England - The Dome', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-08-13.jpg' },
-            { ID_LISTKU: 'TICKET_0007', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '15th August 1982 - London, England - Hammersmith Odeon (Front & Back)', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-08-15-1.jpg, kk-joe-jackson-1982-08-15-2.jpg' },
-            { ID_LISTKU: 'TICKET_0008', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '28th August 1982 - New York, NY, U.S.A. - Pier 84', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-08-28.jpg' },
-            { ID_LISTKU: 'TICKET_0009', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '31st August 1982 - Columbia, MD, U.S.A. - Merriweather Post Pavilion', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-08-31.jpg' },
-            { ID_LISTKU: 'TICKET_0010', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '9th October 1982 - Toronto, Canada - Exhibition Stadium - Support for THE WHO', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-10-09.jpg' },
-            { ID_LISTKU: 'TICKET_0011', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '9th December 1982 - Boston, MA, U.S.A. - Orpheum Theatre', ZDROJ_POSKYTNUL: 'cr8ed, U.S.A.', SOUBOR_SKEN: 'kk-joe-jackson-1982-12-09.jpg' },
-            { ID_LISTKU: 'TICKET_0012', TURNE: 'HOPE AND FURY Tour', INFO_TEXT: '18th July 2026 - New York, NY, U.S.A. - Beacon Theatre', ZDROJ_POSKYTNUL: 'Archive JJ', SOUBOR_SKEN: 'ticket-2026-beacon-1.jpg' },
-            { ID_LISTKU: 'TICKET_0013', TURNE: 'HOPE AND FURY Tour', INFO_TEXT: '18th July 2026 - New York, NY, U.S.A. - Beacon Theatre', ZDROJ_POSKYTNUL: 'Martin S.', SOUBOR_SKEN: 'ticket-2026-beacon-2.jpg' },
-            { ID_LISTKU: 'TICKET_0014', TURNE: 'HOPE AND FURY Tour', INFO_TEXT: '18th July 2026 - New York, NY, U.S.A. - Beacon Theatre', ZDROJ_POSKYTNUL: 'Fanklub CZ', SOUBOR_SKEN: 'ticket-2026-beacon-3.jpg' }
+            { ID_LISTKU: 'TICKET_0005', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '12th August 1982 - Southampton, England - Gaumont Theatre', ZDROJ_POSKYTNUL: 'Martin Ayling, England', SOUBOR_SKEN: 'kk-joe-jackson-1982-08-12.jpg' }
         ];
 
         let ticketsData = [...DEFAULT_DATASET];
-        let activeView = 'GRID'; // 'GRID' or 'TABLE'
-        let imageBasePath = './';
+        let activeView = 'GRID';
+        let imageBasePath = './scans/';
 
         // DOM Elements
         const gridContainer = document.getElementById('gridContainer');
@@ -283,6 +274,11 @@
         function getImageUrl(fileStr) {
             const filename = getFirstFilename(fileStr);
             if (!filename) return 'https://placehold.co/600x400/0f172a/94a3b8?text=Scan+Unavailable';
+            
+            if (filename.startsWith('scans/') || filename.startsWith('./scans/')) {
+                return `./${filename.replace(/^\.\//, '')}`;
+            }
+            
             return `${imageBasePath.replace(/\/$/, '')}/${filename}`;
         }
 
@@ -291,8 +287,10 @@
             const donors = new Set();
 
             ticketsData.forEach(item => {
-                if (item.TURNE) tours.add(item.TURNE);
-                if (item.ZDROJ_POSKYTNUL) donors.add(item.ZDROJ_POSKYTNUL);
+                const tour = item.TURNE || item.turne;
+                const donor = item.ZDROJ_POSKYTNUL || item.zdroj_poskytnul || item.ZDROJ || item.donor;
+                if (tour) tours.add(tour);
+                if (donor) donors.add(donor);
             });
 
             tourFilter.innerHTML = '<option value="ALL">All Tours & Eras</option>';
@@ -319,26 +317,30 @@
             const sortMode = sortSelect.value;
 
             let filtered = ticketsData.filter(t => {
-                const matchesQuery = !query || 
-                    (t.ID_LISTKU && t.ID_LISTKU.toLowerCase().includes(query)) ||
-                    (t.INFO_TEXT && t.INFO_TEXT.toLowerCase().includes(query)) ||
-                    (t.TURNE && t.TURNE.toLowerCase().includes(query)) ||
-                    (t.ZDROJ_POSKYTNUL && t.ZDROJ_POSKYTNUL.toLowerCase().includes(query));
+                const id = t.ID_LISTKU || t.id_listku || t.ID || '';
+                const tour = t.TURNE || t.turne || '';
+                const info = t.INFO_TEXT || t.info_text || t.DATUM || t.MESTO || t.MISTO_KONANI || '';
+                const donor = t.ZDROJ_POSKYTNUL || t.zdroj_poskytnul || t.ZDROJ || '';
 
-                const matchesTour = selectedTour === 'ALL' || t.TURNE === selectedTour;
-                const matchesDonor = selectedDonor === 'ALL' || t.ZDROJ_POSKYTNUL === selectedDonor;
+                const matchesQuery = !query || 
+                    id.toLowerCase().includes(query) ||
+                    info.toLowerCase().includes(query) ||
+                    tour.toLowerCase().includes(query) ||
+                    donor.toLowerCase().includes(query);
+
+                const matchesTour = selectedTour === 'ALL' || tour === selectedTour;
+                const matchesDonor = selectedDonor === 'ALL' || donor === selectedDonor;
 
                 return matchesQuery && matchesTour && matchesDonor;
             });
 
-            // Sorting logic
             filtered.sort((a, b) => {
-                if (sortMode === 'ID_ASC') {
-                    return (a.ID_LISTKU || '').localeCompare(b.ID_LISTKU || '');
-                } else if (sortMode === 'DATE_DESC') {
-                    return (b.INFO_TEXT || '').localeCompare(a.INFO_TEXT || '');
+                const aVal = a.INFO_TEXT || a.ID_LISTKU || '';
+                const bVal = b.INFO_TEXT || b.ID_LISTKU || '';
+                if (sortMode === 'DATE_DESC') {
+                    return bVal.localeCompare(aVal);
                 } else {
-                    return (a.INFO_TEXT || '').localeCompare(b.INFO_TEXT || '');
+                    return aVal.localeCompare(bVal);
                 }
             });
 
@@ -348,10 +350,10 @@
         function render() {
             const items = filterAndSortData();
             
-            // Update Stats
+            // Stats
             statTotal.textContent = items.length;
-            const uniqueTours = new Set(ticketsData.map(i => i.TURNE).filter(Boolean)).size;
-            const uniqueDonors = new Set(ticketsData.map(i => i.ZDROJ_POSKYTNUL).filter(Boolean)).size;
+            const uniqueTours = new Set(ticketsData.map(i => i.TURNE || i.turne).filter(Boolean)).size;
+            const uniqueDonors = new Set(ticketsData.map(i => i.ZDROJ_POSKYTNUL || i.zdroj_poskytnul || i.ZDROJ).filter(Boolean)).size;
             statTours.textContent = uniqueTours;
             statDonors.textContent = uniqueDonors;
 
@@ -369,26 +371,32 @@
                 gridContainer.innerHTML = '';
 
                 items.forEach(t => {
-                    const imgUrl = getImageUrl(t.SOUBOR_SKEN);
+                    const id = t.ID_LISTKU || t.id_listku || 'TICKET';
+                    const tour = t.TURNE || t.turne || 'Concert Record';
+                    const info = t.INFO_TEXT || `${t.DATUM || ''} - ${t.MESTO || ''} - ${t.MISTO_KONANI || ''}`.replace(/^ - |- $/g, '') || 'No details';
+                    const donor = t.ZDROJ_POSKYTNUL || t.zdroj_poskytnul || t.ZDROJ || 'Unknown';
+                    const scan = t.SOUBOR_SKEN || t.soubor_sken || '';
+
+                    const imgUrl = getImageUrl(scan);
                     const card = document.createElement('div');
-                    card.className = 'bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg hover:border-slate-700 transition-all duration-200 flex flex-col group';
+                    card.className = 'bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg hover:border-slate-700 transition-all duration-200 flex flex-col group cursor-pointer';
                     
                     card.innerHTML = `
-                        <div class="h-44 bg-slate-950 border-b border-slate-800/80 relative overflow-hidden flex items-center justify-center cursor-pointer">
-                            <img src="${imgUrl}" alt="${t.ID_LISTKU}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0f172a/94a3b8?text=Scan+Unavailable';">
+                        <div class="h-44 bg-slate-950 border-b border-slate-800/80 relative overflow-hidden flex items-center justify-center">
+                            <img src="${imgUrl}" alt="${id}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0f172a/94a3b8?text=Scan+Unavailable';">
                             <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <span class="bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-full shadow-lg">View Details</span>
                             </div>
-                            <span class="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-md text-amber-400 font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-slate-800">${t.ID_LISTKU}</span>
+                            <span class="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-md text-amber-400 font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-slate-800">${id}</span>
                         </div>
                         <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
                             <div>
-                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">${t.TURNE || 'Tour Record'}</span>
-                                <h4 class="text-xs font-semibold text-slate-100 line-clamp-2 mt-0.5 leading-relaxed">${t.INFO_TEXT || 'No concert information'}</h4>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">${tour}</span>
+                                <h4 class="text-xs font-semibold text-slate-100 line-clamp-2 mt-0.5 leading-relaxed">${info}</h4>
                             </div>
                             <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
                                 <span class="text-slate-500">Source:</span>
-                                <span class="text-slate-300 font-medium truncate max-w-[150px]" title="${t.ZDROJ_POSKYTNUL || ''}">${t.ZDROJ_POSKYTNUL || 'Unknown'}</span>
+                                <span class="text-slate-300 font-medium truncate max-w-[150px]" title="${donor}">${donor}</span>
                             </div>
                         </div>
                     `;
@@ -402,14 +410,20 @@
                 tableBody.innerHTML = '';
 
                 items.forEach(t => {
+                    const id = t.ID_LISTKU || t.id_listku || '-';
+                    const tour = t.TURNE || t.turne || '-';
+                    const info = t.INFO_TEXT || `${t.DATUM || ''} ${t.MESTO || ''} ${t.MISTO_KONANI || ''}` || '-';
+                    const donor = t.ZDROJ_POSKYTNUL || t.zdroj_poskytnul || t.ZDROJ || '-';
+                    const scan = t.SOUBOR_SKEN || t.soubor_sken || '-';
+
                     const tr = document.createElement('tr');
                     tr.className = 'hover:bg-slate-800/40 transition-colors cursor-pointer';
                     tr.innerHTML = `
-                        <td class="py-3 px-4 font-bold text-amber-400">${t.ID_LISTKU}</td>
-                        <td class="py-3 px-4 text-slate-300">${t.TURNE || '-'}</td>
-                        <td class="py-3 px-4 text-slate-200 font-sans">${t.INFO_TEXT || '-'}</td>
-                        <td class="py-3 px-4 text-slate-300 font-sans">${t.ZDROJ_POSKYTNUL || '-'}</td>
-                        <td class="py-3 px-4 text-slate-400 truncate max-w-[200px]" title="${t.SOUBOR_SKEN}">${t.SOUBOR_SKEN || '-'}</td>
+                        <td class="py-3 px-4 font-bold text-amber-400">${id}</td>
+                        <td class="py-3 px-4 text-slate-300">${tour}</td>
+                        <td class="py-3 px-4 text-slate-200 font-sans">${info}</td>
+                        <td class="py-3 px-4 text-slate-300 font-sans">${donor}</td>
+                        <td class="py-3 px-4 text-slate-400 truncate max-w-[200px]" title="${scan}">${scan}</td>
                         <td class="py-3 px-4 text-right">
                             <button class="text-amber-400 hover:text-amber-300 font-sans font-semibold text-xs">View</button>
                         </td>
@@ -421,12 +435,18 @@
         }
 
         function openDetailModal(item) {
-            modalId.textContent = item.ID_LISTKU;
-            modalTour.textContent = item.TURNE || 'Concert Ticket Record';
-            modalInfo.textContent = item.INFO_TEXT || 'No detailed concert information available.';
-            modalDonor.textContent = item.ZDROJ_POSKYTNUL || 'Unknown Contributor';
-            modalFiles.textContent = item.SOUBOR_SKEN || 'N/A';
-            modalImage.src = getImageUrl(item.SOUBOR_SKEN);
+            const id = item.ID_LISTKU || item.id_listku || 'TICKET';
+            const tour = item.TURNE || item.turne || 'Concert Ticket Record';
+            const info = item.INFO_TEXT || `${item.DATUM || ''} ${item.MESTO || ''} ${item.MISTO_KONANI || ''}` || 'No concert info available.';
+            const donor = item.ZDROJ_POSKYTNUL || item.zdroj_poskytnul || item.ZDROJ || 'Unknown Contributor';
+            const scan = item.SOUBOR_SKEN || item.soubor_sken || 'N/A';
+
+            modalId.textContent = id;
+            modalTour.textContent = tour;
+            modalInfo.textContent = info;
+            modalDonor.textContent = donor;
+            modalFiles.textContent = scan;
+            modalImage.src = getImageUrl(scan);
             modalImage.onerror = function() {
                 this.src = 'https://placehold.co/600x400/0f172a/94a3b8?text=Scan+Unavailable';
             };
@@ -438,13 +458,12 @@
             if (e.target === detailModal) detailModal.classList.add('hidden');
         });
 
-        // Image path config modal handlers
         openConfigBtn.addEventListener('click', () => {
             imagePathInput.value = imageBasePath;
             configModal.classList.remove('hidden');
         });
         saveConfigBtn.addEventListener('click', () => {
-            imageBasePath = imagePathInput.value.trim() || './';
+            imageBasePath = imagePathInput.value.trim() || './scans/';
             configModal.classList.add('hidden');
             render();
         });
@@ -469,6 +488,7 @@
         donorFilter.addEventListener('change', render);
         sortSelect.addEventListener('change', render);
 
+        // Manual local CSV override handler
         csvFileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -479,7 +499,7 @@
                 complete: function(results) {
                     if (results.data && results.data.length > 0) {
                         ticketsData = results.data;
-                        dataSourceTag.textContent = `Source: ${file.name} (${results.data.length} records loaded)`;
+                        dataSourceTag.textContent = `Source: Local CSV (${file.name} - ${results.data.length} records)`;
                         populateFilterDropdowns();
                         render();
                     }
@@ -487,9 +507,48 @@
             });
         });
 
-        // Initial setup run
-        populateFilterDropdowns();
-        render();
+        /**
+         * AUTO-LOAD MASTER CSV ON INITIALIZATION
+         * Automatically fetches joe_jackson_tickets_master.csv hosted on GitHub Pages.
+         * Falls back to DEFAULT_DATASET if the file is not found.
+         */
+        function initAutoLoadCSV() {
+            const masterCsvFileName = 'joe_jackson_tickets_master.csv';
+            
+            fetch(`./${masterCsvFileName}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Master CSV file not found (Status ${response.status})`);
+                    }
+                    return response.text();
+                })
+                .then(csvText => {
+                    Papa.parse(csvText, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: function(results) {
+                            if (results.data && results.data.length > 0) {
+                                ticketsData = results.data;
+                                dataSourceTag.textContent = `Source: ${masterCsvFileName} (${results.data.length} records loaded)`;
+                                populateFilterDropdowns();
+                                render();
+                            } else {
+                                throw new Error('CSV file is empty');
+                            }
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.info('Auto-fetch info:', err.message, '- Using fallback dataset.');
+                    dataSourceTag.textContent = `Source: Built-in Demo Archive (${DEFAULT_DATASET.length} records)`;
+                    populateFilterDropdowns();
+                    render();
+                });
+        }
+
+        // Run auto-fetch on page load
+        initAutoLoadCSV();
     </script>
 </body>
 </html>
+```
