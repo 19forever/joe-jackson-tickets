@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<html lang="cs" class="h-full bg-slate-950 text-slate-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Joe Jackson Concert Ticket Archive (1977–2026)</title>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PapaParse CDN for instant CSV file drag & drop / fetch loading -->
+    
+    <!-- PapaParse CDN for CSV parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <script>
         tailwind.config = {
             theme: {
@@ -34,7 +38,6 @@
 </head>
 <body class="min-h-full flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- Navigation Header -->
     <header class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -51,33 +54,32 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <!-- Manual CSV Import Button -->
-                <label for="csvFileInput" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white px-3 py-2 rounded-lg text-xs font-medium border border-slate-700 transition-all flex items-center gap-2 shadow-sm" title="Override data with custom local CSV">
+                <!-- Manual CSV Import Button Override -->
+                <label for="csvFileInput" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white px-3 py-2 rounded-lg text-xs font-medium border border-slate-700 transition-all flex items-center gap-2 shadow-sm" title="Ruční nahrání jiného CSV souboru">
                     <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                     <span>Upload CSV</span>
                     <input type="file" id="csvFileInput" accept=".csv" class="hidden">
                 </label>
 
                 <!-- Settings Modal Trigger -->
-                <button id="openConfigBtn" class="p-2 text-slate-400 hover:text-slate-200 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 transition-colors" title="Scan Image Path Settings">
+                <button id="openConfigBtn" class="p-2 text-slate-400 hover:text-slate-200 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 transition-colors" title="Nastavení cesty ke skenům">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Stats Banner -->
     <section class="bg-slate-900/40 border-b border-slate-800/60 py-3">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4 text-xs">
             <div class="flex items-center gap-6">
-                <div><span class="text-slate-500 uppercase tracking-wider font-semibold">Loaded Tickets:</span> <span id="statTotal" class="font-bold text-amber-400 font-mono text-sm ml-1">0</span></div>
+                <div><span class="text-slate-500 uppercase tracking-wider font-semibold">Načtené lístky:</span> <span id="statTotal" class="font-bold text-amber-400 font-mono text-sm ml-1">0</span></div>
                 <div class="hidden sm:block text-slate-800">|</div>
-                <div class="hidden sm:block"><span class="text-slate-500 uppercase tracking-wider font-semibold">Tours Represented:</span> <span id="statTours" class="font-bold text-slate-200 font-mono text-sm ml-1">0</span></div>
+                <div class="hidden sm:block"><span class="text-slate-500 uppercase tracking-wider font-semibold">Turné:</span> <span id="statTours" class="font-bold text-slate-200 font-mono text-sm ml-1">0</span></div>
                 <div class="hidden sm:block text-slate-800">|</div>
-                <div class="hidden sm:block"><span class="text-slate-500 uppercase tracking-wider font-semibold">Contributors / Donors:</span> <span id="statDonors" class="font-bold text-slate-200 font-mono text-sm ml-1">0</span></div>
+                <div class="hidden sm:block"><span class="text-slate-500 uppercase tracking-wider font-semibold">Dárci / Zdroje:</span> <span id="statDonors" class="font-bold text-slate-200 font-mono text-sm ml-1">0</span></div>
             </div>
             <div id="dataSourceTag" class="text-slate-400 font-mono text-[11px] bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700/60">
-                Source: Loading dataset...
+                Zdroj: Načítám joe_jackson_tickets_master.csv...
             </div>
         </div>
     </section>
@@ -93,34 +95,31 @@
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <input type="text" id="searchInput" placeholder="Search by city, venue, donor, date, tour or ticket ID..."
+                    <input type="text" id="searchInput" placeholder="Hledat podle města, sálu, dárce, data, turné nebo ID..."
                         class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 transition-colors">
                 </div>
 
                 <!-- Filters & Controls -->
                 <div class="flex flex-wrap items-center gap-3">
-                    <!-- Tour Select Dropdown -->
                     <select id="tourFilter" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-                        <option value="ALL">All Tours & Eras</option>
+                        <option value="ALL">Všechna turné a éry</option>
                     </select>
 
-                    <!-- Donor Dropdown -->
                     <select id="donorFilter" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-                        <option value="ALL">All Donors / Sources</option>
+                        <option value="ALL">Všichni dárci / zdroje</option>
                     </select>
 
-                    <!-- Sort Select -->
                     <select id="sortSelect" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-                        <option value="DATE_ASC">Date / ID (Ascending)</option>
-                        <option value="DATE_DESC">Date / ID (Descending)</option>
+                        <option value="DATE_ASC">Datum / ID (Vzestupně)</option>
+                        <option value="DATE_DESC">Datum / ID (Sestupně)</option>
                     </select>
 
                     <!-- View Toggle Buttons -->
                     <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
-                        <button id="viewGridBtn" class="p-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all shadow" title="Grid View">
+                        <button id="viewGridBtn" class="p-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all shadow" title="Mřížka">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
                         </button>
-                        <button id="viewTableBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition-all" title="Table View">
+                        <button id="viewTableBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition-all" title="Tabulka">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                         </button>
                     </div>
@@ -128,41 +127,38 @@
             </div>
         </div>
 
-        <!-- Results Gallery Grid Container -->
         <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            <!-- JavaScript dynamically renders ticket cards here -->
+            <!-- JavaScript dynamicky vykreslí karty -->
         </div>
 
-        <!-- Table Container (Hidden by default) -->
         <div id="tableContainer" class="hidden bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-left text-xs text-slate-300">
                     <thead class="bg-slate-950 uppercase text-[10px] tracking-wider text-slate-400 border-b border-slate-800">
                         <tr>
                             <th class="py-3 px-4 font-semibold">ID</th>
-                            <th class="py-3 px-4 font-semibold">Tour</th>
-                            <th class="py-3 px-4 font-semibold">Information / Date / Venue</th>
-                            <th class="py-3 px-4 font-semibold">Donor / Source</th>
-                            <th class="py-3 px-4 font-semibold">Scan File(s)</th>
-                            <th class="py-3 px-4 text-right font-semibold">Actions</th>
+                            <th class="py-3 px-4 font-semibold">Turné</th>
+                            <th class="py-3 px-4 font-semibold">Informace / Datum / Venue</th>
+                            <th class="py-3 px-4 font-semibold">Dárce / Zdroj</th>
+                            <th class="py-3 px-4 font-semibold">Soubor(y) skenu</th>
+                            <th class="py-3 px-4 text-right font-semibold">Akce</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="divide-y divide-slate-800/60 font-mono">
-                        <!-- Rendered by JS -->
+                        <!-- Vykresluje JS -->
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Empty Results State -->
         <div id="emptyState" class="hidden text-center py-20 bg-slate-900/30 border border-slate-800/50 rounded-2xl">
             <svg class="w-12 h-12 mx-auto text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <h3 class="text-slate-200 font-semibold text-base mb-1">No ticket scans found</h3>
-            <p class="text-slate-500 text-xs">Try searching for a different tour, city, date, or donor.</p>
+            <h3 class="text-slate-200 font-semibold text-base mb-1">Žádné skeny nenalezeny</h3>
+            <p class="text-slate-500 text-xs">Zkuste změnit vyhledávací výraz nebo filtry.</p>
         </div>
     </main>
 
-    <!-- Ticket Detail Modal -->
+    <!-- Modal Detail Lístku -->
     <div id="detailModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
@@ -176,24 +172,22 @@
             </div>
             
             <div class="p-6 overflow-y-auto custom-scrollbar space-y-5">
-                <!-- Large Image Preview Container -->
                 <div class="bg-slate-950 rounded-xl p-3 border border-slate-800 flex items-center justify-center min-h-[260px] relative group">
                     <img id="modalImage" src="" alt="Ticket Scan" class="max-h-[60vh] object-contain rounded shadow-lg">
                 </div>
 
-                <!-- Info Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                     <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80">
-                        <span class="text-slate-500 block text-[10px] uppercase tracking-wider font-semibold mb-1">Concert Information</span>
+                        <span class="text-slate-500 block text-[10px] uppercase tracking-wider font-semibold mb-1">Informace o koncertu</span>
                         <p id="modalInfo" class="text-slate-200 font-medium leading-relaxed"></p>
                     </div>
                     <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80 space-y-2">
                         <div>
-                            <span class="text-slate-500 block text-[10px] uppercase tracking-wider font-semibold mb-0.5">Provided By / Donor</span>
+                            <span class="text-slate-500 block text-[10px] uppercase tracking-wider font-semibold mb-0.5">Poskytnul / Dárce</span>
                             <p id="modalDonor" class="text-amber-400 font-bold font-mono"></p>
                         </div>
                         <div>
-                            <span class="text-slate-500 block text-[10px] uppercase tracking-wider font-semibold mb-0.5">Filename(s)</span>
+                            <span class="text-slate-500 block text-[10px] uppercase tracking-wider font-semibold mb-0.5">Název souboru</span>
                             <p id="modalFiles" class="text-slate-400 font-mono text-[11px] break-all"></p>
                         </div>
                     </div>
@@ -202,41 +196,37 @@
         </div>
     </div>
 
-    <!-- Image Base Path Config Modal -->
+    <!-- Modal Cesta ke skenům -->
     <div id="configModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
                 <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-                Scan Image Base Path Settings
+                Nastavení cesty ke složce se skeny
             </h3>
             <p class="text-xs text-slate-400 leading-relaxed">
-                Specify the folder path or URL prefix where your ticket JPG scans are hosted (e.g., <code class="text-amber-300 font-mono">./scans/</code> or relative path).
+                Zadejte relativní složku, ve které jsou uloženy JPG skeny (např. <code class="text-amber-300 font-mono">./scans/</code>).
             </p>
             <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1">Base Folder / Path Prefix</label>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Cesta ke složce</label>
                 <input type="text" id="imagePathInput" value="./scans/" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-amber-500">
             </div>
             <div class="flex justify-end gap-2 pt-2">
-                <button id="saveConfigBtn" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors">Save Settings</button>
+                <button id="saveConfigBtn" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors">Uložit nastavení</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Fallback demo dataset in case the hosted CSV file is not present yet
         const DEFAULT_DATASET = [
             { ID_LISTKU: 'TICKET_0001', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '29th June 1982 - London, England - Dominion Theatre', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-06-29.jpg' },
             { ID_LISTKU: 'TICKET_0002', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '17th July 1982 - Saint-Pabu, France - Elixir Festival', ZDROJ_POSKYTNUL: 'Hervé Lenoach, France', SOUBOR_SKEN: 'kk-jj-hl-1.jpg' },
-            { ID_LISTKU: 'TICKET_0003', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '25th July 1982 - Leeds, England - Roundhay Park Arena - Support for the Rolling Stones', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-07-25.jpg' },
-            { ID_LISTKU: 'TICKET_0004', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '8th August 1982 - Glasgow, Scotland - Pavilion Theatre', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-08-08.jpg' },
-            { ID_LISTKU: 'TICKET_0005', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '12th August 1982 - Southampton, England - Gaumont Theatre', ZDROJ_POSKYTNUL: 'Martin Ayling, England', SOUBOR_SKEN: 'kk-joe-jackson-1982-08-12.jpg' }
+            { ID_LISTKU: 'TICKET_0003', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '25th July 1982 - Leeds, England - Roundhay Park Arena - Support for Rolling Stones', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-07-25.jpg' }
         ];
 
         let ticketsData = [...DEFAULT_DATASET];
         let activeView = 'GRID';
         let imageBasePath = './scans/';
 
-        // DOM Elements
         const gridContainer = document.getElementById('gridContainer');
         const tableContainer = document.getElementById('tableContainer');
         const tableBody = document.getElementById('tableBody');
@@ -250,7 +240,6 @@
         const statDonors = document.getElementById('statDonors');
         const dataSourceTag = document.getElementById('dataSourceTag');
 
-        // Modal Elements
         const detailModal = document.getElementById('detailModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const modalId = document.getElementById('modalId');
@@ -279,7 +268,8 @@
                 return `./${filename.replace(/^\.\//, '')}`;
             }
             
-            return `${imageBasePath.replace(/\/$/, '')}/${filename}`;
+            const cleanPath = imageBasePath.replace(/\/$/, '');
+            return `${cleanPath}/${filename}`;
         }
 
         function populateFilterDropdowns() {
@@ -293,7 +283,7 @@
                 if (donor) donors.add(donor);
             });
 
-            tourFilter.innerHTML = '<option value="ALL">All Tours & Eras</option>';
+            tourFilter.innerHTML = '<option value="ALL">Všechna turné a éry</option>';
             Array.from(tours).sort().forEach(t => {
                 const opt = document.createElement('option');
                 opt.value = t;
@@ -301,7 +291,7 @@
                 tourFilter.appendChild(opt);
             });
 
-            donorFilter.innerHTML = '<option value="ALL">All Donors / Sources</option>';
+            donorFilter.innerHTML = '<option value="ALL">Všichni dárci / zdroje</option>';
             Array.from(donors).sort().forEach(d => {
                 const opt = document.createElement('option');
                 opt.value = d;
@@ -350,7 +340,6 @@
         function render() {
             const items = filterAndSortData();
             
-            // Stats
             statTotal.textContent = items.length;
             const uniqueTours = new Set(ticketsData.map(i => i.TURNE || i.turne).filter(Boolean)).size;
             const uniqueDonors = new Set(ticketsData.map(i => i.ZDROJ_POSKYTNUL || i.zdroj_poskytnul || i.ZDROJ).filter(Boolean)).size;
@@ -385,7 +374,7 @@
                         <div class="h-44 bg-slate-950 border-b border-slate-800/80 relative overflow-hidden flex items-center justify-center">
                             <img src="${imgUrl}" alt="${id}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0f172a/94a3b8?text=Scan+Unavailable';">
                             <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <span class="bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-full shadow-lg">View Details</span>
+                                <span class="bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-full shadow-lg">Detail lístku</span>
                             </div>
                             <span class="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-md text-amber-400 font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-slate-800">${id}</span>
                         </div>
@@ -395,7 +384,7 @@
                                 <h4 class="text-xs font-semibold text-slate-100 line-clamp-2 mt-0.5 leading-relaxed">${info}</h4>
                             </div>
                             <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
-                                <span class="text-slate-500">Source:</span>
+                                <span class="text-slate-500">Zdroj:</span>
                                 <span class="text-slate-300 font-medium truncate max-w-[150px]" title="${donor}">${donor}</span>
                             </div>
                         </div>
@@ -425,7 +414,7 @@
                         <td class="py-3 px-4 text-slate-300 font-sans">${donor}</td>
                         <td class="py-3 px-4 text-slate-400 truncate max-w-[200px]" title="${scan}">${scan}</td>
                         <td class="py-3 px-4 text-right">
-                            <button class="text-amber-400 hover:text-amber-300 font-sans font-semibold text-xs">View</button>
+                            <button class="text-amber-400 hover:text-amber-300 font-sans font-semibold text-xs">Detail</button>
                         </td>
                     `;
                     tr.addEventListener('click', () => openDetailModal(t));
@@ -437,8 +426,8 @@
         function openDetailModal(item) {
             const id = item.ID_LISTKU || item.id_listku || 'TICKET';
             const tour = item.TURNE || item.turne || 'Concert Ticket Record';
-            const info = item.INFO_TEXT || `${item.DATUM || ''} ${item.MESTO || ''} ${item.MISTO_KONANI || ''}` || 'No concert info available.';
-            const donor = item.ZDROJ_POSKYTNUL || item.zdroj_poskytnul || item.ZDROJ || 'Unknown Contributor';
+            const info = item.INFO_TEXT || `${item.DATUM || ''} ${item.MESTO || ''} ${item.MISTO_KONANI || ''}` || 'Žádné podrobnosti k dispozici.';
+            const donor = item.ZDROJ_POSKYTNUL || item.zdroj_poskytnul || item.ZDROJ || 'Neznámý dárce';
             const scan = item.SOUBOR_SKEN || item.soubor_sken || 'N/A';
 
             modalId.textContent = id;
@@ -468,7 +457,6 @@
             render();
         });
 
-        // View Toggles
         document.getElementById('viewGridBtn').addEventListener('click', function() {
             activeView = 'GRID';
             this.className = 'p-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all shadow';
@@ -482,13 +470,11 @@
             render();
         });
 
-        // Input Filter Event Listeners
         searchInput.addEventListener('input', render);
         tourFilter.addEventListener('change', render);
         donorFilter.addEventListener('change', render);
         sortSelect.addEventListener('change', render);
 
-        // Manual local CSV override handler
         csvFileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -499,7 +485,7 @@
                 complete: function(results) {
                     if (results.data && results.data.length > 0) {
                         ticketsData = results.data;
-                        dataSourceTag.textContent = `Source: Local CSV (${file.name} - ${results.data.length} records)`;
+                        dataSourceTag.textContent = `Zdroj: Ručně nahraný CSV (${file.name} - ${results.data.length} řádků)`;
                         populateFilterDropdowns();
                         render();
                     }
@@ -507,11 +493,6 @@
             });
         });
 
-        /**
-         * AUTO-LOAD MASTER CSV ON INITIALIZATION
-         * Automatically fetches joe_jackson_tickets_master.csv hosted on GitHub Pages.
-         * Falls back to DEFAULT_DATASET if the file is not found.
-         */
         function initAutoLoadCSV() {
             const masterCsvFileName = 'joe_jackson_tickets_master.csv';
             
@@ -529,26 +510,25 @@
                         complete: function(results) {
                             if (results.data && results.data.length > 0) {
                                 ticketsData = results.data;
-                                dataSourceTag.textContent = `Source: ${masterCsvFileName} (${results.data.length} records loaded)`;
+                                dataSourceTag.textContent = `Zdroj: ${masterCsvFileName} (${results.data.length} záznamů načteno)`;
                                 populateFilterDropdowns();
                                 render();
                             } else {
-                                throw new Error('CSV file is empty');
+                                throw new Error('CSV soubor je prázdný');
                             }
                         }
                     });
                 })
                 .catch(err => {
-                    console.info('Auto-fetch info:', err.message, '- Using fallback dataset.');
-                    dataSourceTag.textContent = `Source: Built-in Demo Archive (${DEFAULT_DATASET.length} records)`;
+                    console.info('Auto-fetch info:', err.message, '- Používám záložní ukázkový dataset.');
+                    dataSourceTag.textContent = `Zdroj: Ukázkový archiv (${DEFAULT_DATASET.length} záznamů)`;
                     populateFilterDropdowns();
                     render();
                 });
         }
 
-        // Run auto-fetch on page load
+        // Spuštění automatického načítání CSV při startu
         initAutoLoadCSV();
     </script>
 </body>
 </html>
-```
