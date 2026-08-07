@@ -3,265 +3,373 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joe Jackson Ticket Museum</title>
+  <title>Joe Jackson Ticket Archive</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #38bdf8;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: #334155;
+      --bg-main: #0a0f1c;
+      --bg-panel: #111827;
+      --bg-card: #151c2b;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-yellow: #facc15;
+      --border-color: #1f2937;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-color);
+      font-family: var(--font-family);
+      background-color: var(--bg-main);
       color: var(--text-main);
-      display: flex;
+      padding: 20px 40px;
       min-height: 100vh;
     }
 
-    /* Sidebar / Navigation */
-    aside {
-      width: 280px;
-      background-color: #020617;
-      border-right: 1px solid var(--border);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-    }
-
-    aside h1 {
-      font-size: 1.25rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--card-bg);
-      color: #fff;
-      font-size: 0.9rem;
-    }
-
-    .filter-group label {
-      display: block;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-
-    .filter-group select {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--card-bg);
-      color: #fff;
-    }
-
-    /* Main Content Area */
-    main {
-      flex: 1;
-      padding: 30px;
-    }
-
-    .header-bar {
+    /* Header Section */
+    header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 25px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 15px;
+      margin-bottom: 20px;
     }
 
-    .counter {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-
-    .ticket-list {
+    .header-left {
       display: flex;
-      flex-direction: column;
-      gap: 20px;
+      align-items: center;
+      gap: 15px;
     }
 
-    /* Ticket Card - Two Column Original Layout */
-    .ticket-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      display: flex;
-      overflow: hidden;
-      transition: border-color 0.2s;
-    }
-
-    .ticket-card:hover {
-      border-color: var(--accent);
-    }
-
-    .ticket-scan {
-      width: 320px;
-      background: #000;
+    .logo {
+      background-color: #f97316;
+      color: #000;
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px;
-      flex-shrink: 0;
+      font-weight: 900;
+      font-size: 1.5rem;
+      letter-spacing: -1px;
     }
 
-    .ticket-scan img {
-      max-width: 100%;
-      max-height: 220px;
-      object-fit: contain;
-    }
-
-    .ticket-info {
-      padding: 20px;
-      flex: 1;
+    .title-area h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .ticket-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
-    }
-
-    .tour-tag {
-      background: rgba(56, 189, 248, 0.1);
-      color: var(--accent);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: bold;
-    }
-
-    .ticket-id {
-      color: var(--text-muted);
-      font-size: 0.8rem;
-    }
-
-    .info-main {
-      font-size: 1.05rem;
-      font-weight: 500;
-      line-height: 1.4;
-      margin-bottom: 15px;
-    }
-
-    .metadata-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
       gap: 10px;
-      background: rgba(0,0,0,0.2);
-      padding: 10px;
+    }
+
+    .year-badge {
+      background-color: transparent;
+      border: 1px solid var(--accent-yellow);
+      color: var(--accent-yellow);
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .title-area p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
       border-radius: 6px;
       font-size: 0.85rem;
-      margin-bottom: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn:hover {
+      background-color: #1f2937;
     }
 
-    .meta-item span {
-      display: block;
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
       color: var(--text-muted);
-      font-size: 0.75rem;
+      text-transform: uppercase;
+      margin-bottom: 15px;
+      letter-spacing: 0.5px;
     }
 
-    /* Setlist Box Integration */
-    .setlist-box {
-      border-top: 1px solid var(--border);
-      padding-top: 12px;
+    .stats-bar span {
+      color: var(--border-color);
     }
 
-    .setlist-head {
+    .stat-val-yellow { color: var(--accent-yellow); }
+    .stat-val-white { color: #fff; }
+
+    .source-box {
+      background-color: rgba(31, 41, 55, 0.5);
+      border: 1px solid var(--border-color);
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 25px;
+    }
+
+    /* Controls / Filters */
+    .controls {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      gap: 15px;
+      background-color: var(--bg-panel);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 30px;
+    }
+
+    .controls input, .controls select {
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+    }
+
+    .controls input:focus, .controls select:focus {
+      border-color: #3b82f6;
+    }
+
+    .layout-toggles {
+      display: flex;
+      gap: 5px;
+    }
+
+    .toggle-btn {
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      width: 40px;
+      height: 100%;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-btn.active {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border-color: var(--accent-yellow);
+    }
+
+    /* Grid & Cards */
+    .tickets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .ticket-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-img-wrapper {
+      position: relative;
+      height: 160px;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .card-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ticket-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: var(--accent-yellow);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border: 1px solid var(--accent-yellow);
+    }
+
+    .card-content {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .tour-name {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .info-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 15px;
+      flex-grow: 1;
+    }
+
+    .source-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .setlist-title {
-      font-size: 0.85rem;
-      font-weight: bold;
-      color: var(--accent);
-    }
-
-    .setlist-link {
-      font-size: 0.8rem;
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    .setlist-link:hover { text-decoration: underline; }
-
-    .song-preview {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
-      line-height: 1.4;
+      border-top: 1px solid var(--border-color);
+      padding-top: 12px;
     }
 
-    .more-songs {
-      display: none;
-      margin-top: 6px;
+    .source-val {
+      color: var(--text-main);
+      text-align: right;
     }
 
-    .btn-toggle {
-      background: none;
-      border: none;
-      color: var(--accent);
+    /* Setlist Expansion */
+    .setlist-toggle-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
       font-size: 0.8rem;
+      margin-top: 15px;
       cursor: pointer;
-      padding: 4px 0 0 0;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    
+    .setlist-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 50px;
+    .setlist-content {
+      display: none;
+      margin-top: 10px;
+      background: rgba(0,0,0,0.3);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
       color: var(--text-muted);
+    }
+
+    .setlist-content.open {
+      display: block;
+    }
+
+    .setlist-content ol {
+      padding-left: 20px;
+      margin: 10px 0;
+    }
+
+    .setlist-content li {
+      margin-bottom: 4px;
+    }
+    
+    .setlist-link {
+      color: #38bdf8;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .setlist-link:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-  <aside>
-    <h1>Ticket Museum</h1>
-    
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search archive..." onkeyup="filterData()">
+  <header>
+    <div class="header-left">
+      <div class="logo">JJ</div>
+      <div class="title-area">
+        <h1>Joe Jackson Ticket Archive <span class="year-badge">1977-2026</span></h1>
+        <p>Historical archive of concert ticket scans, venues & memorabilia</p>
+      </div>
     </div>
-
-    <div class="filter-group">
-      <label>Tour</label>
-      <select id="tourFilter" onchange="filterData()">
-        <option value="">All Tours</option>
-      </select>
+    <div class="header-right">
+      <button class="btn">↑ Import Master CSV</button>
+      <button class="btn">⚙</button>
     </div>
-  </aside>
+  </header>
 
-  <main>
-    <div class="header-bar">
-      <h2>Joe Jackson Concert Archive</h2>
-      <div id="counter" class="counter">Loading tickets...</div>
+  <div class="stats-bar">
+    <div>LOADED TICKETS: <strong class="stat-val-yellow" id="stat-tickets">0</strong></div> <span>|</span>
+    <div>TOURS REPRESENTED: <strong class="stat-val-white" id="stat-tours">0</strong></div> <span>|</span>
+    <div>CONTRIBUTORS / DONORS: <strong class="stat-val-white" id="stat-donors">0</strong></div>
+  </div>
+
+  <div class="source-box">
+    Source: joe_jackson_tickets_master — joe_jackson_tickets_master_with_setlists.csv (<span id="stat-records">0</span> records loaded)
+  </div>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, donor, date, tour..." onkeyup="filterData()">
+    <select id="tourFilter" onchange="filterData()">
+      <option value="">All Tours & Eras</option>
+    </select>
+    <select id="donorFilter" onchange="filterData()">
+      <option value="">All Donors / Sources</option>
+    </select>
+    <select id="sortFilter" onchange="filterData()">
+      <option value="oldest">Date (Oldest First)</option>
+      <option value="newest">Date (Newest First)</option>
+    </select>
+    <div class="layout-toggles">
+      <button class="toggle-btn active">⊞</button>
+      <button class="toggle-btn">≡</button>
     </div>
+  </div>
 
-    <div id="ticketList" class="ticket-list"></div>
-  </main>
+  <div id="ticketsGrid" class="tickets-grid"></div>
 
   <script>
     let allTickets = [];
@@ -273,13 +381,28 @@
         skipEmptyLines: true,
         complete: function(results) {
           allTickets = results.data;
-          populateTourFilter();
+          updateStats();
+          populateFilters();
           filterData();
+        },
+        error: function(err) {
+          document.getElementById('ticketsGrid').innerHTML = '<p style="color:red">Failed to load CSV file. Ensure it is in the same directory.</p>';
         }
       });
     });
 
-    function populateTourFilter() {
+    function updateStats() {
+      document.getElementById('stat-tickets').textContent = allTickets.length;
+      document.getElementById('stat-records').textContent = allTickets.length;
+      
+      const uniqueTours = new Set(allTickets.map(t => t.TURNE).filter(Boolean));
+      document.getElementById('stat-tours').textContent = uniqueTours.size;
+
+      const uniqueDonors = new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(Boolean));
+      document.getElementById('stat-donors').textContent = uniqueDonors.size;
+    }
+
+    function populateFilters() {
       const tourSelect = document.getElementById('tourFilter');
       const tours = [...new Set(allTickets.map(t => t.TURNE).filter(Boolean))].sort();
       tours.forEach(tour => {
@@ -288,116 +411,106 @@
         opt.textContent = tour;
         tourSelect.appendChild(opt);
       });
+
+      const donorSelect = document.getElementById('donorFilter');
+      const donors = [...new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(Boolean))].sort();
+      donors.forEach(donor => {
+        const opt = document.createElement('option');
+        opt.value = donor;
+        opt.textContent = donor;
+        donorSelect.appendChild(opt);
+      });
     }
 
     function renderTickets(tickets) {
-      const container = document.getElementById('ticketList');
-      const counter = document.getElementById('counter');
-      container.innerHTML = '';
-      counter.textContent = `Showing ${tickets.length} of ${allTickets.length} tickets`;
-
-      if (tickets.length === 0) {
-        container.innerHTML = '<div class="empty-state">No tickets matched your search.</div>';
-        return;
-      }
+      const grid = document.getElementById('ticketsGrid');
+      grid.innerHTML = '';
 
       tickets.forEach(t => {
         const card = document.createElement('div');
         card.className = 'ticket-card';
 
+        // Use the ./scans directory logic
         const skenFiles = (t.SOUBOR_SKEN || '').split(',');
-        const firstImg = skenFiles[0] ? skenFiles[0].trim() : '';
+        const firstImgFile = skenFiles[0] ? skenFiles[0].trim() : '';
+        const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
 
-        const price = (t.CENA && t.CENA !== 'není k dispozici') ? `${t.CENA} ${t.MENA !== 'není k dispozici' ? t.MENA : ''}` : 'N/A';
-        const seat = (t.SEKTOR_RADA_SEDADLO && t.SEKTOR_RADA_SEDADLO !== 'není k dispozici') ? t.SEKTOR_RADA_SEDADLO : 'N/A';
-        const support = (t.SUPPORTING_ACT && t.SUPPORTING_ACT !== 'není k dispozici') ? t.SUPPORTING_ACT : 'N/A';
-
-        // Setlist rendering
+        // Setlist Setup
         let setlistSection = '';
         const setlistStr = t.SETLIST || '';
         const songCount = parseInt(t.POCET_SKLADEB) || 0;
-        const setlistUrl = (t.SETLIST_URL && t.SETLIST_URL !== 'není k dispozici') ? t.SETLIST_URL : null;
-
+        
         if (setlistStr && setlistStr !== 'není k dispozici' && songCount > 0) {
           const songs = setlistStr.split(',').map(s => s.trim());
-          const firstFive = songs.slice(0, 5).join(', ');
-          const restSongs = songs.slice(5).join(', ');
-
-          const urlLink = setlistUrl ? `<a href="${setlistUrl}" target="_blank" class="setlist-link">Setlist.fm ↗</a>` : '';
+          const listItems = songs.map(s => `<li>${s}</li>`).join('');
+          const setlistUrl = (t.SETLIST_URL && t.SETLIST_URL !== 'není k dispozici') ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
 
           setlistSection = `
-            <div class="setlist-box">
-              <div class="setlist-head">
-                <span class="setlist-title">🎵 Setlist (${songCount} songs)</span>
-                ${urlLink}
-              </div>
-              <div class="song-preview">
-                1. ${firstFive}${restSongs ? '...' : ''}
-                ${restSongs ? `
-                  <div class="more-songs" id="more-${t.ID_LISTKU}">${restSongs}</div>
-                  <button class="btn-toggle" onclick="toggleSongs('${t.ID_LISTKU}', this)">▼ Show all ${songCount} songs</button>
-                ` : ''}
-              </div>
+            <button class="setlist-toggle-btn" onclick="toggleSetlist('${t.ID_LISTKU}')">🎵 View Setlist (${songCount})</button>
+            <div class="setlist-content" id="setlist-${t.ID_LISTKU}">
+              <ol>${listItems}</ol>
+              ${setlistUrl}
             </div>
           `;
         } else {
           setlistSection = `
-            <div class="setlist-box">
-              <span class="song-preview" style="font-style: italic;">🎵 Setlist not available</span>
-            </div>
+            <button class="setlist-toggle-btn" style="opacity: 0.5; cursor: default;">No setlist available</button>
           `;
         }
 
         card.innerHTML = `
-          <div class="ticket-scan">
-            ${firstImg ? `<img src="${firstImg}" alt="Ticket ${t.ID_LISTKU}" onerror="this.src='https://via.placeholder.com/300x150?text=Scan+missing'">` : '<span>No Scan</span>'}
+          <div class="card-img-wrapper">
+            <span class="ticket-badge">${t.ID_LISTKU || 'UNKNOWN'}</span>
+            ${imgSrc ? `<img src="${imgSrc}" alt="${t.ID_LISTKU}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzMzMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4='">` : ''}
           </div>
-          <div class="ticket-info">
-            <div>
-              <div class="ticket-header">
-                <span class="tour-tag">${t.TURNE || 'Concert'}</span>
-                <span class="ticket-id">${t.ID_LISTKU || ''}</span>
-              </div>
-              <div class="info-main">${t.INFO_TEXT || ''}</div>
-              <div class="metadata-grid">
-                <div class="meta-item"><span>Price</span>${price}</div>
-                <div class="meta-item"><span>Seat / Row</span>${seat}</div>
-                <div class="meta-item"><span>Supporting Act</span>${support}</div>
-              </div>
+          <div class="card-content">
+            <div class="tour-name">${t.TURNE || 'UNKNOWN TOUR'}</div>
+            <div class="info-text">${t.INFO_TEXT || ''}</div>
+            
+            <div class="source-row">
+              <span>Source:</span>
+              <span class="source-val">${t.ZDROJ_POSKYTNUL || 'Unknown'}</span>
             </div>
+            
             ${setlistSection}
           </div>
         `;
-
-        container.appendChild(card);
+        
+        grid.appendChild(card);
       });
     }
 
-    function toggleSongs(id, btn) {
-      const el = document.getElementById(`more-${id}`);
-      if (el.style.display === 'block') {
-        el.style.display = 'none';
-        btn.innerText = '▼ Show all songs';
-      } else {
-        el.style.display = 'block';
-        btn.innerText = '▲ Hide remaining songs';
+    function toggleSetlist(id) {
+      const el = document.getElementById(`setlist-${id}`);
+      if (el) {
+        el.classList.toggle('open');
       }
     }
 
     function filterData() {
       const query = document.getElementById('searchInput').value.toLowerCase();
-      const selectedTour = document.getElementById('tourFilter').value;
+      const tour = document.getElementById('tourFilter').value;
+      const donor = document.getElementById('donorFilter').value;
+      const sort = document.getElementById('sortFilter').value;
 
-      const filtered = allTickets.filter(t => {
-        const matchesQuery = !query || 
+      let filtered = allTickets.filter(t => {
+        const qMatch = !query || 
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
-          (t.SETLIST || '').toLowerCase().includes(query) ||
-          (t.ID_LISTKU || '').toLowerCase().includes(query);
-        
-        const matchesTour = !selectedTour || t.TURNE === selectedTour;
+          (t.ZDROJ_POSKYTNUL || '').toLowerCase().includes(query) ||
+          (t.MESTO || '').toLowerCase().includes(query) ||
+          (t.SETLIST || '').toLowerCase().includes(query);
+          
+        const tMatch = !tour || t.TURNE === tour;
+        const dMatch = !donor || t.ZDROJ_POSKYTNUL === donor;
 
-        return matchesQuery && matchesTour;
+        return qMatch && tMatch && dMatch;
       });
+
+      // Simple sort by ID (which generally represents chronological insertion)
+      // Can be swapped to date parsing if DATUM field is strictly formatted
+      if (sort === 'newest') {
+        filtered.reverse();
+      }
 
       renderTickets(filtered);
     }
