@@ -1,534 +1,354 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joe Jackson Concert Ticket Archive (1977–2026)</title>
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- PapaParse CDN for CSV parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joe Jackson - Archív Koncertních Lístků</title>
+  <!-- PapaParse pro načtení CSV souboru -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f6f8;
+      color: #333;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    header h1 {
+      font-size: 2.2rem;
+      color: #1a1a1a;
+    }
+    header p {
+      color: #666;
+      margin-top: 5px;
+    }
+    .controls {
+      max-width: 1200px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      gap: 15px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .tickets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 25px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .ticket-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .ticket-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+    .ticket-header {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 15px 20px;
+    }
+    .ticket-header .tour-badge {
+      display: inline-block;
+      background: #3b82f6;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .ticket-header h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .ticket-header .info-text {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    .ticket-img-container {
+      background: #e2e8f0;
+      text-align: center;
+      padding: 10px;
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ticket-img {
+      max-width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+    .ticket-details {
+      padding: 15px 20px;
+      font-size: 0.88rem;
+      border-bottom: 1px solid #f1f5f9;
+      flex-grow: 1;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .detail-label {
+      color: #64748b;
+      font-weight: 500;
+    }
+    .detail-value {
+      color: #0f172a;
+      font-weight: 600;
+      text-align: right;
+    }
+    .setlist-container {
+      padding: 15px 20px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+    }
+    .setlist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .setlist-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #334155;
+    }
+    .setlist-link {
+      font-size: 0.8rem;
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .setlist-link:hover {
+      text-decoration: underline;
+    }
+    .songs-list {
+      list-style: none;
+      font-size: 0.85rem;
+    }
+    .songs-list li {
+      padding: 3px 0;
+      color: #475569;
+      display: flex;
+    }
+    .song-num {
+      color: #94a3b8;
+      width: 26px;
+      flex-shrink: 0;
+    }
+    .btn-toggle-songs {
+      background: none;
+      border: none;
+      color: #2563eb;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      padding: 0;
+      display: inline-block;
+    }
+    .btn-toggle-songs:hover {
+      color: #1d4ed8;
+    }
+    .setlist-none {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      font-style: italic;
+    }
+    .loading {
+      text-align: center;
+      font-size: 1.2rem;
+      padding: 50px;
+      color: #64748b;
+    }
+  </style>
 </head>
-<body class="min-h-full flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950">
+<body>
 
-    <header class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-950/40 text-slate-950 font-black text-xl">
-                    JJ
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg tracking-tight text-white flex items-center gap-2">
-                        Joe Jackson Ticket Archive
-                        <span class="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">1977–2026</span>
-                    </h1>
-                    <p class="text-xs text-slate-400 hidden sm:block">Historical archive of concert ticket scans, venues & memorabilia</p>
-                </div>
-            </div>
+  <header>
+    <h1>Joe Jackson - Archív Koncertů & Lístků</h1>
+    <p>Kompletní katalog vstupenek spojený se setlisty ze Setlist.fm</p>
+  </header>
 
-            <div class="flex items-center gap-3">
-                <!-- Manual CSV Import Button -->
-                <label for="csvFileInput" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white px-3 py-2 rounded-lg text-xs font-medium border border-slate-700 transition-all flex items-center gap-2 shadow-sm" title="Manually upload a different CSV file">
-                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    <span>Upload CSV</span>
-                    <input type="file" id="csvFileInput" accept=".csv" class="hidden">
-                </label>
+  <div class="controls">
+    <input type="text" id="searchInput" class="search-input" placeholder="Hledat podle města, roku, turné, písničky..." onkeyup="filterTickets()">
+  </div>
 
-                <!-- Settings Modal Trigger -->
-                <button id="openConfigBtn" class="p-2 text-slate-400 hover:text-slate-200 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 transition-colors" title="Scan directory settings">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                </button>
-            </div>
-        </div>
-    </header>
+  <div id="loading" class="loading">Načítám data lístků...</div>
+  <div id="ticketsGrid" class="tickets-grid"></div>
 
-    <section class="bg-slate-900/40 border-b border-slate-800/60 py-3">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4 text-xs">
-            <div class="flex items-center gap-6">
-                <div><span class="text-slate-500 uppercase tracking-wider font-semibold">Loaded Tickets:</span> <span id="statTotal" class="font-bold text-amber-400 font-mono text-sm ml-1">0</span></div>
-                <div class="hidden sm:block text-slate-800">|</div>
-                <div class="hidden sm:block"><span class="text-slate-500 uppercase tracking-wider font-semibold">Tours:</span> <span id="statTours" class="font-bold text-slate-200 font-mono text-sm ml-1">0</span></div>
-                <div class="hidden sm:block text-slate-800">|</div>
-                <div class="hidden sm:block"><span class="text-slate-500 uppercase tracking-wider font-semibold">Donors / Sources:</span> <span id="statDonors" class="font-bold text-slate-200 font-mono text-sm ml-1">0</span></div>
-            </div>
-            <div id="dataSourceTag" class="text-slate-400 font-mono text-[11px] bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700/60">
-                Source: Loading joe_jackson_tickets_master.csv...
-            </div>
-        </div>
-    </section>
+  <script>
+    let ticketsData = [];
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    // Načtení CSV souboru po načtení stránky
+    window.addEventListener('DOMContentLoaded', () => {
+      Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          ticketsData = results.data;
+          document.getElementById('loading').style.display = 'none';
+          renderTickets(ticketsData);
+        },
+        error: function(err) {
+          document.getElementById('loading').innerHTML = 'Chyba při načítání souboru `joe_jackson_tickets_master_with_setlists.csv`. Ujistěte se, že je ve stejné složce.';
+        }
+      });
+    });
 
-        <!-- Controls Bar -->
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl space-y-4">
-            <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
-                
-                <!-- Live Search Bar -->
-                <div class="relative flex-1">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </div>
-                    <input type="text" id="searchInput" placeholder="Search by city, venue, donor, date, tour, or ID..."
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 transition-colors">
-                </div>
+    // Vykreslení všech karet lístků
+    function renderTickets(data) {
+      const grid = document.getElementById('ticketsGrid');
+      grid.innerHTML = '';
 
-                <!-- Filters & Controls -->
-                <div class="flex flex-wrap items-center gap-3">
-                    <select id="tourFilter" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-                        <option value="ALL">All Tours & Eras</option>
-                    </select>
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'ticket-card';
 
-                    <select id="donorFilter" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-                        <option value="ALL">All Donors & Sources</option>
-                    </select>
+        const skenFiles = (item.SOUBOR_SKEN || '').split(',');
+        const firstImg = skenFiles[0] ? skenFiles[0].trim() : '';
 
-                    <select id="sortSelect" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
-                        <option value="DATE_ASC">Date / ID (Ascending)</option>
-                        <option value="DATE_DESC">Date / ID (Descending)</option>
-                    </select>
-
-                    <!-- View Toggle Buttons -->
-                    <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
-                        <button id="viewGridBtn" class="p-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all shadow" title="Grid View">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                        </button>
-                        <button id="viewTableBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition-all" title="Table View">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="gridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            <!-- Dynamically rendered via JS -->
-        </div>
-
-        <div id="tableContainer" class="hidden bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-            <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left text-xs text-slate-300">
-                    <thead class="bg-slate-950 uppercase text-[10px] tracking-wider text-slate-400 border-b border-slate-800">
-                        <tr>
-                            <th class="py-3 px-4 font-semibold">ID</th>
-                            <th class="py-3 px-4 font-semibold">Tour</th>
-                            <th class="py-3 px-4 font-semibold">Info / Date / Venue</th>
-                            <th class="py-3 px-4 font-semibold">Donor / Source</th>
-                            <th class="py-3 px-4 font-semibold">Scan File(s)</th>
-                            <th class="py-3 px-4 text-right font-semibold">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody" class="divide-y divide-slate-800/60 font-mono">
-                        <!-- Dynamically rendered via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="emptyState" class="hidden text-center py-20 bg-slate-900/30 border border-slate-800/50 rounded-2xl">
-            <svg class="w-12 h-12 mx-auto text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <h3 class="text-slate-200 font-semibold text-base mb-1">No ticket scans found</h3>
-            <p class="text-slate-500 text-xs">Try adjusting your search query or filters.</p>
-        </div>
-    </main>
-
-    <!-- Modal: Ticket Detail -->
-    <div id="detailModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-            <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-                <div>
-                    <span id="modalId" class="text-xs font-mono font-bold text-amber-400">TICKET_0001</span>
-                    <h2 id="modalTour" class="text-base font-bold text-slate-100">Night and Day Tour</h2>
-                </div>
-                <button id="closeModalBtn" class="p-1.5 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-            
-            <div class="p-6 overflow-y-auto custom-scrollbar space-y-5">
-                <div class="bg-slate-950 rounded-xl p-3 border border-slate-800 flex items-center justify-center min-h-[260px] relative group">
-                    <img id="modalImage" src="" alt="Ticket Scan" class="max-h-[60vh] object-contain rounded shadow-lg">
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80">
-                        <span class="text-slate-500 block text-[10px] uppercase tracking-wider font-semibold mb-1">Concert Information</span>
-                        <p id="modalInfo" class="text-slate-200 font-medium leading-relaxed"></p>
-                    </div>
-                    <div class="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80 space-y-2">
-                        <div>
-                            <span class="text-slate-500 block text-[10px] uppercase tracking-wider font-semibold mb-0.5">Provided by / Donor</span>
-                            <p id="modalDonor" class="text-amber-400 font-bold font-mono"></p>
-                        </div>
-                        <div>
-                            <span class="text-slate-500 block text-[10px] uppercase tracking-wider font-semibold mb-0.5">Filename(s)</span>
-                            <p id="modalFiles" class="text-slate-400 font-mono text-[11px] break-all"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Scan Folder Configuration -->
-    <div id="configModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
-                <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-                Scan Directory Settings
-            </h3>
-            <p class="text-xs text-slate-400 leading-relaxed">
-                Specify the relative folder path where JPG ticket scans are stored (e.g., <code class="text-amber-300 font-mono">./scans/</code>).
-            </p>
-            <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1">Folder Path</label>
-                <input type="text" id="imagePathInput" value="./scans/" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-amber-500">
-            </div>
-            <div class="flex justify-end gap-2 pt-2">
-                <button id="saveConfigBtn" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors">Save Settings</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const DEFAULT_DATASET = [
-            { ID_LISTKU: 'TICKET_0001', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '29th June 1982 - London, England - Dominion Theatre', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-06-29.jpg' },
-            { ID_LISTKU: 'TICKET_0002', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '17th July 1982 - Saint-Pabu, France - Elixir Festival', ZDROJ_POSKYTNUL: 'Hervé Lenoach, France', SOUBOR_SKEN: 'kk-jj-hl-1.jpg' },
-            { ID_LISTKU: 'TICKET_0003', TURNE: 'NIGHT AND DAY Tour', INFO_TEXT: '25th July 1982 - Leeds, England - Roundhay Park Arena - Support for Rolling Stones', ZDROJ_POSKYTNUL: 'Gert Schaumlöffel, Germany', SOUBOR_SKEN: 'kk-joe-jackson-1982-07-25.jpg' }
-        ];
-
-        let ticketsData = [...DEFAULT_DATASET];
-        let activeView = 'GRID';
-        let imageBasePath = './scans/';
-
-        const gridContainer = document.getElementById('gridContainer');
-        const tableContainer = document.getElementById('tableContainer');
-        const tableBody = document.getElementById('tableBody');
-        const emptyState = document.getElementById('emptyState');
-        const searchInput = document.getElementById('searchInput');
-        const tourFilter = document.getElementById('tourFilter');
-        const donorFilter = document.getElementById('donorFilter');
-        const sortSelect = document.getElementById('sortSelect');
-        const statTotal = document.getElementById('statTotal');
-        const statTours = document.getElementById('statTours');
-        const statDonors = document.getElementById('statDonors');
-        const dataSourceTag = document.getElementById('dataSourceTag');
-
-        const detailModal = document.getElementById('detailModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const modalId = document.getElementById('modalId');
-        const modalTour = document.getElementById('modalTour');
-        const modalInfo = document.getElementById('modalInfo');
-        const modalDonor = document.getElementById('modalDonor');
-        const modalFiles = document.getElementById('modalFiles');
-        const modalImage = document.getElementById('modalImage');
-
-        const configModal = document.getElementById('configModal');
-        const openConfigBtn = document.getElementById('openConfigBtn');
-        const saveConfigBtn = document.getElementById('saveConfigBtn');
-        const imagePathInput = document.getElementById('imagePathInput');
-        const csvFileInput = document.getElementById('csvFileInput');
-
-        function getFirstFilename(fileStr) {
-            if (!fileStr) return '';
-            return fileStr.split(',')[0].trim();
+        let cenaText = 'není k dispozici';
+        if (item.CENA && item.CENA !== 'není k dispozici') {
+          cenaText = `${item.CENA} ${item.MENA !== 'není k dispozici' ? item.MENA : ''}`;
         }
 
-        function getImageUrl(fileStr) {
-            const filename = getFirstFilename(fileStr);
-            if (!filename) return 'https://placehold.co/600x400/0f172a/94a3b8?text=Scan+Unavailable';
-            
-            if (filename.startsWith('scans/') || filename.startsWith('./scans/')) {
-                return `./${filename.replace(/^\.\//, '')}`;
-            }
-            
-            const cleanPath = imageBasePath.replace(/\/$/, '');
-            return `${cleanPath}/${filename}`;
+        let setlistHtml = '';
+        const setlistStr = item.SETLIST || '';
+        const songCount = parseInt(item.POCET_SKLADEB) || 0;
+        const setlistUrl = item.SETLIST_URL && item.SETLIST_URL !== 'není k dispozici' ? item.SETLIST_URL : null;
+
+        if (setlistStr && setlistStr !== 'není k dispozici' && songCount > 0) {
+          const songs = setlistStr.split(',').map(s => s.trim());
+          const previewSongs = songs.slice(0, 5);
+          const remainingSongs = songs.slice(5);
+
+          let songsListHtml = previewSongs.map((song, i) => 
+            `<li><span class="song-num">${i + 1}.</span><span>${song}</span></li>`
+          ).join('');
+
+          let remainingHtml = '';
+          if (remainingSongs.length > 0) {
+            const extraList = remainingSongs.map((song, i) => 
+              `<li><span class="song-num">${i + 6}.</span><span>${song}</span></li>`
+            ).join('');
+
+            remainingHtml = `
+              <div id="more-${item.ID_LISTKU}" style="display: none;">
+                ${extraList}
+              </div>
+              <button class="btn-toggle-songs" onclick="toggleSongs('${item.ID_LISTKU}', this)">
+                ▼ Zobrazit zbylých ${remainingSongs.length} skladeb
+              </button>
+            `;
+          }
+
+          const urlLink = setlistUrl ? `<a href="${setlistUrl}" target="_blank" class="setlist-link">Setlist.fm ↗</a>` : '';
+
+          setlistHtml = `
+            <div class="setlist-container">
+              <div class="setlist-header">
+                <span class="setlist-title">🎵 Setlist (${songCount} písní)</span>
+                ${urlLink}
+              </div>
+              <ul class="songs-list">
+                ${songsListHtml}
+                ${remainingHtml}
+              </ul>
+            </div>
+          `;
+        } else {
+          setlistHtml = `
+            <div class="setlist-container">
+              <div class="setlist-none">🎵 Setlist není k tomuto koncertu k dispozici</div>
+            </div>
+          `;
         }
 
-        function populateFilterDropdowns() {
-            const tours = new Set();
-            const donors = new Set();
+        card.innerHTML = `
+          <div class="ticket-header">
+            <span class="tour-badge">${item.TURNE || 'Koncert'}</span>
+            <h3>${item.ID_LISTKU || ''}</h3>
+            <div class="info-text">${item.INFO_TEXT || ''}</div>
+          </div>
+          <div class="ticket-img-container">
+            ${firstImg ? `<img src="${firstImg}" alt="Lístek ${item.ID_LISTKU}" class="ticket-img" onerror="this.src='https://via.placeholder.com/300x150?text=Obrázek+chybí'">` : '<span>Bez skenu</span>'}
+          </div>
+          <div class="ticket-details">
+            <div class="detail-row">
+              <span class="detail-label">Cena:</span>
+              <span class="detail-value">${cenaText}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Sektor / Sedadlo:</span>
+              <span class="detail-value">${item.SEKTOR_RADA_SEDADLO || 'není k dispozici'}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Předkapela:</span>
+              <span class="detail-value">${item.SUPPORTING_ACT || 'není k dispozici'}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Zdroj:</span>
+              <span class="detail-value">${item.ZDROJ_POSKYTNUL || 'není k dispozici'}</span>
+            </div>
+          </div>
+          ${setlistHtml}
+        `;
 
-            ticketsData.forEach(item => {
-                const tour = item.TURNE || item.turne;
-                const donor = item.ZDROJ_POSKYTNUL || item.zdroj_poskytnul || item.ZDROJ || item.donor;
-                if (tour) tours.add(tour);
-                if (donor) donors.add(donor);
-            });
+        grid.appendChild(card);
+      });
+    }
 
-            tourFilter.innerHTML = '<option value="ALL">All Tours & Eras</option>';
-            Array.from(tours).sort().forEach(t => {
-                const opt = document.createElement('option');
-                opt.value = t;
-                opt.textContent = t;
-                tourFilter.appendChild(opt);
-            });
+    function toggleSongs(id, btn) {
+      const el = document.getElementById(`more-${id}`);
+      if (el.style.display === 'none') {
+        el.style.display = 'block';
+        btn.innerText = '▲ Skrýt zbylé skladby';
+      } else {
+        el.style.display = 'none';
+        const count = el.children.length;
+        btn.innerText = `▼ Zobrazit zbylých ${count} skladeb`;
+      }
+    }
 
-            donorFilter.innerHTML = '<option value="ALL">All Donors & Sources</option>';
-            Array.from(donors).sort().forEach(d => {
-                const opt = document.createElement('option');
-                opt.value = d;
-                opt.textContent = d;
-                donorFilter.appendChild(opt);
-            });
-        }
-
-        function filterAndSortData() {
-            const query = searchInput.value.toLowerCase().trim();
-            const selectedTour = tourFilter.value;
-            const selectedDonor = donorFilter.value;
-            const sortMode = sortSelect.value;
-
-            let filtered = ticketsData.filter(t => {
-                const id = t.ID_LISTKU || t.id_listku || t.ID || '';
-                const tour = t.TURNE || t.turne || '';
-                const info = t.INFO_TEXT || t.info_text || t.DATUM || t.MESTO || t.MISTO_KONANI || '';
-                const donor = t.ZDROJ_POSKYTNUL || t.zdroj_poskytnul || t.ZDROJ || '';
-
-                const matchesQuery = !query || 
-                    id.toLowerCase().includes(query) ||
-                    info.toLowerCase().includes(query) ||
-                    tour.toLowerCase().includes(query) ||
-                    donor.toLowerCase().includes(query);
-
-                const matchesTour = selectedTour === 'ALL' || tour === selectedTour;
-                const matchesDonor = selectedDonor === 'ALL' || donor === selectedDonor;
-
-                return matchesQuery && matchesTour && matchesDonor;
-            });
-
-            filtered.sort((a, b) => {
-                const aVal = a.INFO_TEXT || a.ID_LISTKU || '';
-                const bVal = b.INFO_TEXT || b.ID_LISTKU || '';
-                if (sortMode === 'DATE_DESC') {
-                    return bVal.localeCompare(aVal);
-                } else {
-                    return aVal.localeCompare(bVal);
-                }
-            });
-
-            return filtered;
-        }
-
-        function render() {
-            const items = filterAndSortData();
-            
-            statTotal.textContent = items.length;
-            const uniqueTours = new Set(ticketsData.map(i => i.TURNE || i.turne).filter(Boolean)).size;
-            const uniqueDonors = new Set(ticketsData.map(i => i.ZDROJ_POSKYTNUL || i.zdroj_poskytnul || i.ZDROJ).filter(Boolean)).size;
-            statTours.textContent = uniqueTours;
-            statDonors.textContent = uniqueDonors;
-
-            if (items.length === 0) {
-                gridContainer.classList.add('hidden');
-                tableContainer.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                return;
-            }
-            emptyState.classList.add('hidden');
-
-            if (activeView === 'GRID') {
-                tableContainer.classList.add('hidden');
-                gridContainer.classList.remove('hidden');
-                gridContainer.innerHTML = '';
-
-                items.forEach(t => {
-                    const id = t.ID_LISTKU || t.id_listku || 'TICKET';
-                    const tour = t.TURNE || t.turne || 'Concert Record';
-                    const info = t.INFO_TEXT || `${t.DATUM || ''} - ${t.MESTO || ''} - ${t.MISTO_KONANI || ''}`.replace(/^ - |- $/g, '') || 'No details';
-                    const donor = t.ZDROJ_POSKYTNUL || t.zdroj_poskytnul || t.ZDROJ || 'Unknown';
-                    const scan = t.SOUBOR_SKEN || t.soubor_sken || '';
-
-                    const imgUrl = getImageUrl(scan);
-                    const card = document.createElement('div');
-                    card.className = 'bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg hover:border-slate-700 transition-all duration-200 flex flex-col group cursor-pointer';
-                    
-                    card.innerHTML = `
-                        <div class="h-44 bg-slate-950 border-b border-slate-800/80 relative overflow-hidden flex items-center justify-center">
-                            <img src="${imgUrl}" alt="${id}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0f172a/94a3b8?text=Scan+Unavailable';">
-                            <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <span class="bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-full shadow-lg">Ticket Detail</span>
-                            </div>
-                            <span class="absolute top-2 left-2 bg-slate-950/80 backdrop-blur-md text-amber-400 font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-slate-800">${id}</span>
-                        </div>
-                        <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
-                            <div>
-                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">${tour}</span>
-                                <h4 class="text-xs font-semibold text-slate-100 line-clamp-2 mt-0.5 leading-relaxed">${info}</h4>
-                            </div>
-                            <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
-                                <span class="text-slate-500">Source:</span>
-                                <span class="text-slate-300 font-medium truncate max-w-[150px]" title="${donor}">${donor}</span>
-                            </div>
-                        </div>
-                    `;
-
-                    card.addEventListener('click', () => openDetailModal(t));
-                    gridContainer.appendChild(card);
-                });
-            } else {
-                gridContainer.classList.add('hidden');
-                tableContainer.classList.remove('hidden');
-                tableBody.innerHTML = '';
-
-                items.forEach(t => {
-                    const id = t.ID_LISTKU || t.id_listku || '-';
-                    const tour = t.TURNE || t.turne || '-';
-                    const info = t.INFO_TEXT || `${t.DATUM || ''} ${t.MESTO || ''} ${t.MISTO_KONANI || ''}` || '-';
-                    const donor = t.ZDROJ_POSKYTNUL || t.zdroj_poskytnul || t.ZDROJ || '-';
-                    const scan = t.SOUBOR_SKEN || t.soubor_sken || '-';
-
-                    const tr = document.createElement('tr');
-                    tr.className = 'hover:bg-slate-800/40 transition-colors cursor-pointer';
-                    tr.innerHTML = `
-                        <td class="py-3 px-4 font-bold text-amber-400">${id}</td>
-                        <td class="py-3 px-4 text-slate-300">${tour}</td>
-                        <td class="py-3 px-4 text-slate-200 font-sans">${info}</td>
-                        <td class="py-3 px-4 text-slate-300 font-sans">${donor}</td>
-                        <td class="py-3 px-4 text-slate-400 truncate max-w-[200px]" title="${scan}">${scan}</td>
-                        <td class="py-3 px-4 text-right">
-                            <button class="text-amber-400 hover:text-amber-300 font-sans font-semibold text-xs">Details</button>
-                        </td>
-                    `;
-                    tr.addEventListener('click', () => openDetailModal(t));
-                    tableBody.appendChild(tr);
-                });
-            }
-        }
-
-        function openDetailModal(item) {
-            const id = item.ID_LISTKU || item.id_listku || 'TICKET';
-            const tour = item.TURNE || item.turne || 'Concert Ticket Record';
-            const info = item.INFO_TEXT || `${item.DATUM || ''} ${item.MESTO || ''} ${item.MISTO_KONANI || ''}` || 'No details available.';
-            const donor = item.ZDROJ_POSKYTNUL || item.zdroj_poskytnul || item.ZDROJ || 'Unknown Donor';
-            const scan = item.SOUBOR_SKEN || item.soubor_sken || 'N/A';
-
-            modalId.textContent = id;
-            modalTour.textContent = tour;
-            modalInfo.textContent = info;
-            modalDonor.textContent = donor;
-            modalFiles.textContent = scan;
-            modalImage.src = getImageUrl(scan);
-            modalImage.onerror = function() {
-                this.src = 'https://placehold.co/600x400/0f172a/94a3b8?text=Scan+Unavailable';
-            };
-            detailModal.classList.remove('hidden');
-        }
-
-        closeModalBtn.addEventListener('click', () => detailModal.classList.add('hidden'));
-        detailModal.addEventListener('click', (e) => {
-            if (e.target === detailModal) detailModal.classList.add('hidden');
-        });
-
-        openConfigBtn.addEventListener('click', () => {
-            imagePathInput.value = imageBasePath;
-            configModal.classList.remove('hidden');
-        });
-        saveConfigBtn.addEventListener('click', () => {
-            imageBasePath = imagePathInput.value.trim() || './scans/';
-            configModal.classList.add('hidden');
-            render();
-        });
-
-        document.getElementById('viewGridBtn').addEventListener('click', function() {
-            activeView = 'GRID';
-            this.className = 'p-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all shadow';
-            document.getElementById('viewTableBtn').className = 'p-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition-all';
-            render();
-        });
-        document.getElementById('viewTableBtn').addEventListener('click', function() {
-            activeView = 'TABLE';
-            this.className = 'p-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold transition-all shadow';
-            document.getElementById('viewGridBtn').className = 'p-1.5 rounded-lg text-slate-400 hover:text-slate-200 transition-all';
-            render();
-        });
-
-        searchInput.addEventListener('input', render);
-        tourFilter.addEventListener('change', render);
-        donorFilter.addEventListener('change', render);
-        sortSelect.addEventListener('change', render);
-
-        csvFileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            Papa.parse(file, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    if (results.data && results.data.length > 0) {
-                        ticketsData = results.data;
-                        dataSourceTag.textContent = `Source: Manually uploaded CSV (${file.name} - ${results.data.length} records)`;
-                        populateFilterDropdowns();
-                        render();
-                    }
-                }
-            });
-        });
-
-        function initAutoLoadCSV() {
-            const masterCsvFileName = 'joe_jackson_tickets_master.csv';
-            
-            fetch(`./${masterCsvFileName}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Master CSV file not found (Status ${response.status})`);
-                    }
-                    return response.text();
-                })
-                .then(csvText => {
-                    Papa.parse(csvText, {
-                        header: true,
-                        skipEmptyLines: true,
-                        complete: function(results) {
-                            if (results.data && results.data.length > 0) {
-                                ticketsData = results.data;
-                                dataSourceTag.textContent = `Source: ${masterCsvFileName} (${results.data.length} records loaded)`;
-                                populateFilterDropdowns();
-                                render();
-                            } else {
-                                throw new Error('CSV file is empty');
-                            }
-                        }
-                    });
-                })
-                .catch(err => {
-                    console.info('Auto-fetch info:', err.message, '- Using fallback dataset.');
-                    dataSourceTag.textContent = `Source: Sample archive (${DEFAULT_DATASET.length} records)`;
-                    populateFilterDropdowns();
-                    render();
-                });
-        }
-
-        // Initialize auto-load CSV on start
-        initAutoLoadCSV();
-    </script>
+    function filterTickets() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = ticketsData.filter(item => {
+        return (item.INFO_TEXT || '').toLowerCase().includes(query) ||
+               (item.TURNE || '').toLowerCase().includes(query) ||
+               (item.SETLIST || '').toLowerCase().includes(query) ||
+               (item.ID_LISTKU || '').toLowerCase().includes(query) ||
+               (item.ZDROJ_POSKYTNUL || '').toLowerCase().includes(query);
+      });
+      renderTickets(filtered);
+    }
+  </script>
 </body>
 </html>
