@@ -178,6 +178,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.1rem;
     }
 
     .toggle-btn.active {
@@ -186,11 +187,30 @@
       border-color: var(--accent-yellow);
     }
 
-    /* Grid & Cards */
-    .tickets-grid {
+    /* Grid Layout */
+    .tickets-container.grid-view {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 20px;
+    }
+
+    /* List Layout */
+    .tickets-container.list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .tickets-container.list-view .ticket-card {
+      flex-direction: row;
+      align-items: center;
+      height: auto;
+    }
+
+    .tickets-container.list-view .card-img-wrapper {
+      width: 180px;
+      height: 120px;
+      flex-shrink: 0;
     }
 
     .ticket-card {
@@ -200,12 +220,19 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .ticket-card:hover {
+      border-color: #38bdf8;
+      transform: translateY(-2px);
     }
 
     .card-img-wrapper {
       position: relative;
       height: 160px;
-      background-color: #fff;
+      background-color: #000;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -216,19 +243,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-    }
-
-    .ticket-badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background-color: rgba(0, 0, 0, 0.7);
-      color: var(--accent-yellow);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      border: 1px solid var(--accent-yellow);
     }
 
     .card-content {
@@ -270,7 +284,7 @@
       text-align: right;
     }
 
-    /* Setlist Expansion */
+    /* Setlist Button in Card */
     .setlist-toggle-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
@@ -323,6 +337,119 @@
     .setlist-link:hover {
       text-decoration: underline;
     }
+
+    /* Modal / Detail View Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-img-container {
+      background: #000;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-img-container img {
+      max-width: 100%;
+      max-height: 50vh;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    .modal-body {
+      padding: 25px;
+    }
+
+    .modal-tour {
+      color: var(--accent-yellow);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    .modal-grid-item span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-bottom: 2px;
+    }
+
+    .modal-grid-item strong {
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
   </style>
 </head>
 <body>
@@ -364,15 +491,51 @@
       <option value="newest">Date (Newest First)</option>
     </select>
     <div class="layout-toggles">
-      <button class="toggle-btn active">⊞</button>
-      <button class="toggle-btn">≡</button>
+      <button class="toggle-btn active" id="btnGrid" onclick="setLayout('grid')">⊞</button>
+      <button class="toggle-btn" id="btnList" onclick="setLayout('list')">≡</button>
     </div>
   </div>
 
-  <div id="ticketsGrid" class="tickets-grid"></div>
+  <div id="ticketsContainer" class="tickets-container grid-view"></div>
+
+  <!-- Detail Modal Window -->
+  <div class="modal-overlay" id="detailModal" onclick="closeModalOnOverlay(event)">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-img-container">
+        <img id="modalImg" src="" alt="Ticket Full View">
+      </div>
+      <div class="modal-body">
+        <div class="modal-tour" id="modalTour"></div>
+        <div class="modal-title" id="modalInfo"></div>
+        
+        <div class="modal-grid">
+          <div class="modal-grid-item">
+            <span>Source / Contributor</span>
+            <strong id="modalSource">N/A</strong>
+          </div>
+          <div class="modal-grid-item">
+            <span>Price</span>
+            <strong id="modalPrice">N/A</strong>
+          </div>
+          <div class="modal-grid-item">
+            <span>Seat / Row</span>
+            <strong id="modalSeat">N/A</strong>
+          </div>
+          <div class="modal-grid-item">
+            <span>Supporting Act</span>
+            <strong id="modalSupport">N/A</strong>
+          </div>
+        </div>
+
+        <div id="modalSetlistSection"></div>
+      </div>
+    </div>
+  </div>
 
   <script>
     let allTickets = [];
+    let currentLayout = 'grid';
 
     window.addEventListener('DOMContentLoaded', () => {
       Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
@@ -386,9 +549,14 @@
           filterData();
         },
         error: function(err) {
-          document.getElementById('ticketsGrid').innerHTML = '<p style="color:red">Failed to load CSV file. Ensure it is in the same directory.</p>';
+          document.getElementById('ticketsContainer').innerHTML = '<p style="color:red">Failed to load CSV file. Ensure it is in the same directory.</p>';
         }
       });
+    });
+
+    // Close Modal on ESC key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
     });
 
     function updateStats() {
@@ -422,20 +590,43 @@
       });
     }
 
-    function renderTickets(tickets) {
-      const grid = document.getElementById('ticketsGrid');
-      grid.innerHTML = '';
+    function setLayout(layout) {
+      currentLayout = layout;
+      const container = document.getElementById('ticketsContainer');
+      const btnGrid = document.getElementById('btnGrid');
+      const btnList = document.getElementById('btnList');
 
-      tickets.forEach(t => {
+      if (layout === 'grid') {
+        container.className = 'tickets-container grid-view';
+        btnGrid.classList.add('active');
+        btnList.classList.remove('active');
+      } else {
+        container.className = 'tickets-container list-view';
+        btnList.classList.add('active');
+        btnGrid.classList.remove('active');
+      }
+    }
+
+    function renderTickets(tickets) {
+      const container = document.getElementById('ticketsContainer');
+      container.innerHTML = '';
+
+      tickets.forEach((t, index) => {
         const card = document.createElement('div');
         card.className = 'ticket-card';
+        card.onclick = (e) => {
+          // Prevent opening modal if clicking setlist toggle button
+          if (e.target.classList.contains('setlist-toggle-btn') || e.target.classList.contains('setlist-link')) {
+            return;
+          }
+          openModal(t);
+        };
 
-        // Use the ./scans directory logic
         const skenFiles = (t.SOUBOR_SKEN || '').split(',');
         const firstImgFile = skenFiles[0] ? skenFiles[0].trim() : '';
         const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
 
-        // Setlist Setup
+        // Setlist
         let setlistSection = '';
         const setlistStr = t.SETLIST || '';
         const songCount = parseInt(t.POCET_SKLADEB) || 0;
@@ -446,22 +637,21 @@
           const setlistUrl = (t.SETLIST_URL && t.SETLIST_URL !== 'není k dispozici') ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
 
           setlistSection = `
-            <button class="setlist-toggle-btn" onclick="toggleSetlist('${t.ID_LISTKU}')">🎵 View Setlist (${songCount})</button>
-            <div class="setlist-content" id="setlist-${t.ID_LISTKU}">
+            <button class="setlist-toggle-btn" onclick="event.stopPropagation(); toggleSetlist('${index}')">🎵 View Setlist (${songCount})</button>
+            <div class="setlist-content" id="setlist-${index}">
               <ol>${listItems}</ol>
               ${setlistUrl}
             </div>
           `;
         } else {
           setlistSection = `
-            <button class="setlist-toggle-btn" style="opacity: 0.5; cursor: default;">No setlist available</button>
+            <button class="setlist-toggle-btn" style="opacity: 0.5; cursor: default;" onclick="event.stopPropagation();">No setlist available</button>
           `;
         }
 
         card.innerHTML = `
           <div class="card-img-wrapper">
-            <span class="ticket-badge">${t.ID_LISTKU || 'UNKNOWN'}</span>
-            ${imgSrc ? `<img src="${imgSrc}" alt="${t.ID_LISTKU}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzMzMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4='">` : ''}
+            ${imgSrc ? `<img src="${imgSrc}" alt="Ticket Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzMzMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4='">` : ''}
           </div>
           <div class="card-content">
             <div class="tour-name">${t.TURNE || 'UNKNOWN TOUR'}</div>
@@ -476,7 +666,7 @@
           </div>
         `;
         
-        grid.appendChild(card);
+        container.appendChild(card);
       });
     }
 
@@ -484,6 +674,57 @@
       const el = document.getElementById(`setlist-${id}`);
       if (el) {
         el.classList.toggle('open');
+      }
+    }
+
+    function openModal(t) {
+      const skenFiles = (t.SOUBOR_SKEN || '').split(',');
+      const firstImgFile = skenFiles[0] ? skenFiles[0].trim() : '';
+      const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
+
+      document.getElementById('modalImg').src = imgSrc;
+      document.getElementById('modalTour').textContent = t.TURNE || 'UNKNOWN TOUR';
+      document.getElementById('modalInfo').textContent = t.INFO_TEXT || '';
+      document.getElementById('modalSource').textContent = t.ZDROJ_POSKYTNUL || 'N/A';
+      
+      const price = (t.CENA && t.CENA !== 'není k dispozici') ? `${t.CENA} ${t.MENA !== 'není k dispozici' ? t.MENA : ''}` : 'N/A';
+      document.getElementById('modalPrice').textContent = price;
+
+      const seat = (t.SEKTOR_RADA_SEDADLO && t.SEKTOR_RADA_SEDADLO !== 'není k dispozici') ? t.SEKTOR_RADA_SEDADLO : 'N/A';
+      document.getElementById('modalSeat').textContent = seat;
+
+      const support = (t.SUPPORTING_ACT && t.SUPPORTING_ACT !== 'není k dispozici') ? t.SUPPORTING_ACT : 'N/A';
+      document.getElementById('modalSupport').textContent = support;
+
+      // Setlist for Modal
+      const modalSetlistSec = document.getElementById('modalSetlistSection');
+      const setlistStr = t.SETLIST || '';
+      const songCount = parseInt(t.POCET_SKLADEB) || 0;
+
+      if (setlistStr && setlistStr !== 'není k dispozici' && songCount > 0) {
+        const songs = setlistStr.split(',').map(s => s.trim());
+        const listItems = songs.map(s => `<li>${s}</li>`).join('');
+        const setlistUrl = (t.SETLIST_URL && t.SETLIST_URL !== 'není k dispozici') ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
+
+        modalSetlistSec.innerHTML = `
+          <h4 style="color: var(--accent-yellow); margin-bottom: 10px;">🎵 Full Setlist (${songCount} songs)</h4>
+          <ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">${listItems}</ol>
+          ${setlistUrl}
+        `;
+      } else {
+        modalSetlistSec.innerHTML = `<p style="color: var(--text-muted); font-style: italic;">No setlist available for this concert.</p>`;
+      }
+
+      document.getElementById('detailModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    function closeModalOnOverlay(e) {
+      if (e.target.id === 'detailModal') {
+        closeModal();
       }
     }
 
@@ -506,8 +747,6 @@
         return qMatch && tMatch && dMatch;
       });
 
-      // Simple sort by ID (which generally represents chronological insertion)
-      // Can be swapped to date parsing if DATUM field is strictly formatted
       if (sort === 'newest') {
         filtered.reverse();
       }
