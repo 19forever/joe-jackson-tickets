@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joe Jackson Ticket Archive</title>
+  <title>Rolf Thalmann´s Ticket Museum</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     :root {
@@ -83,28 +83,6 @@
       margin-top: 4px;
     }
 
-    .header-right {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn {
-      background-color: var(--bg-panel);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .btn:hover {
-      background-color: #1f2937;
-    }
-
     /* Stats Bar */
     .stats-bar {
       display: flex;
@@ -114,7 +92,7 @@
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
-      margin-bottom: 15px;
+      margin-bottom: 25px;
       letter-spacing: 0.5px;
     }
 
@@ -124,16 +102,6 @@
 
     .stat-val-yellow { color: var(--accent-yellow); }
     .stat-val-white { color: #fff; }
-
-    .source-box {
-      background-color: rgba(31, 41, 55, 0.5);
-      border: 1px solid var(--border-color);
-      padding: 10px 15px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-bottom: 25px;
-    }
 
     /* Controls / Filters */
     .controls {
@@ -458,13 +426,9 @@
     <div class="header-left">
       <div class="logo">JJ</div>
       <div class="title-area">
-        <h1>Joe Jackson Ticket Archive <span class="year-badge">1977-2026</span></h1>
-        <p>Historical archive of concert ticket scans, venues & memorabilia</p>
+        <h1>Rolf Thalmann´s Ticket Museum <span class="year-badge">1977-2026</span></h1>
+        <p>Historical archive of Joe Jackson´s concert tickets, venues & memorabilia</p>
       </div>
-    </div>
-    <div class="header-right">
-      <button class="btn">↑ Import Master CSV</button>
-      <button class="btn">⚙</button>
     </div>
   </header>
 
@@ -472,10 +436,6 @@
     <div>LOADED TICKETS: <strong class="stat-val-yellow" id="stat-tickets">0</strong></div> <span>|</span>
     <div>TOURS REPRESENTED: <strong class="stat-val-white" id="stat-tours">0</strong></div> <span>|</span>
     <div>CONTRIBUTORS / DONORS: <strong class="stat-val-white" id="stat-donors">0</strong></div>
-  </div>
-
-  <div class="source-box">
-    Source: joe_jackson_tickets_master — joe_jackson_tickets_master_with_setlists.csv (<span id="stat-records">0</span> records loaded)
   </div>
 
   <div class="controls">
@@ -561,7 +521,6 @@
 
     function updateStats() {
       document.getElementById('stat-tickets').textContent = allTickets.length;
-      document.getElementById('stat-records').textContent = allTickets.length;
       
       const uniqueTours = new Set(allTickets.map(t => t.TURNE).filter(Boolean));
       document.getElementById('stat-tours').textContent = uniqueTours.size;
@@ -615,7 +574,6 @@
         const card = document.createElement('div');
         card.className = 'ticket-card';
         card.onclick = (e) => {
-          // Prevent opening modal if clicking setlist toggle button
           if (e.target.classList.contains('setlist-toggle-btn') || e.target.classList.contains('setlist-link')) {
             return;
           }
