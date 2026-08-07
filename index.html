@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joe Jackson - Archív Koncertních Lístků</title>
-  <!-- PapaParse pro načtení CSV souboru -->
+  <title>Joe Jackson - Concert Ticket Archive</title>
+  <!-- PapaParse for reading the CSV file -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <style>
     * {
@@ -192,21 +192,20 @@
 <body>
 
   <header>
-    <h1>Joe Jackson - Archív Koncertů & Lístků</h1>
-    <p>Kompletní katalog vstupenek spojený se setlisty ze Setlist.fm</p>
+    <h1>Joe Jackson - Concert Ticket Archive</h1>
+    <p>Complete ticket catalog linked with setlists from Setlist.fm</p>
   </header>
 
   <div class="controls">
-    <input type="text" id="searchInput" class="search-input" placeholder="Hledat podle města, roku, turné, písničky..." onkeyup="filterTickets()">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search by city, year, tour, song..." onkeyup="filterTickets()">
   </div>
 
-  <div id="loading" class="loading">Načítám data lístků...</div>
+  <div id="loading" class="loading">Loading ticket data...</div>
   <div id="ticketsGrid" class="tickets-grid"></div>
 
   <script>
     let ticketsData = [];
 
-    // Načtení CSV souboru po načtení stránky
     window.addEventListener('DOMContentLoaded', () => {
       Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
         download: true,
@@ -218,12 +217,11 @@
           renderTickets(ticketsData);
         },
         error: function(err) {
-          document.getElementById('loading').innerHTML = 'Chyba při načítání souboru `joe_jackson_tickets_master_with_setlists.csv`. Ujistěte se, že je ve stejné složce.';
+          document.getElementById('loading').innerHTML = 'Error loading `joe_jackson_tickets_master_with_setlists.csv`. Make sure the file is in the same directory.';
         }
       });
     });
 
-    // Vykreslení všech karet lístků
     function renderTickets(data) {
       const grid = document.getElementById('ticketsGrid');
       grid.innerHTML = '';
@@ -235,10 +233,14 @@
         const skenFiles = (item.SOUBOR_SKEN || '').split(',');
         const firstImg = skenFiles[0] ? skenFiles[0].trim() : '';
 
-        let cenaText = 'není k dispozici';
-        if (item.CENA && item.CENA !== 'není k dispozici') {
+        let cenaText = 'N/A';
+        if (item.CENA && item.CENA !== 'není k dispozici' && item.CENA !== 'N/A') {
           cenaText = `${item.CENA} ${item.MENA !== 'není k dispozici' ? item.MENA : ''}`;
         }
+
+        let seatText = (item.SEKTOR_RADA_SEDADLO && item.SEKTOR_RADA_SEDADLO !== 'není k dispozici') ? item.SEKTOR_RADA_SEDADLO : 'N/A';
+        let supportText = (item.SUPPORTING_ACT && item.SUPPORTING_ACT !== 'není k dispozici') ? item.SUPPORTING_ACT : 'N/A';
+        let sourceText = (item.ZDROJ_POSKYTNUL && item.ZDROJ_POSKYTNUL !== 'není k dispozici') ? item.ZDROJ_POSKYTNUL : 'N/A';
 
         let setlistHtml = '';
         const setlistStr = item.SETLIST || '';
@@ -265,7 +267,7 @@
                 ${extraList}
               </div>
               <button class="btn-toggle-songs" onclick="toggleSongs('${item.ID_LISTKU}', this)">
-                ▼ Zobrazit zbylých ${remainingSongs.length} skladeb
+                ▼ Show remaining ${remainingSongs.length} songs
               </button>
             `;
           }
@@ -275,7 +277,7 @@
           setlistHtml = `
             <div class="setlist-container">
               <div class="setlist-header">
-                <span class="setlist-title">🎵 Setlist (${songCount} písní)</span>
+                <span class="setlist-title">🎵 Setlist (${songCount} songs)</span>
                 ${urlLink}
               </div>
               <ul class="songs-list">
@@ -287,36 +289,36 @@
         } else {
           setlistHtml = `
             <div class="setlist-container">
-              <div class="setlist-none">🎵 Setlist není k tomuto koncertu k dispozici</div>
+              <div class="setlist-none">🎵 Setlist not available for this concert</div>
             </div>
           `;
         }
 
         card.innerHTML = `
           <div class="ticket-header">
-            <span class="tour-badge">${item.TURNE || 'Koncert'}</span>
+            <span class="tour-badge">${item.TURNE || 'Concert'}</span>
             <h3>${item.ID_LISTKU || ''}</h3>
             <div class="info-text">${item.INFO_TEXT || ''}</div>
           </div>
           <div class="ticket-img-container">
-            ${firstImg ? `<img src="${firstImg}" alt="Lístek ${item.ID_LISTKU}" class="ticket-img" onerror="this.src='https://via.placeholder.com/300x150?text=Obrázek+chybí'">` : '<span>Bez skenu</span>'}
+            ${firstImg ? `<img src="${firstImg}" alt="Ticket ${item.ID_LISTKU}" class="ticket-img" onerror="this.src='https://via.placeholder.com/300x150?text=Image+missing'">` : '<span>No scan</span>'}
           </div>
           <div class="ticket-details">
             <div class="detail-row">
-              <span class="detail-label">Cena:</span>
+              <span class="detail-label">Price:</span>
               <span class="detail-value">${cenaText}</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Sektor / Sedadlo:</span>
-              <span class="detail-value">${item.SEKTOR_RADA_SEDADLO || 'není k dispozici'}</span>
+              <span class="detail-label">Seat / Row:</span>
+              <span class="detail-value">${seatText}</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Předkapela:</span>
-              <span class="detail-value">${item.SUPPORTING_ACT || 'není k dispozici'}</span>
+              <span class="detail-label">Supporting Act:</span>
+              <span class="detail-value">${supportText}</span>
             </div>
             <div class="detail-row">
-              <span class="detail-label">Zdroj:</span>
-              <span class="detail-value">${item.ZDROJ_POSKYTNUL || 'není k dispozici'}</span>
+              <span class="detail-label">Source:</span>
+              <span class="detail-value">${sourceText}</span>
             </div>
           </div>
           ${setlistHtml}
@@ -330,11 +332,11 @@
       const el = document.getElementById(`more-${id}`);
       if (el.style.display === 'none') {
         el.style.display = 'block';
-        btn.innerText = '▲ Skrýt zbylé skladby';
+        btn.innerText = '▲ Hide remaining songs';
       } else {
         el.style.display = 'none';
         const count = el.children.length;
-        btn.innerText = `▼ Zobrazit zbylých ${count} skladeb`;
+        btn.innerText = `▼ Show remaining ${count} songs`;
       }
     }
 
