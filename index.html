@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rolf Thalmann´s Ticket Museum</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  
-  <!-- Leaflet.js (Interactive Map) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- Viewer.js (Image Zoom & Inspection) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
@@ -414,22 +410,6 @@
       text-decoration: underline;
     }
 
-    /* Map View Container */
-    #mapContainer {
-      display: none;
-      height: 600px;
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-    }
-
-    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-      background: var(--bg-panel) !important;
-      color: var(--text-main) !important;
-      border: 1px solid var(--border-color);
-    }
-
     /* Pagination Controls */
     .pagination-container {
       display: flex;
@@ -637,7 +617,6 @@
       .tickets-container.grid-view { grid-template-columns: 1fr; gap: 15px; }
       .tickets-container.list-view .ticket-card { flex-direction: column; }
       .tickets-container.list-view .card-img-wrapper { width: 100%; height: 160px; }
-      #mapContainer { height: 400px; }
       .modal-overlay { padding: 10px; }
       .modal-card { max-height: 95vh; border-radius: 8px; }
       .modal-body { padding: 15px; }
@@ -660,7 +639,7 @@
     </header>
 
     <div class="stats-bar">
-      <div>LOADED TICKETS: <strong class="stat-val-yellow" id="stat-tickets">0</strong></div> <span>|</span>
+      <div>LOADED RECORDS: <strong class="stat-val-yellow" id="stat-tickets">0</strong></div> <span>|</span>
       <div>TOURS REPRESENTED: <strong class="stat-val-white" id="stat-tours">0</strong></div> <span>|</span>
       <div>CONTRIBUTORS / DONORS: <strong class="stat-val-white" id="stat-donors">0</strong></div>
     </div>
@@ -689,16 +668,12 @@
       <div class="layout-toggles">
         <button class="toggle-btn active" id="btnGrid" onclick="setLayout('grid')">⊞</button>
         <button class="toggle-btn" id="btnList" onclick="setLayout('list')">≡</button>
-        <button class="toggle-btn" id="btnMap" onclick="setLayout('map')">🗺️</button>
       </div>
     </div>
   </div>
 
   <!-- Main Grid / List Container -->
   <div id="ticketsContainer" class="tickets-container grid-view"></div>
-
-  <!-- Interactive Map View Container -->
-  <div id="mapContainer"></div>
 
   <!-- Pagination Controls -->
   <div id="paginationContainer" class="pagination-container"></div>
@@ -750,52 +725,28 @@
     let pageSize = 50;
     let currentCategory = 'ALL';
 
-    let mapInstance = null;
-    let mapMarkersGroup = null;
     let imageViewerInstance = null;
-
-    const cityCoordsLookup = {
-      "london": [51.5074, -0.1278],
-      "paris": [48.8566, 2.3522],
-      "new york": [40.7128, -74.0060],
-      "berlin": [52.5200, 13.4050],
-      "hamburg": [53.5511, 9.9937],
-      "munich": [48.1351, 11.5820],
-      "münchen": [48.1351, 11.5820],
-      "frankfurt": [50.1109, 8.6821],
-      "cologne": [50.9375, 6.9603],
-      "köln": [50.9375, 6.9603],
-      "amsterdam": [52.3676, 4.9041],
-      "vienna": [48.2082, 16.3738],
-      "wien": [48.2082, 16.3738],
-      "prague": [50.0755, 14.4378],
-      "praha": [50.0755, 14.4378],
-      "brussels": [50.8503, 4.3517],
-      "bruxelles": [50.8503, 4.3517],
-      "tokyo": [35.6762, 139.6503],
-      "sydney": [33.8688, 151.2093],
-      "los angeles": [34.0522, -118.2437],
-      "chicago": [41.8781, -87.6298],
-      "san francisco": [37.7749, -122.4194],
-      "ludwigshafen": [49.4811, 8.4353],
-      "basel": [47.5596, 7.5886],
-      "zurich": [47.3769, 8.5417],
-      "zürich": [47.3769, 8.5417],
-      "roma": [41.9028, 12.4964],
-      "rome": [41.9028, 12.4964],
-      "milano": [45.4642, 9.1900],
-      "milan": [45.4642, 9.1900]
-    };
 
     function isValidValue(val) {
       if (!val) return false;
-      const clean = val.trim().toLowerCase();
-      return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'undefined';
+      const clean = String(val).trim().toLowerCase();
+      return clean !== '' && 
+             clean !== 'není k dispozici' && 
+             clean !== 'n/a' && 
+             clean !== 'undefined' && 
+             clean !== 'null' && 
+             clean !== '-' && 
+             clean !== 'none';
     }
 
     function getTicketCategory(t) {
       if (t.KATEGORIE && t.KATEGORIE.trim()) {
-        return t.KATEGORIE.trim();
+        const cat = t.KATEGORIE.trim().toLowerCase();
+        if (cat.includes('pass')) return 'Passes';
+        if (cat.includes('program')) return 'Programs';
+        if (cat.includes('poster')) return 'Posters';
+        if (cat.includes('memo')) return 'Memorabilia';
+        if (cat.includes('ticket')) return 'Tickets';
       }
       const text = `${t.INFO_TEXT || ''} ${t.TURNE || ''}`.toLowerCase();
       if (text.includes('pass') || text.includes('backstage') || text.includes('vip')) {
@@ -934,8 +885,8 @@
         }
       });
 
-      const categoryIcons = {
-        'ALL': '✨ All Items',
+      const categoryLabels = {
+        'ALL': '✨ All Records',
         'Tickets': '🎫 Tickets',
         'Passes': '🪪 Passes',
         'Programs': '📖 Programs',
@@ -947,7 +898,7 @@
         if (count > 0 || catKey === 'ALL') {
           const btn = document.createElement('button');
           btn.className = `tab-btn ${currentCategory === catKey ? 'active' : ''}`;
-          const labelText = categoryIcons[catKey] || catKey;
+          const labelText = categoryLabels[catKey] || catKey;
           btn.innerHTML = `${labelText} <span style="opacity: 0.75; font-size: 0.8em;">(${count})</span>`;
           btn.onclick = () => {
             currentCategory = catKey;
@@ -961,38 +912,25 @@
     function setLayout(layout) {
       currentLayout = layout;
       const container = document.getElementById('ticketsContainer');
-      const mapCont = document.getElementById('mapContainer');
       const paginationCont = document.getElementById('paginationContainer');
 
       const btnGrid = document.getElementById('btnGrid');
       const btnList = document.getElementById('btnList');
-      const btnMap = document.getElementById('btnMap');
 
       btnGrid.classList.remove('active');
       btnList.classList.remove('active');
-      btnMap.classList.remove('active');
 
-      if (layout === 'map') {
-        container.style.display = 'none';
-        paginationCont.style.display = 'none';
-        mapCont.style.display = 'block';
-        btnMap.classList.add('active');
+      container.style.display = 'grid';
+      paginationCont.style.display = 'flex';
 
-        initOrUpdateMap();
+      if (layout === 'grid') {
+        container.className = 'tickets-container grid-view';
+        btnGrid.classList.add('active');
       } else {
-        mapCont.style.display = 'none';
-        container.style.display = 'grid';
-        paginationCont.style.display = 'flex';
-
-        if (layout === 'grid') {
-          container.className = 'tickets-container grid-view';
-          btnGrid.classList.add('active');
-        } else {
-          container.className = 'tickets-container list-view';
-          btnList.classList.add('active');
-        }
-        renderPaginated();
+        container.className = 'tickets-container list-view';
+        btnList.classList.add('active');
       }
+      renderPaginated();
     }
 
     function changePageSize() {
@@ -1036,11 +974,7 @@
 
       currentPage = 1;
 
-      if (currentLayout === 'map') {
-        initOrUpdateMap();
-      } else {
-        renderPaginated();
-      }
+      renderPaginated();
     }
 
     function renderPaginated() {
@@ -1082,7 +1016,7 @@
 
         const parsed = parseInfoText(t);
 
-        // Extra details block (Only if valid)
+        // Extra details block (Only if strictly valid)
         let extraRowsHTML = '';
         if (isValidValue(t.CENA)) {
           const formattedPrice = `${t.CENA} ${isValidValue(t.MENA) ? t.MENA : ''}`.trim();
@@ -1146,51 +1080,6 @@
         `;
         
         container.appendChild(card);
-      });
-    }
-
-    function initOrUpdateMap() {
-      if (!mapInstance) {
-        mapInstance = L.map('mapContainer').setView([50.0, 10.0], 4);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
-          subdomains: 'abcd',
-          maxZoom: 19
-        }).addTo(mapInstance);
-
-        mapMarkersGroup = L.layerGroup().addTo(mapInstance);
-      }
-
-      mapMarkersGroup.clearLayers();
-
-      filteredTickets.forEach((t) => {
-        const mestoStr = (t.MESTO || t.INFO_TEXT || '').toLowerCase();
-        let coords = null;
-
-        for (let cityKey in cityCoordsLookup) {
-          if (mestoStr.includes(cityKey)) {
-            coords = cityCoordsLookup[cityKey];
-            break;
-          }
-        }
-
-        if (coords) {
-          const marker = L.marker(coords);
-          const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
-          const firstImgFile = skenFiles[0] || '';
-          const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
-
-          const popupContent = `
-            <div style="font-family: var(--font-family); width: 200px;">
-              <strong style="color: var(--accent-yellow); font-size: 0.8rem;">${t.TURNE || ''}</strong>
-              <div style="font-weight: 600; font-size: 0.85rem; margin: 4px 0;">${t.INFO_TEXT || ''}</div>
-              ${imgSrc ? `<img src="${imgSrc}" style="width: 100%; height: 90px; object-fit: cover; border-radius: 4px; margin-top: 6px;">` : ''}
-            </div>
-          `;
-
-          marker.bindPopup(popupContent);
-          mapMarkersGroup.addLayer(marker);
-        }
       });
     }
 
