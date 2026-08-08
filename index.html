@@ -319,8 +319,31 @@
       font-weight: 500;
       color: var(--text-muted);
       line-height: 1.4;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       flex-grow: 1;
+    }
+
+    .card-extra-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .card-extra-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .card-extra-row span:last-child {
+      color: var(--text-main);
+      font-weight: 600;
     }
 
     .source-row {
@@ -764,6 +787,12 @@
       "milan": [45.4642, 9.1900]
     };
 
+    function isValidValue(val) {
+      if (!val) return false;
+      const clean = val.trim().toLowerCase();
+      return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'undefined';
+    }
+
     function getTicketCategory(t) {
       if (t.KATEGORIE && t.KATEGORIE.trim()) {
         return t.KATEGORIE.trim();
@@ -1053,15 +1082,30 @@
 
         const parsed = parseInfoText(t);
 
+        // Extra details block (Only if valid)
+        let extraRowsHTML = '';
+        if (isValidValue(t.CENA)) {
+          const formattedPrice = `${t.CENA} ${isValidValue(t.MENA) ? t.MENA : ''}`.trim();
+          extraRowsHTML += `<div class="card-extra-row"><span>Price:</span><span>${formattedPrice}</span></div>`;
+        }
+        if (isValidValue(t.SEKTOR_RADA_SEDADLO)) {
+          extraRowsHTML += `<div class="card-extra-row"><span>Seat/Row:</span><span>${t.SEKTOR_RADA_SEDADLO}</span></div>`;
+        }
+        if (isValidValue(t.SUPPORTING_ACT)) {
+          extraRowsHTML += `<div class="card-extra-row"><span>Support:</span><span>${t.SUPPORTING_ACT}</span></div>`;
+        }
+
+        const extraDetailsBlock = extraRowsHTML ? `<div class="card-extra-details">${extraRowsHTML}</div>` : '';
+
         // Setlist
         let setlistSection = '';
         const setlistStr = t.SETLIST || '';
         const songCount = parseInt(t.POCET_SKLADEB) || 0;
         
-        if (setlistStr && setlistStr !== 'není k dispozici' && songCount > 0) {
+        if (setlistStr && isValidValue(setlistStr) && songCount > 0) {
           const songs = setlistStr.split(',').map(s => s.trim());
           const listItems = songs.map(s => `<li>${s}</li>`).join('');
-          const setlistUrl = (t.SETLIST_URL && t.SETLIST_URL !== 'není k dispozici') ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
+          const setlistUrl = (t.SETLIST_URL && isValidValue(t.SETLIST_URL)) ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
 
           setlistSection = `
             <button class="setlist-toggle-btn" onclick="event.stopPropagation(); toggleSetlist('${index}')">🎵 View Setlist (${songCount})</button>
@@ -1090,6 +1134,8 @@
             ${parsed.date ? `<div class="card-date">${parsed.date}</div>` : ''}
             <div class="info-text">${parsed.text}</div>
             
+            ${extraDetailsBlock}
+
             <div class="source-row">
               <span>Source:</span>
               <span class="source-val">${t.ZDROJ_POSKYTNUL || 'Unknown'}</span>
@@ -1257,18 +1303,17 @@
       document.getElementById('modalTour').textContent = t.TURNE || 'UNKNOWN TOUR';
       document.getElementById('modalDate').textContent = parsed.date || '';
       document.getElementById('modalInfo').textContent = parsed.text || '';
-      document.getElementById('modalSource').textContent = t.ZDROJ_POSKYTNUL || 'N/A';
+      document.getElementById('modalSource').textContent = isValidValue(t.ZDROJ_POSKYTNUL) ? t.ZDROJ_POSKYTNUL : 'N/A';
       
-      const price = (t.CENA && t.CENA !== 'není k dispozici') ? `${t.CENA} ${t.MENA !== 'není k dispozici' ? t.MENA : ''}` : 'N/A';
+      const price = isValidValue(t.CENA) ? `${t.CENA} ${isValidValue(t.MENA) ? t.MENA : ''}`.trim() : 'N/A';
       document.getElementById('modalPrice').textContent = price;
 
-      const seat = (t.SEKTOR_RADA_SEDADLO && t.SEKTOR_RADA_SEDADLO !== 'není k dispozici') ? t.SEKTOR_RADA_SEDADLO : 'N/A';
+      const seat = isValidValue(t.SEKTOR_RADA_SEDADLO) ? t.SEKTOR_RADA_SEDADLO : 'N/A';
       document.getElementById('modalSeat').textContent = seat;
 
       const supportItem = document.getElementById('modalSupportItem');
-      const supportVal = t.SUPPORTING_ACT ? t.SUPPORTING_ACT.trim() : '';
-      if (supportVal && supportVal.toLowerCase() !== 'není k dispozici') {
-        document.getElementById('modalSupport').textContent = supportVal;
+      if (isValidValue(t.SUPPORTING_ACT)) {
+        document.getElementById('modalSupport').textContent = t.SUPPORTING_ACT.trim();
         supportItem.style.display = 'block';
       } else {
         supportItem.style.display = 'none';
@@ -1279,10 +1324,10 @@
       const setlistStr = t.SETLIST || '';
       const songCount = parseInt(t.POCET_SKLADEB) || 0;
 
-      if (setlistStr && setlistStr !== 'není k dispozici' && songCount > 0) {
+      if (setlistStr && isValidValue(setlistStr) && songCount > 0) {
         const songs = setlistStr.split(',').map(s => s.trim());
         const listItems = songs.map(s => `<li>${s}</li>`).join('');
-        const setlistUrl = (t.SETLIST_URL && t.SETLIST_URL !== 'není k dispozici') ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
+        const setlistUrl = (t.SETLIST_URL && isValidValue(t.SETLIST_URL)) ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
 
         modalSetlistSec.innerHTML = `
           <h4 style="color: var(--accent-yellow); margin-bottom: 10px;">🎵 Full Setlist (${songCount} songs)</h4>
