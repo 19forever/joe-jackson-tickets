@@ -123,6 +123,42 @@
     .stat-val-yellow { color: var(--accent-yellow); }
     .stat-val-white { color: #fff; }
 
+    /* Dynamic Category Tabs */
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn:hover {
+      border-color: #38bdf8;
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border-color: var(--accent-yellow);
+    }
+
     .controls {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr 1fr 110px auto;
@@ -576,6 +612,9 @@
       <div>CONTRIBUTORS / DONORS: <strong class="stat-val-white" id="stat-donors">0</strong></div>
     </div>
 
+    <!-- Category Tabs -->
+    <div class="category-tabs" id="categoryTabs"></div>
+
     <div class="controls">
       <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, donor, date, tour..." onkeyup="filterData()">
       <select id="tourFilter" onchange="filterData()">
@@ -656,6 +695,7 @@
     let currentLayout = 'grid';
     let currentPage = 1;
     let pageSize = 50;
+    let currentCategory = 'ALL';
 
     let mapInstance = null;
     let mapMarkersGroup = null;
@@ -694,6 +734,24 @@
       "milan": [45.4642, 9.1900]
     };
 
+    // Helper: Determine category from explicitly specified column or text keywords
+    function getTicketCategory(t) {
+      if (t.KATEGORIE && t.KATEGORIE.trim()) {
+        return t.KATEGORIE.trim();
+      }
+      const text = `${t.INFO_TEXT || ''} ${t.TURNE || ''}`.toLowerCase();
+      if (text.includes('pass') || text.includes('backstage') || text.includes('vip')) {
+        return 'Passes';
+      }
+      if (text.includes('program') || text.includes('catalog') || text.includes('book')) {
+        return 'Programs';
+      }
+      if (text.includes('poster') || text.includes('plakát')) {
+        return 'Posters';
+      }
+      return 'Tickets'; // Default fallback
+    }
+
     // Split INFO_TEXT into separate Date and Description
     function parseInfoText(t) {
       let rawText = (t.INFO_TEXT || '').trim();
@@ -718,12 +776,11 @@
       };
     }
 
-    // Convert string dates to Date object for proper sorting
+    // Convert string dates to Date object for sorting
     function parseToDate(t) {
       const parsed = parseInfoText(t);
-      if (!parsed.date) return new Date(0); // fall back to epoch if missing
+      if (!parsed.date) return new Date(0);
 
-      // Clean ordinal suffixes like "10th" -> "10"
       let cleanDateStr = parsed.date.replace(/(\d+)(st|nd|rd|th)/i, '$1').replace(/\./g, '/');
       let timestamp = Date.parse(cleanDateStr);
 
@@ -799,6 +856,54 @@
       });
     }
 
+    function renderCategoryTabs(matchesBeforeCategoryFilter) {
+      const tabsContainer = document.getElementById('categoryTabs');
+      tabsContainer.innerHTML = '';
+
+      // Count items per category based on current search & select filters
+      const counts = {
+        'ALL': matchesBeforeCategoryFilter.length,
+        'Tickets': 0,
+        'Passes': 0,
+        'Programs': 0,
+        'Posters': 0,
+        'Memorabilia': 0
+      };
+
+      matchesBeforeCategoryFilter.forEach(t => {
+        const cat = getTicketCategory(t);
+        if (counts[cat] !== undefined) {
+          counts[cat]++;
+        } else {
+          counts[cat] = 1;
+        }
+      });
+
+      const categoryIcons = {
+        'ALL': '✨ All Items',
+        'Tickets': '🎫 Tickets',
+        'Passes': '🪪 Passes',
+        'Programs': '📖 Programs',
+        'Posters': '🖼️ Posters',
+        'Memorabilia': '⭐ Memorabilia'
+      };
+
+      // Create tabs only for categories that have at least 1 item
+      for (const [catKey, count] of Object.entries(counts)) {
+        if (count > 0 || catKey === 'ALL') {
+          const btn = document.createElement('button');
+          btn.className = `tab-btn ${currentCategory === catKey ? 'active' : ''}`;
+          const labelText = categoryIcons[catKey] || catKey;
+          btn.innerHTML = `${labelText} <span style="opacity: 0.75; font-size: 0.8em;">(${count})</span>`;
+          btn.onclick = () => {
+            currentCategory = catKey;
+            filterData();
+          };
+          tabsContainer.appendChild(btn);
+        }
+      }
+    }
+
     function setLayout(layout) {
       currentLayout = layout;
       const container = document.getElementById('ticketsContainer');
@@ -849,7 +954,8 @@
       const donor = document.getElementById('donorFilter').value;
       const sort = document.getElementById('sortFilter').value;
 
-      filteredTickets = allTickets.filter(t => {
+      // First pass: Filter by Search Query, Tour and Donor
+      const matchesBase = allTickets.filter(t => {
         const qMatch = !query || 
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
           (t.ZDROJ_POSKYTNUL || '').toLowerCase().includes(query) ||
@@ -860,6 +966,15 @@
         const dMatch = !donor || t.ZDROJ_POSKYTNUL === donor;
 
         return qMatch && tMatch && dMatch;
+      });
+
+      // Render Dynamic Tabs based on matchesBase counts
+      renderCategoryTabs(matchesBase);
+
+      // Second pass: Filter by selected Category tab
+      filteredTickets = matchesBase.filter(t => {
+        if (currentCategory === 'ALL') return true;
+        return getTicketCategory(t).toLowerCase() === currentCategory.toLowerCase();
       });
 
       // True chronological sorting
@@ -897,7 +1012,7 @@
       container.innerHTML = '';
 
       if (tickets.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 40px;">No tickets found matching your criteria.</p>';
+        container.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 40px;">No items found matching your criteria.</p>';
         return;
       }
 
