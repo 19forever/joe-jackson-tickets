@@ -27,8 +27,20 @@
       font-family: var(--font-family);
       background-color: var(--bg-main);
       color: var(--text-main);
-      padding: 20px 40px;
+      padding: 0 40px 40px 40px;
       min-height: 100vh;
+    }
+
+    /* Fixed / Sticky Top Header Wrapper */
+    .top-header-container {
+      position: sticky;
+      top: 0;
+      background-color: var(--bg-main);
+      z-index: 100;
+      padding-top: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 25px;
     }
 
     /* Header Section */
@@ -36,7 +48,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     .header-left {
@@ -92,7 +104,7 @@
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
-      margin-bottom: 25px;
+      margin-bottom: 15px;
       letter-spacing: 0.5px;
     }
 
@@ -106,22 +118,21 @@
     /* Controls / Filters */
     .controls {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr auto;
-      gap: 15px;
+      grid-template-columns: 2fr 1fr 1fr 1fr 110px auto;
+      gap: 12px;
       background-color: var(--bg-panel);
-      padding: 15px;
+      padding: 12px 15px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
-      margin-bottom: 30px;
     }
 
     .controls input, .controls select {
       background-color: var(--bg-main);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 10px 15px;
+      padding: 8px 12px;
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       width: 100%;
       outline: none;
     }
@@ -139,7 +150,7 @@
       background-color: var(--bg-main);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      width: 40px;
+      width: 36px;
       height: 100%;
       border-radius: 6px;
       cursor: pointer;
@@ -306,6 +317,45 @@
       text-decoration: underline;
     }
 
+    /* Pagination Controls */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 35px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .page-btn {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background-color: #1f2937;
+      border-color: #38bdf8;
+    }
+
+    .page-btn.active {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border-color: var(--accent-yellow);
+      font-weight: 700;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
     /* Modal / Detail View Overlay */
     .modal-overlay {
       position: fixed;
@@ -422,41 +472,54 @@
 </head>
 <body>
 
-  <header>
-    <div class="header-left">
-      <div class="logo">JJ</div>
-      <div class="title-area">
-        <h1>Rolf Thalmann´s Ticket Museum <span class="year-badge">1977-2026</span></h1>
-        <p>Historical archive of Joe Jackson´s concert tickets, venues & memorabilia</p>
+  <!-- Fixed Top Bar Wrapper -->
+  <div class="top-header-container">
+    <header>
+      <div class="header-left">
+        <div class="logo">JJ</div>
+        <div class="title-area">
+          <h1>Rolf Thalmann´s Ticket Museum <span class="year-badge">1977-2026</span></h1>
+          <p>Historical archive of Joe Jackson´s concert tickets, venues & memorabilia</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="stats-bar">
+      <div>LOADED TICKETS: <strong class="stat-val-yellow" id="stat-tickets">0</strong></div> <span>|</span>
+      <div>TOURS REPRESENTED: <strong class="stat-val-white" id="stat-tours">0</strong></div> <span>|</span>
+      <div>CONTRIBUTORS / DONORS: <strong class="stat-val-white" id="stat-donors">0</strong></div>
+    </div>
+
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, donor, date, tour..." onkeyup="filterData()">
+      <select id="tourFilter" onchange="filterData()">
+        <option value="">All Tours & Eras</option>
+      </select>
+      <select id="donorFilter" onchange="filterData()">
+        <option value="">All Donors / Sources</option>
+      </select>
+      <select id="sortFilter" onchange="filterData()">
+        <option value="oldest">Date (Oldest First)</option>
+        <option value="newest">Date (Newest First)</option>
+      </select>
+      <select id="pageSizeFilter" onchange="changePageSize()">
+        <option value="25">25 / page</option>
+        <option value="50" selected>50 / page</option>
+        <option value="100">100 / page</option>
+        <option value="ALL">ALL</option>
+      </select>
+      <div class="layout-toggles">
+        <button class="toggle-btn active" id="btnGrid" onclick="setLayout('grid')">⊞</button>
+        <button class="toggle-btn" id="btnList" onclick="setLayout('list')">≡</button>
       </div>
     </div>
-  </header>
-
-  <div class="stats-bar">
-    <div>LOADED TICKETS: <strong class="stat-val-yellow" id="stat-tickets">0</strong></div> <span>|</span>
-    <div>TOURS REPRESENTED: <strong class="stat-val-white" id="stat-tours">0</strong></div> <span>|</span>
-    <div>CONTRIBUTORS / DONORS: <strong class="stat-val-white" id="stat-donors">0</strong></div>
   </div>
 
-  <div class="controls">
-    <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, donor, date, tour..." onkeyup="filterData()">
-    <select id="tourFilter" onchange="filterData()">
-      <option value="">All Tours & Eras</option>
-    </select>
-    <select id="donorFilter" onchange="filterData()">
-      <option value="">All Donors / Sources</option>
-    </select>
-    <select id="sortFilter" onchange="filterData()">
-      <option value="oldest">Date (Oldest First)</option>
-      <option value="newest">Date (Newest First)</option>
-    </select>
-    <div class="layout-toggles">
-      <button class="toggle-btn active" id="btnGrid" onclick="setLayout('grid')">⊞</button>
-      <button class="toggle-btn" id="btnList" onclick="setLayout('list')">≡</button>
-    </div>
-  </div>
-
+  <!-- Main Grid / List -->
   <div id="ticketsContainer" class="tickets-container grid-view"></div>
+
+  <!-- Pagination -->
+  <div id="paginationContainer" class="pagination-container"></div>
 
   <!-- Detail Modal Window -->
   <div class="modal-overlay" id="detailModal" onclick="closeModalOnOverlay(event)">
@@ -482,7 +545,7 @@
             <span>Seat / Row</span>
             <strong id="modalSeat">N/A</strong>
           </div>
-          <div class="modal-grid-item">
+          <div class="modal-grid-item" id="modalSupportItem" style="display: none;">
             <span>Supporting Act</span>
             <strong id="modalSupport">N/A</strong>
           </div>
@@ -495,7 +558,10 @@
 
   <script>
     let allTickets = [];
+    let filteredTickets = [];
     let currentLayout = 'grid';
+    let currentPage = 1;
+    let pageSize = 50;
 
     window.addEventListener('DOMContentLoaded', () => {
       Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
@@ -566,9 +632,62 @@
       }
     }
 
+    function changePageSize() {
+      const val = document.getElementById('pageSizeFilter').value;
+      pageSize = val === 'ALL' ? 'ALL' : parseInt(val);
+      currentPage = 1;
+      renderPaginated();
+    }
+
+    function filterData() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const tour = document.getElementById('tourFilter').value;
+      const donor = document.getElementById('donorFilter').value;
+      const sort = document.getElementById('sortFilter').value;
+
+      filteredTickets = allTickets.filter(t => {
+        const qMatch = !query || 
+          (t.INFO_TEXT || '').toLowerCase().includes(query) ||
+          (t.ZDROJ_POSKYTNUL || '').toLowerCase().includes(query) ||
+          (t.MESTO || '').toLowerCase().includes(query) ||
+          (t.SETLIST || '').toLowerCase().includes(query);
+          
+        const tMatch = !tour || t.TURNE === tour;
+        const dMatch = !donor || t.ZDROJ_POSKYTNUL === donor;
+
+        return qMatch && tMatch && dMatch;
+      });
+
+      if (sort === 'newest') {
+        filteredTickets.reverse();
+      }
+
+      currentPage = 1;
+      renderPaginated();
+    }
+
+    function renderPaginated() {
+      let pageData = [];
+      if (pageSize === 'ALL') {
+        pageData = filteredTickets;
+      } else {
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        pageData = filteredTickets.slice(start, end);
+      }
+
+      renderTickets(pageData);
+      renderPaginationControls();
+    }
+
     function renderTickets(tickets) {
       const container = document.getElementById('ticketsContainer');
       container.innerHTML = '';
+
+      if (tickets.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 40px;">No tickets found matching your criteria.</p>';
+        return;
+      }
 
       tickets.forEach((t, index) => {
         const card = document.createElement('div');
@@ -628,6 +747,70 @@
       });
     }
 
+    function renderPaginationControls() {
+      const container = document.getElementById('paginationContainer');
+      container.innerHTML = '';
+
+      if (pageSize === 'ALL' || filteredTickets.length <= pageSize) {
+        return;
+      }
+
+      const totalPages = Math.ceil(filteredTickets.length / pageSize);
+
+      // Prev Button
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'page-btn';
+      prevBtn.textContent = '◄ Prev';
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.onclick = () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderPaginated();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      };
+      container.appendChild(prevBtn);
+
+      // Page Number Buttons
+      for (let i = 1; i <= totalPages; i++) {
+        // Show limited buttons if many pages
+        if (totalPages > 10 && Math.abs(i - currentPage) > 3 && i !== 1 && i !== totalPages) {
+          if (i === 2 || i === totalPages - 1) {
+            const dots = document.createElement('span');
+            dots.textContent = '...';
+            dots.style.color = 'var(--text-muted)';
+            dots.style.padding = '0 4px';
+            container.appendChild(dots);
+          }
+          continue;
+        }
+
+        const pageBtn = document.createElement('button');
+        pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+        pageBtn.textContent = i;
+        pageBtn.onclick = () => {
+          currentPage = i;
+          renderPaginated();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+        container.appendChild(pageBtn);
+      }
+
+      // Next Button
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'page-btn';
+      nextBtn.textContent = 'Next ►';
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderPaginated();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      };
+      container.appendChild(nextBtn);
+    }
+
     function toggleSetlist(id) {
       const el = document.getElementById(`setlist-${id}`);
       if (el) {
@@ -651,8 +834,15 @@
       const seat = (t.SEKTOR_RADA_SEDADLO && t.SEKTOR_RADA_SEDADLO !== 'není k dispozici') ? t.SEKTOR_RADA_SEDADLO : 'N/A';
       document.getElementById('modalSeat').textContent = seat;
 
-      const support = (t.SUPPORTING_ACT && t.SUPPORTING_ACT !== 'není k dispozici') ? t.SUPPORTING_ACT : 'N/A';
-      document.getElementById('modalSupport').textContent = support;
+      // Conditional Supporting Act Display
+      const supportItem = document.getElementById('modalSupportItem');
+      const supportVal = t.SUPPORTING_ACT ? t.SUPPORTING_ACT.trim() : '';
+      if (supportVal && supportVal.toLowerCase() !== 'není k dispozici') {
+        document.getElementById('modalSupport').textContent = supportVal;
+        supportItem.style.display = 'block';
+      } else {
+        supportItem.style.display = 'none';
+      }
 
       // Setlist for Modal
       const modalSetlistSec = document.getElementById('modalSetlistSection');
@@ -684,32 +874,6 @@
       if (e.target.id === 'detailModal') {
         closeModal();
       }
-    }
-
-    function filterData() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const tour = document.getElementById('tourFilter').value;
-      const donor = document.getElementById('donorFilter').value;
-      const sort = document.getElementById('sortFilter').value;
-
-      let filtered = allTickets.filter(t => {
-        const qMatch = !query || 
-          (t.INFO_TEXT || '').toLowerCase().includes(query) ||
-          (t.ZDROJ_POSKYTNUL || '').toLowerCase().includes(query) ||
-          (t.MESTO || '').toLowerCase().includes(query) ||
-          (t.SETLIST || '').toLowerCase().includes(query);
-          
-        const tMatch = !tour || t.TURNE === tour;
-        const dMatch = !donor || t.ZDROJ_POSKYTNUL === donor;
-
-        return qMatch && tMatch && dMatch;
-      });
-
-      if (sort === 'newest') {
-        filtered.reverse();
-      }
-
-      renderTickets(filtered);
     }
   </script>
 </body>
