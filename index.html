@@ -504,7 +504,7 @@
       }
 
       .stats-bar span {
-        display: none; /* Skryje svislé oddělovače | na mobilu */
+        display: none;
       }
 
       .stats-bar div {
@@ -514,14 +514,12 @@
         border: 1px solid var(--border-color);
       }
 
-      /* Přeuspořádání filtrů pod sebe na plnou šířku */
       .controls {
         grid-template-columns: 1fr;
         gap: 10px;
         padding: 10px;
       }
 
-      /* Zvětšení dotykové plochy + zamezení nechtěnému zoomování na iOS (font 16px) */
       .controls input, 
       .controls select {
         font-size: 16px !important; 
@@ -576,7 +574,7 @@
       <div class="header-left">
         <div class="logo">JJ</div>
         <div class="title-area">
-          <h1>Rolf Thalmann´s Ticket Museum <span class="year-badge">1977-2026</span></h1>
+          <h1>Rolf Thalmann´s Ticket Museum <span class="year-badge" id="yearBadge">...</span></h1>
           <p>Historical archive of Joe Jackson´s concert tickets, venues & memorabilia</p>
         </div>
       </div>
@@ -691,6 +689,25 @@
 
       const uniqueDonors = new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(Boolean));
       document.getElementById('stat-donors').textContent = uniqueDonors.size;
+
+      // Dynamic calculation of year range from DATUM and INFO_TEXT
+      const years = [];
+      allTickets.forEach(t => {
+        const textToSearch = `${t.DATUM || ''} ${t.INFO_TEXT || ''}`;
+        const matches = textToSearch.match(/\b(19\d\d|20\d\d)\b/g);
+        if (matches) {
+          matches.forEach(y => years.push(parseInt(y, 10)));
+        }
+      });
+
+      if (years.length > 0) {
+        const minYear = Math.min(...years);
+        const maxYear = Math.max(...years);
+        const badge = document.getElementById('yearBadge');
+        if (badge) {
+          badge.textContent = minYear === maxYear ? `${minYear}` : `${minYear}-${maxYear}`;
+        }
+      }
     }
 
     function populateFilters() {
