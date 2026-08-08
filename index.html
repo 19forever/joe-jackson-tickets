@@ -247,9 +247,17 @@
       font-weight: 600;
     }
 
+    .card-date {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
     .info-text {
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
       line-height: 1.4;
       margin-bottom: 15px;
       flex-grow: 1;
@@ -333,7 +341,6 @@
       overflow: hidden;
     }
 
-    /* Leaflet Dark Theme Overrides */
     .leaflet-popup-content-wrapper, .leaflet-popup-tip {
       background: var(--bg-panel) !important;
       color: var(--text-main) !important;
@@ -451,7 +458,6 @@
       cursor: zoom-in;
     }
 
-    /* Thumbnail Gallery in Modal */
     .modal-thumbnails {
       display: flex;
       justify-content: center;
@@ -486,12 +492,20 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .modal-date {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
       margin-bottom: 8px;
     }
 
     .modal-title {
-      font-size: 1.3rem;
-      font-weight: 700;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-muted);
       margin-bottom: 20px;
       line-height: 1.4;
     }
@@ -609,6 +623,7 @@
 
       <div class="modal-body">
         <div class="modal-tour" id="modalTour"></div>
+        <div class="modal-date" id="modalDate"></div>
         <div class="modal-title" id="modalInfo"></div>
         
         <div class="modal-grid">
@@ -642,12 +657,10 @@
     let currentPage = 1;
     let pageSize = 50;
 
-    // Leaflet Map & Viewer.js instances
     let mapInstance = null;
     let mapMarkersGroup = null;
     let imageViewerInstance = null;
 
-    // Pre-mapped coordinates dictionary for common cities
     const cityCoordsLookup = {
       "london": [51.5074, -0.1278],
       "paris": [48.8566, 2.3522],
@@ -681,6 +694,31 @@
       "milan": [45.4642, 9.1900]
     };
 
+    // Helper: Split INFO_TEXT into separate Date and Description
+    function parseInfoText(t) {
+      let rawText = (t.INFO_TEXT || '').trim();
+      let explicitDate = (t.DATUM || '').trim();
+
+      // Regex pattern to extract date formats (e.g. "10th December 1986", "1986-12-10", "10.12.1986")
+      const dateRegex = /\b(\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]+\s+\d{4}|\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4})\b/i;
+      const match = rawText.match(dateRegex);
+
+      let extractedDate = explicitDate;
+      let cleanedText = rawText;
+
+      if (match) {
+        if (!extractedDate) {
+          extractedDate = match[0];
+        }
+        cleanedText = rawText.replace(match[0], '').replace(/^[\s–—\-]+|[\s–—\-]+$/g, '').trim();
+      }
+
+      return {
+        date: extractedDate,
+        text: cleanedText || rawText
+      };
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
         download: true,
@@ -711,7 +749,6 @@
       const uniqueDonors = new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(Boolean));
       document.getElementById('stat-donors').textContent = uniqueDonors.size;
 
-      // Dynamic calculation of year range
       const years = [];
       allTickets.forEach(t => {
         const textToSearch = `${t.DATUM || ''} ${t.INFO_TEXT || ''}`;
@@ -864,6 +901,8 @@
         const firstImgFile = skenFiles[0] || '';
         const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
 
+        const parsed = parseInfoText(t);
+
         // Setlist
         let setlistSection = '';
         const setlistStr = t.SETLIST || '';
@@ -893,7 +932,8 @@
           </div>
           <div class="card-content">
             <div class="tour-name">${t.TURNE || 'UNKNOWN TOUR'}</div>
-            <div class="info-text">${t.INFO_TEXT || ''}</div>
+            ${parsed.date ? `<div class="card-date">${parsed.date}</div>` : ''}
+            <div class="info-text">${parsed.text}</div>
             
             <div class="source-row">
               <span>Source:</span>
@@ -908,7 +948,6 @@
       });
     }
 
-    /* Map Initialization & Marker Updates */
     function initOrUpdateMap() {
       if (!mapInstance) {
         mapInstance = L.map('mapContainer').setView([50.0, 10.0], 4);
@@ -1031,7 +1070,6 @@
       if (skenFiles.length > 0) {
         modalImg.src = `./scans/${skenFiles[0]}`;
 
-        // Render thumbnails gallery if multiple scans exist
         if (skenFiles.length > 1) {
           skenFiles.forEach((file, idx) => {
             const thumb = document.createElement('img');
@@ -1054,14 +1092,16 @@
         modalImg.src = '';
       }
 
-      // Initialize Viewer.js Zoom inspector
       if (imageViewerInstance) {
         imageViewerInstance.destroy();
       }
       imageViewerInstance = new Viewer(modalImg, { toolbar: true, navbar: false });
 
+      const parsed = parseInfoText(t);
+
       document.getElementById('modalTour').textContent = t.TURNE || 'UNKNOWN TOUR';
-      document.getElementById('modalInfo').textContent = t.INFO_TEXT || '';
+      document.getElementById('modalDate').textContent = parsed.date || '';
+      document.getElementById('modalInfo').textContent = parsed.text || '';
       document.getElementById('modalSource').textContent = t.ZDROJ_POSKYTNUL || 'N/A';
       
       const price = (t.CENA && t.CENA !== 'není k dispozici') ? `${t.CENA} ${t.MENA !== 'není k dispozici' ? t.MENA : ''}` : 'N/A';
