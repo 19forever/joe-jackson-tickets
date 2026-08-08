@@ -127,6 +127,31 @@
       min-height: 80px;
     }
 
+    .input-with-button {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-with-button input {
+      flex: 1;
+    }
+
+    .btn-fetch {
+      background-color: #38bdf8;
+      color: #000;
+      border: none;
+      padding: 0 16px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn-fetch:hover { opacity: 0.9; }
+    .btn-fetch:disabled { opacity: 0.5; cursor: not-allowed; }
+
     .file-input-wrapper {
       background: rgba(0,0,0,0.2);
       border: 2px dashed var(--border-color);
@@ -309,23 +334,26 @@
         </div>
 
         <div class="form-group">
-          <label>Tour Name (TURNE)</label>
-          <input type="text" id="TURNE" placeholder="e.g. BIG WORLD RECORDING">
-        </div>
-
-        <div class="form-group full-width">
-          <label>Header / Info Text (INFO_TEXT)</label>
-          <input type="text" id="INFO_TEXT" placeholder="e.g. 10th December 1986 – Ludwigshafen, Germany – Friedrich-Ebert-Halle" required>
+          <label>Date (DATUM)</label>
+          <div class="input-with-button">
+            <input type="text" id="DATUM" placeholder="YYYY-MM-DD or DD.MM.YYYY">
+            <button type="button" class="btn-fetch" id="btnFetchByDate" onclick="autoFetchSetlistByDate()">⚡ Auto-Find Setlist</button>
+          </div>
         </div>
 
         <div class="form-group">
-          <label>Date (DATUM)</label>
-          <input type="text" id="DATUM" placeholder="YYYY-MM-DD or DD.MM.YYYY">
+          <label>Tour Name (TURNE)</label>
+          <input type="text" id="TURNE" placeholder="e.g. BIG WORLD RECORDING">
         </div>
 
         <div class="form-group">
           <label>City / Venue (MESTO)</label>
           <input type="text" id="MESTO" placeholder="e.g. Ludwigshafen, Germany">
+        </div>
+
+        <div class="form-group full-width">
+          <label>Header / Info Text (INFO_TEXT)</label>
+          <input type="text" id="INFO_TEXT" placeholder="e.g. 10th December 1986 – Ludwigshafen, Germany – Friedrich-Ebert-Halle" required>
         </div>
 
         <div class="form-group">
@@ -362,6 +390,11 @@
         </div>
 
         <div class="form-group full-width">
+          <label>Setlist.fm URL (SETLIST_URL)</label>
+          <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
+        </div>
+
+        <div class="form-group full-width">
           <label>Setlist (Comma separated songs)</label>
           <textarea id="SETLIST" placeholder="Town Without Pity, On Your Radio, Real Men..." oninput="calculateSongs()"></textarea>
         </div>
@@ -369,11 +402,6 @@
         <div class="form-group">
           <label>Song Count (POCET_SKLADEB)</label>
           <input type="number" id="POCET_SKLADEB" readonly placeholder="Auto-calculated">
-        </div>
-
-        <div class="form-group">
-          <label>Setlist.fm URL (SETLIST_URL)</label>
-          <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
         </div>
 
       </div>
@@ -423,19 +451,18 @@
   </div>
 
   <script>
+    const SETLIST_FM_API_KEY = '3pc6VtmOHzQbQVh9xedw_LLpNRCCfDhEvop7';
     let existingCSVData = [];
     let uploadedFileBlob = null;
     let uploadedFileDataURL = "";
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Load current CSV to get record count & prepare master structure
       Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
         download: true,
         header: true,
         skipEmptyLines: true,
         complete: function(results) {
           existingCSVData = results.data;
-          // Auto fill next ID
           if (!document.getElementById('ID_LISTKU').value) {
             const nextNum = String(existingCSVData.length + 1).padStart(4, '0');
             document.getElementById('ID_LISTKU').value = `TICKET_${nextNum}`;
@@ -465,6 +492,107 @@
         document.getElementById('POCET_SKLADEB').value = count;
       } else {
         document.getElementById('POCET_SKLADEB').value = 0;
+      }
+    }
+
+    // Helper: Parse user date input into Setlist.fm expected format (DD-MM-YYYY)
+    function parseDateToSetlistFmFormat(rawDate) {
+      if (!rawDate) return null;
+      const clean = rawDate.trim().replace(/[/.]/g, '-');
+      const parts = clean.split('-');
+
+      if (parts.length === 3) {
+        let year, month, day;
+        if (parts[0].length === 4) { // YYYY-MM-DD
+          year = parts[0];
+          month = parts[1].padStart(2, '0');
+          day = parts[2].padStart(2, '0');
+        } else { // DD-MM-YYYY
+          day = parts[0].padStart(2, '0');
+          month = parts[1].padStart(2, '0');
+          year = parts[2];
+        }
+        return `${day}-${month}-${year}`;
+      }
+      return null;
+    }
+
+    async function autoFetchSetlistByDate() {
+      const rawDate = document.getElementById('DATUM').value;
+      const formattedDate = parseDateToSetlistFmFormat(rawDate);
+      const btn = document.getElementById('btnFetchByDate');
+
+      if (!formattedDate) {
+        alert('Please enter a valid date in DATUM field (e.g. 1986-12-10 or 10.12.1986).');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Searching API...';
+
+      try {
+        const targetApiUrl = `https://api.setlist.fm/rest/1.0/search/setlists?artistName=Joe+Jackson&date=${formattedDate}`;
+        const proxyUrl = `https://corsproxy.io/?` + encodeURIComponent(targetApiUrl);
+
+        const response = await fetch(proxyUrl, {
+          headers: {
+            'x-api-key': SETLIST_FM_API_KEY,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`API returned status ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.setlist && data.setlist.length > 0) {
+          const match = data.setlist[0];
+
+          // Extract songs
+          let songNames = [];
+          if (match.sets && match.sets.set) {
+            match.sets.set.forEach(s => {
+              if (s.song) {
+                s.song.forEach(item => {
+                  if (item.name) songNames.push(item.name);
+                });
+              }
+            });
+          }
+
+          // Auto Fill Form Fields
+          if (songNames.length > 0) {
+            document.getElementById('SETLIST').value = songNames.join(', ');
+            calculateSongs();
+          }
+
+          if (match.url) {
+            document.getElementById('SETLIST_URL').value = match.url;
+          }
+
+          if (match.tour && match.tour.name && !document.getElementById('TURNE').value) {
+            document.getElementById('TURNE').value = match.tour.name.toUpperCase();
+          }
+
+          if (match.venue && !document.getElementById('MESTO').value) {
+            const venueName = match.venue.name || '';
+            const cityName = match.venue.city ? match.venue.city.name : '';
+            const countryName = match.venue.city && match.venue.city.country ? match.venue.city.country.name : '';
+            document.getElementById('MESTO').value = [cityName, countryName].filter(Boolean).join(', ') + (venueName ? ` – ${venueName}` : '');
+          }
+
+          alert(`Found concert! Automatically retrieved ${songNames.length} songs.`);
+        } else {
+          alert(`No setlist found on Setlist.fm for date ${formattedDate}.`);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to Setlist.fm API. Please verify the date or internet connection.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '⚡ Auto-Find Setlist';
       }
     }
 
