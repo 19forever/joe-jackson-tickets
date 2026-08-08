@@ -459,7 +459,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 9999;
       padding: 20px;
     }
 
@@ -596,7 +596,13 @@
     /* Mobile Responsive Overrides */
     @media (max-width: 768px) {
       body { padding: 0 12px 20px 12px; }
-      .top-header-container { padding-top: 12px; padding-bottom: 12px; margin-bottom: 15px; }
+      .top-header-container { 
+        position: relative; 
+        top: auto; 
+        padding-top: 12px; 
+        padding-bottom: 12px; 
+        margin-bottom: 15px; 
+      }
       header { flex-direction: column; align-items: flex-start; gap: 10px; }
       .title-area h1 { font-size: 1.15rem; flex-wrap: wrap; }
       .stats-bar { flex-wrap: wrap; gap: 6px 10px; font-size: 0.7rem; margin-bottom: 10px; }
@@ -618,7 +624,7 @@
 </head>
 <body>
 
-  <!-- Fixed Top Bar Wrapper -->
+  <!-- Fixed / Relative Top Bar Wrapper -->
   <div class="top-header-container">
     <header>
       <div class="header-left">
