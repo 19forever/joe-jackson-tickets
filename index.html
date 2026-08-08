@@ -694,12 +694,11 @@
       "milan": [45.4642, 9.1900]
     };
 
-    // Helper: Split INFO_TEXT into separate Date and Description
+    // Split INFO_TEXT into separate Date and Description
     function parseInfoText(t) {
       let rawText = (t.INFO_TEXT || '').trim();
       let explicitDate = (t.DATUM || '').trim();
 
-      // Regex pattern to extract date formats (e.g. "10th December 1986", "1986-12-10", "10.12.1986")
       const dateRegex = /\b(\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]+\s+\d{4}|\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4})\b/i;
       const match = rawText.match(dateRegex);
 
@@ -717,6 +716,18 @@
         date: extractedDate,
         text: cleanedText || rawText
       };
+    }
+
+    // Convert string dates to Date object for proper sorting
+    function parseToDate(t) {
+      const parsed = parseInfoText(t);
+      if (!parsed.date) return new Date(0); // fall back to epoch if missing
+
+      // Clean ordinal suffixes like "10th" -> "10"
+      let cleanDateStr = parsed.date.replace(/(\d+)(st|nd|rd|th)/i, '$1').replace(/\./g, '/');
+      let timestamp = Date.parse(cleanDateStr);
+
+      return isNaN(timestamp) ? new Date(0) : new Date(timestamp);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -851,9 +862,12 @@
         return qMatch && tMatch && dMatch;
       });
 
-      if (sort === 'newest') {
-        filteredTickets.reverse();
-      }
+      // True chronological sorting
+      filteredTickets.sort((a, b) => {
+        const dateA = parseToDate(a);
+        const dateB = parseToDate(b);
+        return sort === 'newest' ? dateB - dateA : dateA - dateB;
+      });
 
       currentPage = 1;
 
