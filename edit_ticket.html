@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Ticket Record - Rolf Thalmann´s Ticket Museum</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    :root {
+      --bg-main: #0a0f1c;
+      --bg-panel: #111827;
+      --bg-card: #151c2b;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-yellow: #facc15;
+      --border-color: #1f2937;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding: 30px 40px;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 15px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      background-color: #f97316;
+      color: #000;
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.5rem;
+    }
+
+    .btn-back {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn-back:hover { background-color: #1f2937; }
+
+    .selector-box {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .selector-box label {
+      font-weight: 700;
+      color: var(--accent-yellow);
+      white-space: nowrap;
+    }
+
+    .selector-box select {
+      flex: 1;
+      padding: 10px;
+      background: var(--bg-main);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .editor-layout {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 25px;
+    }
+
+    .preview-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .preview-panel img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #000;
+      border: 1px solid var(--border-color);
+    }
+
+    .form-container {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 25px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width { grid-column: span 2; }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, textarea, select {
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #38bdf8;
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .input-with-button { display: flex; gap: 10px; }
+    .input-with-button input { flex: 1; }
+
+    .btn-fetch {
+      background-color: #38bdf8;
+      color: #000;
+      border: none;
+      padding: 0 14px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .btn-save-gh {
+      background-color: #22c55e;
+      color: #fff;
+      border: none;
+      padding: 14px 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      flex: 2;
+    }
+
+    .btn-download-csv {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border: none;
+      padding: 14px 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    @media (max-width: 900px) {
+      .editor-layout { grid-template-columns: 1fr; }
+      .preview-panel { position: static; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full-width { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <div class="logo">JJ</div>
+      <div>
+        <h1>Edit Ticket Record</h1>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Correct OCR errors & update metadata</p>
+      </div>
+    </div>
+    <a href="index.html" class="btn-back">◄ Back to Archive</a>
+  </header>
+
+  <div class="selector-box">
+    <label for="ticketSelector">SELECT TICKET TO EDIT:</label>
+    <select id="ticketSelector" onchange="loadTicketForEditing()"></select>
+  </div>
+
+  <div class="editor-layout">
+    
+    <!-- Image Preview Panel -->
+    <div class="preview-panel">
+      <label>Current Ticket Scan</label>
+      <img id="scanPreviewImg" src="" alt="Scan preview" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzMzMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
+      
+      <div class="form-group">
+        <label>Replace Scan File</label>
+        <input type="file" id="scanFileInput" accept="image/*" onchange="handleNewFileSelect(event)">
+      </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="form-container">
+      <form id="editTicketForm" onsubmit="event.preventDefault();">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label>Ticket ID</label>
+            <input type="text" id="ID_LISTKU" readonly style="opacity: 0.6; cursor: not-allowed;">
+          </div>
+
+          <div class="form-group">
+            <label>Category (KATEGORIE)</label>
+            <select id="KATEGORIE">
+              <option value="Tickets">Tickets</option>
+              <option value="Passes">Passes</option>
+              <option value="Programs">Programs</option>
+              <option value="Posters">Posters</option>
+              <option value="Memorabilia">Memorabilia</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Date (DATUM)</label>
+            <div class="input-with-button">
+              <input type="text" id="DATUM" placeholder="YYYY-MM-DD or DD.MM.YYYY">
+              <button type="button" class="btn-fetch" onclick="autoFetchSetlistByDate()">⚡ Auto-Find Setlist</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Tour Name (TURNE)</label>
+            <input type="text" id="TURNE" placeholder="e.g. BIG WORLD">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Header / OCR Info Text (INFO_TEXT)</label>
+            <input type="text" id="INFO_TEXT" placeholder="e.g. 10th December 1986 – Ludwigshafen – Friedrich-Ebert-Halle" required>
+          </div>
+
+          <div class="form-group">
+            <label>City / Venue (MESTO)</label>
+            <input type="text" id="MESTO" placeholder="e.g. Ludwigshafen, Germany">
+          </div>
+
+          <div class="form-group">
+            <label>Price (CENA)</label>
+            <input type="text" id="CENA" placeholder="e.g. 34,00">
+          </div>
+
+          <div class="form-group">
+            <label>Currency (MENA)</label>
+            <input type="text" id="MENA" placeholder="e.g. DM, EUR">
+          </div>
+
+          <div class="form-group">
+            <label>Seat / Row / Section</label>
+            <input type="text" id="SEKTOR_RADA_SEDADLO">
+          </div>
+
+          <div class="form-group">
+            <label>Supporting Act</label>
+            <input type="text" id="SUPPORTING_ACT">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Source / Contributor (ZDROJ_POSKYTNUL)</label>
+            <input type="text" id="ZDROJ_POSKYTNUL">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Scan File Name (SOUBOR_SKEN)</label>
+            <input type="text" id="SOUBOR_SKEN">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Setlist.fm URL</label>
+            <input type="url" id="SETLIST_URL">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Setlist (Comma separated songs)</label>
+            <textarea id="SETLIST" oninput="calculateSongs()"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Song Count (POCET_SKLADEB)</label>
+            <input type="number" id="POCET_SKLADEB" readonly placeholder="Auto-calculated">
+          </div>
+
+        </div>
+
+        <div class="actions-bar">
+          <button type="button" class="btn-save-gh" onclick="saveDirectToGitHub()">☁️ Save Directly to GitHub</button>
+          <button type="button" class="btn-download-csv" onclick="downloadUpdatedCSV()">💾 Download CSV</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <script>
+    const SETLIST_FM_API_KEY = '3pc6VtmOHzQbQVh9xedw_LLpNRCCfDhEvop7';
+    let allTickets = [];
+    let selectedIndex = -1;
+    let newScanFileData = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          allTickets = results.data;
+          populateSelector();
+
+          // Check for URL parameter ?id=TICKET_0001
+          const urlParams = new URLSearchParams(window.location.search);
+          const reqId = urlParams.get('id');
+          if (reqId) {
+            const idx = allTickets.findIndex(t => t.ID_LISTKU === reqId);
+            if (idx !== -1) {
+              document.getElementById('ticketSelector').value = idx;
+            }
+          }
+          loadTicketForEditing();
+        }
+      });
+    });
+
+    function populateSelector() {
+      const select = document.getElementById('ticketSelector');
+      select.innerHTML = '';
+      allTickets.forEach((t, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `[${t.ID_LISTKU || idx}] ${t.INFO_TEXT || t.TURNE || 'Untitled'}`;
+        select.appendChild(opt);
+      });
+    }
+
+    function loadTicketForEditing() {
+      const select = document.getElementById('ticketSelector');
+      selectedIndex = parseInt(select.value, 10);
+      if (isNaN(selectedIndex) || !allTickets[selectedIndex]) return;
+
+      const t = allTickets[selectedIndex];
+
+      document.getElementById('ID_LISTKU').value = t.ID_LISTKU || '';
+      document.getElementById('KATEGORIE').value = t.KATEGORIE || 'Tickets';
+      document.getElementById('DATUM').value = t.DATUM || '';
+      document.getElementById('TURNE').value = t.TURNE || '';
+      document.getElementById('INFO_TEXT').value = t.INFO_TEXT || '';
+      document.getElementById('MESTO').value = t.MESTO || '';
+      document.getElementById('CENA').value = t.CENA || '';
+      document.getElementById('MENA').value = t.MENA || '';
+      document.getElementById('SEKTOR_RADA_SEDADLO').value = t.SEKTOR_RADA_SEDADLO || '';
+      document.getElementById('SUPPORTING_ACT').value = t.SUPPORTING_ACT || '';
+      document.getElementById('ZDROJ_POSKYTNUL').value = t.ZDROJ_POSKYTNUL || '';
+      document.getElementById('SOUBOR_SKEN').value = t.SOUBOR_SKEN || '';
+      document.getElementById('SETLIST_URL').value = t.SETLIST_URL || '';
+      document.getElementById('SETLIST').value = t.SETLIST || '';
+      document.getElementById('POCET_SKLADEB').value = t.POCET_SKLADEB || 0;
+
+      // Scan Image Preview
+      const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
+      const img = document.getElementById('scanPreviewImg');
+      if (skenFiles.length > 0) {
+        img.src = `./scans/${skenFiles[0]}`;
+      } else {
+        img.src = '';
+      }
+    }
+
+    function handleNewFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById('SOUBOR_SKEN').value = file.name;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          document.getElementById('scanPreviewImg').src = evt.target.result;
+          newScanFileData = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function calculateSongs() {
+      const val = document.getElementById('SETLIST').value.trim();
+      document.getElementById('POCET_SKLADEB').value = val ? val.split(',').filter(s => s.trim()).length : 0;
+    }
+
+    function updateLocalRecordObject() {
+      if (selectedIndex === -1) return;
+      allTickets[selectedIndex] = {
+        ID_LISTKU: document.getElementById('ID_LISTKU').value,
+        KATEGORIE: document.getElementById('KATEGORIE').value,
+        TURNE: document.getElementById('TURNE').value,
+        INFO_TEXT: document.getElementById('INFO_TEXT').value,
+        DATUM: document.getElementById('DATUM').value,
+        MESTO: document.getElementById('MESTO').value,
+        CENA: document.getElementById('CENA').value,
+        MENA: document.getElementById('MENA').value,
+        SEKTOR_RADA_SEDADLO: document.getElementById('SEKTOR_RADA_SEDADLO').value,
+        SUPPORTING_ACT: document.getElementById('SUPPORTING_ACT').value,
+        ZDROJ_POSKYTNUL: document.getElementById('ZDROJ_POSKYTNUL').value,
+        SOUBOR_SKEN: document.getElementById('SOUBOR_SKEN').value,
+        SETLIST: document.getElementById('SETLIST').value,
+        POCET_SKLADEB: document.getElementById('POCET_SKLADEB').value,
+        SETLIST_URL: document.getElementById('SETLIST_URL').value
+      };
+    }
+
+    function downloadUpdatedCSV() {
+      updateLocalRecordObject();
+      const csvString = Papa.unparse(allTickets);
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'joe_jackson_tickets_master_with_setlists.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      alert('Updated CSV downloaded! Replace the file in your repository.');
+    }
+
+    async function saveDirectToGitHub() {
+      const token = prompt('Enter your GitHub Personal Access Token (PAT):');
+      if (!token) return;
+
+      updateLocalRecordObject();
+      const csvContent = Papa.unparse(allTickets);
+
+      try {
+        const repoPath = '19forever/joe-jackson-tickets';
+        const filePath = 'joe_jackson_tickets_master_with_setlists.csv';
+        const apiUrl = `https://api.github.com/repos/${repoPath}/contents/${filePath}`;
+
+        // Get current file SHA
+        const getRes = await fetch(apiUrl, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        const fileData = await getRes.json();
+        const sha = fileData.sha;
+
+        // Commit updated CSV directly to GitHub
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `Update record ${document.getElementById('ID_LISTKU').value} via edit_ticket.html`,
+            content: btoa(unescape(encodeURIComponent(csvContent))),
+            sha: sha
+          })
+        });
+
+        if (putRes.ok) {
+          alert('Changes successfully committed directly to GitHub!');
+        } else {
+          alert('Failed to save. Check your GitHub Token permissions.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error saving to GitHub.');
+      }
+    }
+  </script>
+</body>
+</html>
