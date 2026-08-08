@@ -243,12 +243,37 @@
       display: flex;
       flex-direction: column;
       cursor: pointer;
+      position: relative;
       transition: transform 0.2s, border-color 0.2s;
     }
 
     .ticket-card:hover {
       border-color: #38bdf8;
       transform: translateY(-2px);
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .edit-icon-btn {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      transition: all 0.2s;
+    }
+
+    .edit-icon-btn:hover {
+      color: var(--accent-yellow);
+      border-color: var(--accent-yellow);
+      background: rgba(250, 204, 21, 0.1);
     }
 
     .card-img-wrapper {
@@ -279,7 +304,6 @@
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 6px;
       font-weight: 600;
     }
 
@@ -734,7 +758,6 @@
       "milan": [45.4642, 9.1900]
     };
 
-    // Helper: Determine category from explicitly specified column or text keywords
     function getTicketCategory(t) {
       if (t.KATEGORIE && t.KATEGORIE.trim()) {
         return t.KATEGORIE.trim();
@@ -749,10 +772,9 @@
       if (text.includes('poster') || text.includes('plakát')) {
         return 'Posters';
       }
-      return 'Tickets'; // Default fallback
+      return 'Tickets';
     }
 
-    // Split INFO_TEXT into separate Date and Description
     function parseInfoText(t) {
       let rawText = (t.INFO_TEXT || '').trim();
       let explicitDate = (t.DATUM || '').trim();
@@ -776,7 +798,6 @@
       };
     }
 
-    // Convert string dates to Date object for sorting
     function parseToDate(t) {
       const parsed = parseInfoText(t);
       if (!parsed.date) return new Date(0);
@@ -860,7 +881,6 @@
       const tabsContainer = document.getElementById('categoryTabs');
       tabsContainer.innerHTML = '';
 
-      // Count items per category based on current search & select filters
       const counts = {
         'ALL': matchesBeforeCategoryFilter.length,
         'Tickets': 0,
@@ -888,7 +908,6 @@
         'Memorabilia': '⭐ Memorabilia'
       };
 
-      // Create tabs only for categories that have at least 1 item
       for (const [catKey, count] of Object.entries(counts)) {
         if (count > 0 || catKey === 'ALL') {
           const btn = document.createElement('button');
@@ -954,7 +973,6 @@
       const donor = document.getElementById('donorFilter').value;
       const sort = document.getElementById('sortFilter').value;
 
-      // First pass: Filter by Search Query, Tour and Donor
       const matchesBase = allTickets.filter(t => {
         const qMatch = !query || 
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
@@ -968,16 +986,13 @@
         return qMatch && tMatch && dMatch;
       });
 
-      // Render Dynamic Tabs based on matchesBase counts
       renderCategoryTabs(matchesBase);
 
-      // Second pass: Filter by selected Category tab
       filteredTickets = matchesBase.filter(t => {
         if (currentCategory === 'ALL') return true;
         return getTicketCategory(t).toLowerCase() === currentCategory.toLowerCase();
       });
 
-      // True chronological sorting
       filteredTickets.sort((a, b) => {
         const dateA = parseToDate(a);
         const dateB = parseToDate(b);
@@ -1020,7 +1035,7 @@
         const card = document.createElement('div');
         card.className = 'ticket-card';
         card.onclick = (e) => {
-          if (e.target.classList.contains('setlist-toggle-btn') || e.target.classList.contains('setlist-link')) {
+          if (e.target.classList.contains('setlist-toggle-btn') || e.target.classList.contains('setlist-link') || e.target.classList.contains('edit-icon-btn')) {
             return;
           }
           openModal(t);
@@ -1055,12 +1070,17 @@
           `;
         }
 
+        const editUrl = `edit_ticket.html?id=${encodeURIComponent(t.ID_LISTKU || '')}`;
+
         card.innerHTML = `
           <div class="card-img-wrapper">
             ${imgSrc ? `<img src="${imgSrc}" alt="Ticket Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzMzMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4='">` : ''}
           </div>
           <div class="card-content">
-            <div class="tour-name">${t.TURNE || 'UNKNOWN TOUR'}</div>
+            <div class="card-header-row">
+              <div class="tour-name">${t.TURNE || 'UNKNOWN TOUR'}</div>
+              <a href="${editUrl}" target="_blank" class="edit-icon-btn" onclick="event.stopPropagation();" title="Edit this record">✏️</a>
+            </div>
             ${parsed.date ? `<div class="card-date">${parsed.date}</div>` : ''}
             <div class="info-text">${parsed.text}</div>
             
