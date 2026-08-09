@@ -684,7 +684,7 @@
       <button class="modal-close" onclick="closeModal()">✕</button>
       
       <div class="modal-img-container">
-        <img id="modalImg" src="" alt="Ticket Full View" title="Click to open Zoom / Inspector">
+        <img id="modalImg" src="" alt="Ticket Full View" title="Click to open Zoom / Inspection">
         <div class="modal-thumbnails" id="modalThumbnails"></div>
       </div>
 
@@ -745,6 +745,7 @@
         if (cat.includes('pass')) return 'Passes';
         if (cat.includes('program')) return 'Programs';
         if (cat.includes('poster')) return 'Posters';
+        if (cat.includes('shirt') || cat.includes('t-shirt') || cat.includes('tričko')) return 'T-shirts';
         if (cat.includes('memo')) return 'Memorabilia';
         if (cat.includes('ticket')) return 'Tickets';
       }
@@ -757,6 +758,9 @@
       }
       if (text.includes('poster') || text.includes('plakát')) {
         return 'Posters';
+      }
+      if (text.includes('t-shirt') || text.includes('shirt') || text.includes('tričko')) {
+        return 'T-shirts';
       }
       return 'Tickets';
     }
@@ -873,6 +877,7 @@
         'Passes': 0,
         'Programs': 0,
         'Posters': 0,
+        'T-shirts': 0,
         'Memorabilia': 0
       };
 
@@ -891,6 +896,7 @@
         'Passes': '🪪 Passes',
         'Programs': '📖 Programs',
         'Posters': '🖼️ Posters',
+        'T-shirts': '🎽 T-shirts',
         'Memorabilia': '⭐ Memorabilia'
       };
 
