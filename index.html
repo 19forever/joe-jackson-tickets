@@ -310,6 +310,16 @@
       margin-bottom: 4px;
     }
 
+    .location-text {
+      font-size: 0.85rem;
+      color: #38bdf8;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     .info-text {
       font-size: 0.85rem;
       font-weight: 500;
@@ -484,19 +494,53 @@
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
+    .modal-nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: rgba(0, 0, 0, 0.4);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-nav-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-nav-btn:hover:not(:disabled) {
+      background: #1f2937;
+      border-color: #38bdf8;
+      color: #fff;
+    }
+
+    .modal-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .modal-counter {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
     .modal-close {
-      position: absolute;
-      top: 15px;
-      right: 20px;
       background: rgba(255, 255, 255, 0.1);
       border: none;
       color: #fff;
-      font-size: 1.5rem;
-      width: 36px;
-      height: 36px;
+      font-size: 1.2rem;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       cursor: pointer;
-      z-index: 10;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -562,11 +606,18 @@
       font-size: 1.1rem;
       font-weight: 700;
       color: #fff;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    .modal-location {
+      font-size: 0.95rem;
+      color: #38bdf8;
+      font-weight: 600;
+      margin-bottom: 12px;
     }
 
     .modal-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 500;
       color: var(--text-muted);
       margin-bottom: 20px;
@@ -678,37 +729,49 @@
   <!-- Pagination Controls -->
   <div id="paginationContainer" class="pagination-container"></div>
 
-  <!-- Detail Modal Window -->
+  <!-- Detail Modal Window (Flash Card) -->
   <div class="modal-overlay" id="detailModal" onclick="closeModalOnOverlay(event)">
     <div class="modal-card">
-      <button class="modal-close" onclick="closeModal()">✕</button>
       
+      <!-- Top Navigation Bar for Modal -->
+      <div class="modal-nav-bar">
+        <button class="modal-nav-btn" id="modalPrevBtn" onclick="navigateModal(-1)">◄ Previous</button>
+        <div class="modal-counter" id="modalCounter">0 / 0</div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button class="modal-nav-btn" id="modalNextBtn" onclick="navigateModal(1)">Next ►</button>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+      </div>
+
       <div class="modal-img-container">
-        <img id="modalImg" src="" alt="Ticket Full View" title="Click to open Zoom / Inspection">
+        <div id="modalViewerWrapper">
+          <img id="modalImg" src="" alt="Ticket Full View" title="Click to zoom / inspect image">
+        </div>
         <div class="modal-thumbnails" id="modalThumbnails"></div>
       </div>
 
       <div class="modal-body">
         <div class="modal-tour" id="modalTour"></div>
         <div class="modal-date" id="modalDate"></div>
+        <div class="modal-location" id="modalLocation"></div>
         <div class="modal-title" id="modalInfo"></div>
         
-        <div class="modal-grid">
-          <div class="modal-grid-item">
+        <div class="modal-grid" id="modalGrid">
+          <div class="modal-grid-item" id="modalSourceGroup">
             <span>Source / Contributor</span>
-            <strong id="modalSource">N/A</strong>
+            <strong id="modalSource"></strong>
           </div>
-          <div class="modal-grid-item">
+          <div class="modal-grid-item" id="modalPriceGroup">
             <span>Price</span>
-            <strong id="modalPrice">N/A</strong>
+            <strong id="modalPrice"></strong>
           </div>
-          <div class="modal-grid-item">
+          <div class="modal-grid-item" id="modalSeatGroup">
             <span>Seat / Row</span>
-            <strong id="modalSeat">N/A</strong>
+            <strong id="modalSeat"></strong>
           </div>
-          <div class="modal-grid-item" id="modalSupportItem" style="display: none;">
+          <div class="modal-grid-item" id="modalSupportGroup">
             <span>Supporting Act</span>
-            <strong id="modalSupport">N/A</strong>
+            <strong id="modalSupport"></strong>
           </div>
         </div>
 
@@ -723,7 +786,8 @@
     let currentLayout = 'grid';
     let currentPage = 1;
     let pageSize = 50;
-    let currentCategory = 'ALL';
+    let currentCategory = 'Tickets'; // Implicitně nastaveno na Tickets
+    let currentModalIndex = -1;
 
     let imageViewerInstance = null;
 
@@ -788,6 +852,26 @@
       };
     }
 
+    function parseLocation(t) {
+      if (isValidValue(t.MESTO)) {
+        return t.MESTO.trim();
+      }
+      const parsed = parseInfoText(t);
+      let text = parsed.text;
+      // Odstraní případné jméno přispěvatele na konci za pomlčkou
+      if (text.includes(' - ')) {
+        const parts = text.split(' - ').map(p => p.trim()).filter(Boolean);
+        if (parts.length > 1) {
+          // Pokud poslední část vypadá jako jméno přispěvatele ze ZDROJ_POSKYTNUL, odřízne se
+          if (isValidValue(t.ZDROJ_POSKYTNUL) && parts[parts.length - 1].toLowerCase().includes(t.ZDROJ_POSKYTNUL.toLowerCase())) {
+            parts.pop();
+          }
+          return parts.join(' • ');
+        }
+      }
+      return text;
+    }
+
     function parseToDate(t) {
       const parsed = parseInfoText(t);
       if (!parsed.date) return new Date(0);
@@ -816,7 +900,11 @@
     });
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
+      if (document.getElementById('detailModal').classList.contains('active')) {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowLeft') navigateModal(-1);
+        if (e.key === 'ArrowRight') navigateModal(1);
+      }
     });
 
     function updateStats() {
@@ -872,13 +960,13 @@
       tabsContainer.innerHTML = '';
 
       const counts = {
-        'ALL': matchesBeforeCategoryFilter.length,
         'Tickets': 0,
         'Passes': 0,
         'Programs': 0,
         'Posters': 0,
         'T-shirts': 0,
-        'Memorabilia': 0
+        'Memorabilia': 0,
+        'ALL': matchesBeforeCategoryFilter.length
       };
 
       matchesBeforeCategoryFilter.forEach(t => {
@@ -890,18 +978,22 @@
         }
       });
 
+      // Pořadí: Tickets první, ALL až na konci
+      const categoryOrder = ['Tickets', 'Passes', 'Programs', 'Posters', 'T-shirts', 'Memorabilia', 'ALL'];
+
       const categoryLabels = {
-        'ALL': '✨ All Records',
         'Tickets': '🎫 Tickets',
         'Passes': '🪪 Passes',
         'Programs': '📖 Programs',
         'Posters': '🖼️ Posters',
         'T-shirts': '🎽 T-shirts',
-        'Memorabilia': '⭐ Memorabilia'
+        'Memorabilia': '⭐ Memorabilia',
+        'ALL': '✨ All Records'
       };
 
-      for (const [catKey, count] of Object.entries(counts)) {
-        if (count > 0 || catKey === 'ALL') {
+      categoryOrder.forEach(catKey => {
+        const count = counts[catKey];
+        if (count > 0 || catKey === 'ALL' || catKey === 'Tickets') {
           const btn = document.createElement('button');
           btn.className = `tab-btn ${currentCategory === catKey ? 'active' : ''}`;
           const labelText = categoryLabels[catKey] || catKey;
@@ -912,7 +1004,7 @@
           };
           tabsContainer.appendChild(btn);
         }
-      }
+      });
     }
 
     function setLayout(layout) {
@@ -1006,14 +1098,15 @@
         return;
       }
 
-      tickets.forEach((t, index) => {
+      tickets.forEach((t) => {
+        const globalIndex = filteredTickets.indexOf(t);
         const card = document.createElement('div');
         card.className = 'ticket-card';
         card.onclick = (e) => {
           if (e.target.classList.contains('setlist-toggle-btn') || e.target.classList.contains('setlist-link') || e.target.classList.contains('edit-icon-btn')) {
             return;
           }
-          openModal(t);
+          openModal(globalIndex);
         };
 
         const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -1021,6 +1114,7 @@
         const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
 
         const parsed = parseInfoText(t);
+        const locationStr = parseLocation(t);
 
         // Extra details block (Only if strictly valid)
         let extraRowsHTML = '';
@@ -1048,8 +1142,8 @@
           const setlistUrl = (t.SETLIST_URL && isValidValue(t.SETLIST_URL)) ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
 
           setlistSection = `
-            <button class="setlist-toggle-btn" onclick="event.stopPropagation(); toggleSetlist('${index}')">🎵 View Setlist (${songCount})</button>
-            <div class="setlist-content" id="setlist-${index}">
+            <button class="setlist-toggle-btn" onclick="event.stopPropagation(); toggleSetlist('${globalIndex}')">🎵 View Setlist (${songCount})</button>
+            <div class="setlist-content" id="setlist-${globalIndex}">
               <ol>${listItems}</ol>
               ${setlistUrl}
             </div>
@@ -1062,6 +1156,13 @@
 
         const editUrl = `edit_ticket.html?id=${encodeURIComponent(t.ID_LISTKU || '')}`;
 
+        // Source display
+        const sourceHTML = isValidValue(t.ZDROJ_POSKYTNUL) ? `
+          <div class="source-row">
+            <span>Source:</span>
+            <span class="source-val">${t.ZDROJ_POSKYTNUL}</span>
+          </div>` : '';
+
         card.innerHTML = `
           <div class="card-img-wrapper">
             ${imgSrc ? `<img src="${imgSrc}" alt="Ticket Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzMzMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4='">` : ''}
@@ -1072,15 +1173,10 @@
               <a href="${editUrl}" target="_blank" class="edit-icon-btn" onclick="event.stopPropagation();" title="Edit this record">✏️</a>
             </div>
             ${parsed.date ? `<div class="card-date">${parsed.date}</div>` : ''}
-            <div class="info-text">${parsed.text}</div>
+            ${locationStr ? `<div class="location-text">📍 ${locationStr}</div>` : ''}
             
             ${extraDetailsBlock}
-
-            <div class="source-row">
-              <span>Source:</span>
-              <span class="source-val">${t.ZDROJ_POSKYTNUL || 'Unknown'}</span>
-            </div>
-            
+            ${sourceHTML}
             ${setlistSection}
           </div>
         `;
@@ -1156,7 +1252,17 @@
       }
     }
 
-    function openModal(t) {
+    function openModal(index) {
+      if (index < 0 || index >= filteredTickets.length) return;
+      currentModalIndex = index;
+      const t = filteredTickets[currentModalIndex];
+
+      // Reset viewer if exists
+      if (imageViewerInstance) {
+        imageViewerInstance.destroy();
+        imageViewerInstance = null;
+      }
+
       const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
       const modalImg = document.getElementById('modalImg');
       const thumbContainer = document.getElementById('modalThumbnails');
@@ -1188,30 +1294,54 @@
         modalImg.src = '';
       }
 
-      if (imageViewerInstance) {
-        imageViewerInstance.destroy();
-      }
-      imageViewerInstance = new Viewer(modalImg, { toolbar: true, navbar: false });
+      // Initialize Zoom Viewer
+      setTimeout(() => {
+        imageViewerInstance = new Viewer(modalImg, { 
+          toolbar: true, 
+          navbar: false,
+          title: false
+        });
+      }, 100);
 
       const parsed = parseInfoText(t);
+      const locationStr = parseLocation(t);
 
       document.getElementById('modalTour').textContent = t.TURNE || 'UNKNOWN TOUR';
       document.getElementById('modalDate').textContent = parsed.date || '';
-      document.getElementById('modalInfo').textContent = parsed.text || '';
-      document.getElementById('modalSource').textContent = isValidValue(t.ZDROJ_POSKYTNUL) ? t.ZDROJ_POSKYTNUL : 'N/A';
-      
-      const price = isValidValue(t.CENA) ? `${t.CENA} ${isValidValue(t.MENA) ? t.MENA : ''}`.trim() : 'N/A';
-      document.getElementById('modalPrice').textContent = price;
+      document.getElementById('modalLocation').textContent = locationStr ? `📍 ${locationStr}` : '';
+      document.getElementById('modalInfo').textContent = parsed.text !== locationStr ? parsed.text : '';
 
-      const seat = isValidValue(t.SEKTOR_RADA_SEDADLO) ? t.SEKTOR_RADA_SEDADLO : 'N/A';
-      document.getElementById('modalSeat').textContent = seat;
+      // Grid Fields (Strictly hide if invalid)
+      const srcGroup = document.getElementById('modalSourceGroup');
+      if (isValidValue(t.ZDROJ_POSKYTNUL)) {
+        document.getElementById('modalSource').textContent = t.ZDROJ_POSKYTNUL;
+        srcGroup.style.display = 'block';
+      } else {
+        srcGroup.style.display = 'none';
+      }
 
-      const supportItem = document.getElementById('modalSupportItem');
+      const priceGroup = document.getElementById('modalPriceGroup');
+      if (isValidValue(t.CENA)) {
+        document.getElementById('modalPrice').textContent = `${t.CENA} ${isValidValue(t.MENA) ? t.MENA : ''}`.trim();
+        priceGroup.style.display = 'block';
+      } else {
+        priceGroup.style.display = 'none';
+      }
+
+      const seatGroup = document.getElementById('modalSeatGroup');
+      if (isValidValue(t.SEKTOR_RADA_SEDADLO)) {
+        document.getElementById('modalSeat').textContent = t.SEKTOR_RADA_SEDADLO;
+        seatGroup.style.display = 'block';
+      } else {
+        seatGroup.style.display = 'none';
+      }
+
+      const supportGroup = document.getElementById('modalSupportGroup');
       if (isValidValue(t.SUPPORTING_ACT)) {
         document.getElementById('modalSupport').textContent = t.SUPPORTING_ACT.trim();
-        supportItem.style.display = 'block';
+        supportGroup.style.display = 'block';
       } else {
-        supportItem.style.display = 'none';
+        supportGroup.style.display = 'none';
       }
 
       // Setlist for Modal
@@ -1233,7 +1363,19 @@
         modalSetlistSec.innerHTML = `<p style="color: var(--text-muted); font-style: italic;">No setlist available for this concert.</p>`;
       }
 
+      // Nav controls update
+      document.getElementById('modalCounter').textContent = `${currentModalIndex + 1} / ${filteredTickets.length}`;
+      document.getElementById('modalPrevBtn').disabled = currentModalIndex === 0;
+      document.getElementById('modalNextBtn').disabled = currentModalIndex === filteredTickets.length - 1;
+
       document.getElementById('detailModal').classList.add('active');
+    }
+
+    function navigateModal(direction) {
+      const newIndex = currentModalIndex + direction;
+      if (newIndex >= 0 && newIndex < filteredTickets.length) {
+        openModal(newIndex);
+      }
     }
 
     function closeModal() {
@@ -1242,6 +1384,7 @@
         imageViewerInstance.destroy();
         imageViewerInstance = null;
       }
+      currentModalIndex = -1;
     }
 
     function closeModalOnOverlay(e) {
