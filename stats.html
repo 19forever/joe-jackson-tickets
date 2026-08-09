@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rolf Thalmann´s Ticket Museum - Analytics & Stats</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <!-- Chart.js pro vykreslení grafů -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -16,6 +17,7 @@
       --text-muted: #9ca3af;
       --accent-yellow: #facc15;
       --accent-blue: #38bdf8;
+      --accent-orange: #f97316;
       --border-color: #1f2937;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
@@ -30,7 +32,7 @@
       font-family: var(--font-family);
       background-color: var(--bg-main);
       color: var(--text-main);
-      padding: 20px 40px 40px 40px;
+      padding: 30px;
       min-height: 100vh;
     }
 
@@ -39,7 +41,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 25px;
-      padding-bottom: 15px;
+      padding-bottom: 20px;
       border-bottom: 1px solid var(--border-color);
     }
 
@@ -50,7 +52,7 @@
     }
 
     .logo {
-      background-color: #f97316;
+      background-color: var(--accent-orange);
       color: #000;
       width: 48px;
       height: 48px;
@@ -74,63 +76,63 @@
       margin-top: 4px;
     }
 
-    .btn-nav {
+    .btn-back {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 8px 16px;
-      border-radius: 6px;
+      padding: 10px 18px;
+      border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.2s;
     }
 
-    .btn-nav:hover {
-      background-color: #1f2937;
+    .btn-back:hover {
       border-color: var(--accent-yellow);
       color: var(--accent-yellow);
     }
 
-    /* KPI Summary Cards */
-    .kpi-grid {
+    /* Key Numbers Bar */
+    .stats-summary-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 15px;
       margin-bottom: 30px;
     }
 
-    .kpi-card {
-      background-color: var(--bg-card);
+    .stat-card {
+      background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
       border-radius: 10px;
       padding: 20px;
       text-align: center;
     }
 
-    .kpi-title {
-      font-size: 0.75rem;
+    .stat-card span {
+      display: block;
       color: var(--text-muted);
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 8px;
       font-weight: 600;
+      margin-bottom: 8px;
     }
 
-    .kpi-value {
-      font-size: 2rem;
+    .stat-card strong {
+      font-size: 1.8rem;
       font-weight: 800;
       color: var(--accent-yellow);
     }
 
-    /* Main Grid for Charts */
+    /* Charts Grid */
     .charts-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 25px;
     }
 
-    .chart-panel {
+    .chart-box {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
       border-radius: 12px;
@@ -139,31 +141,17 @@
       flex-direction: column;
     }
 
-    .chart-panel.full-width {
+    .chart-box.full-width {
       grid-column: 1 / -1;
     }
 
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .panel-title {
+    .chart-box h3 {
       font-size: 1rem;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .panel-select {
-      background-color: var(--bg-main);
-      border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      outline: none;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .chart-wrapper {
@@ -172,47 +160,10 @@
       min-height: 280px;
     }
 
-    /* Custom Table for Songs */
-    .song-list {
-      list-style: none;
-      padding: 0;
-      margin-top: 10px;
-      max-height: 320px;
-      overflow-y: auto;
-    }
-
-    .song-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 0.88rem;
-    }
-
-    .song-item:nth-child(even) {
-      background-color: rgba(255, 255, 255, 0.02);
-    }
-
-    .song-rank {
-      font-weight: 700;
-      color: var(--accent-yellow);
-      width: 30px;
-    }
-
-    .song-name {
-      flex-grow: 1;
-      font-weight: 500;
-    }
-
-    .song-count {
-      color: var(--accent-blue);
-      font-weight: 700;
-    }
-
     @media (max-width: 900px) {
       body { padding: 15px; }
+      header { flex-direction: column; align-items: flex-start; gap: 15px; }
       .charts-grid { grid-template-columns: 1fr; }
-      .chart-panel.full-width { grid-column: 1; }
     }
   </style>
 </head>
@@ -222,79 +173,78 @@
     <div class="header-left">
       <div class="logo">JJ</div>
       <div class="title-area">
-        <h1>Museum Analytics & Song Statistics</h1>
-        <p>Insights into Joe Jackson´s live concert history & collection data</p>
+        <h1>Museum Analytics & Geographic Insights</h1>
+        <p>Distribution of concerts across venues, cities, countries and time</p>
       </div>
     </div>
-    <a href="index.html" class="btn-nav">◄ Back to Museum</a>
+    <a href="index.html" class="btn-back">◄ Back to Museum</a>
   </header>
 
-  <!-- KPI Summary Row -->
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-title">Archived Records</div>
-      <div class="kpi-value" id="kpiTickets">0</div>
+  <!-- KPI Key Numbers -->
+  <div class="stats-summary-grid">
+    <div class="stat-card">
+      <span>Loaded Records</span>
+      <strong id="statRecords">0</strong>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-title">Tours Represented</div>
-      <div class="kpi-value" id="kpiTours" style="color: #fff;">0</div>
+    <div class="stat-card">
+      <span>Tours Represented</span>
+      <strong id="statTours" style="color: #fff;">0</strong>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-title">Contributors</div>
-      <div class="kpi-value" id="kpiDonors" style="color: var(--accent-blue);">0</div>
+    <div class="stat-card">
+      <span>Unique Cities</span>
+      <strong id="statCities" style="color: var(--accent-blue);">0</strong>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-title">Total Tracked Songs</div>
-      <div class="kpi-value" id="kpiSongs" style="color: #10b981;">0</div>
+    <div class="stat-card">
+      <span>Venues / Clubs</span>
+      <strong id="statVenues" style="color: var(--accent-orange);">0</strong>
+    </div>
+    <div class="stat-card">
+      <span>Countries</span>
+      <strong id="statCountries" style="color: #4ade80;">0</strong>
     </div>
   </div>
 
+  <!-- Charts -->
   <div class="charts-grid">
-
+    
     <!-- Timeline Chart (Full Width) -->
-    <div class="chart-panel full-width">
-      <div class="panel-header">
-        <div class="panel-title">📅 Concert Items by Year (Timeline)</div>
-      </div>
+    <div class="chart-box full-width">
+      <h3>📅 Concerts & Memorabilia per Year</h3>
       <div class="chart-wrapper">
-        <canvas id="timelineChart"></canvas>
+        <canvas id="chartYears"></canvas>
       </div>
     </div>
 
-    <!-- Songs By Tour Panel -->
-    <div class="chart-panel">
-      <div class="panel-header">
-        <div class="panel-title">🎵 Song Frequency by Tour</div>
-        <select id="tourSelect" class="panel-select" onchange="updateTourSongs()"></select>
-      </div>
-      <ul class="song-list" id="tourSongList"></ul>
-    </div>
-
-    <!-- Top Songs Overall Chart -->
-    <div class="chart-panel">
-      <div class="panel-header">
-        <div class="panel-title">⭐ Top 10 Most Played Songs Overall</div>
-      </div>
+    <!-- Top Cities -->
+    <div class="chart-box">
+      <h3>🏙️ Top 10 Cities</h3>
       <div class="chart-wrapper">
-        <canvas id="topSongsChart"></canvas>
+        <canvas id="chartCities"></canvas>
       </div>
     </div>
 
-    <!-- Donors Distribution Chart -->
-    <div class="chart-panel full-width">
-      <div class="panel-header">
-        <div class="panel-title">🤝 Top Contributors / Donors</div>
-      </div>
+    <!-- Top Venues -->
+    <div class="chart-box">
+      <h3>Ingang 🎭 Top 10 Venues / Halls</h3>
       <div class="chart-wrapper">
-        <canvas id="donorsChart"></canvas>
+        <canvas id="chartVenues"></canvas>
+      </div>
+    </div>
+
+    <!-- Country Breakdown (Full Width or Half) -->
+    <div class="chart-box full-width">
+      <h3>🌍 Concerts by Country</h3>
+      <div class="chart-wrapper">
+        <canvas id="chartCountries"></canvas>
       </div>
     </div>
 
   </div>
 
   <script>
-    let allData = [];
-    let tourSongMap = {};
+    // Globální konfigurace pro tmavé téma v Chart.js
+    Chart.defaults.color = '#9ca3af';
+    Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
     window.addEventListener('DOMContentLoaded', () => {
       Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
@@ -302,8 +252,7 @@
         header: true,
         skipEmptyLines: true,
         complete: function(results) {
-          allData = results.data;
-          processAndRenderStats();
+          processAndRenderStats(results.data);
         }
       });
     });
@@ -311,77 +260,87 @@
     function isValid(val) {
       if (!val) return false;
       const clean = String(val).trim().toLowerCase();
-      return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a';
+      return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'undefined' && clean !== 'null';
     }
 
-    function processAndRenderStats() {
-      let totalSongsCount = 0;
-      let yearCounts = {};
-      let globalSongCounts = {};
-      let donorCounts = {};
-      let toursSet = new Set();
+    function processAndRenderStats(data) {
+      const toursSet = new Set();
+      const citiesMap = {};
+      const venuesMap = {};
+      const countriesMap = {};
+      const yearsMap = {};
 
-      allData.forEach(row => {
-        // Tour stats
-        if (isValid(row.TURNE)) {
-          toursSet.add(row.TURNE.trim());
-        }
+      data.forEach(item => {
+        if (item.TURNE) toursSet.add(item.TURNE.trim());
 
-        // Donor stats
-        if (isValid(row.ZDROJ_POSKYTNUL)) {
-          const donor = row.ZDROJ_POSKYTNUL.trim();
-          donorCounts[donor] = (donorCounts[donor] || 0) + 1;
-        }
-
-        // Year extraction
-        const textToSearch = `${row.DATUM || ''} ${row.INFO_TEXT || ''}`;
-        const yearMatch = textToSearch.match(/\b(19\d\d|20\d\d)\b/);
+        const infoText = item.INFO_TEXT || '';
+        
+        // Extrakce roku
+        const yearMatch = infoText.match(/\b(19\d\d|20\d\d)\b/);
         if (yearMatch) {
-          const yr = yearMatch[0];
-          yearCounts[yr] = (yearCounts[yr] || 0) + 1;
+          const year = yearMatch[0];
+          yearsMap[year] = (yearsMap[year] || 0) + 1;
         }
 
-        // Setlists parsing
-        if (isValid(row.SETLIST)) {
-          const tourName = isValid(row.TURNE) ? row.TURNE.trim() : 'Unknown Tour';
-          if (!tourSongMap[tourName]) tourSongMap[tourName] = {};
+        // Extrakce Města / Klubu / Státu z MESTO nebo z INFO_TEXT
+        if (isValid(item.MESTO)) {
+          const city = item.MESTO.trim();
+          citiesMap[city] = (citiesMap[city] || 0) + 1;
+        } else if (infoText.includes(' - ')) {
+          const parts = infoText.split(' - ').map(p => p.trim());
+          if (parts.length >= 2) {
+            // Často ve tvaru: Datum - Město, Země - Klub
+            const locPart = parts[1];
+            if (locPart.includes(',')) {
+              const locSub = locPart.split(',');
+              const city = locSub[0].trim();
+              const country = locSub[1].trim();
+              citiesMap[city] = (citiesMap[city] || 0) + 1;
+              countriesMap[country] = (countriesMap[country] || 0) + 1;
+            } else {
+              citiesMap[locPart] = (citiesMap[locPart] || 0) + 1;
+            }
 
-          const songs = row.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
-          totalSongsCount += songs.length;
-
-          songs.forEach(song => {
-            globalSongCounts[song] = (globalSongCounts[song] || 0) + 1;
-            tourSongMap[tourName][song] = (tourSongMap[tourName][song] || 0) + 1;
-          });
+            if (parts.length >= 3) {
+              const venue = parts[2].split('-')[0].trim();
+              if (venue) venuesMap[venue] = (venuesMap[venue] || 0) + 1;
+            }
+          }
         }
       });
 
-      // Update KPIs
-      document.getElementById('kpiTickets').textContent = allData.length;
-      document.getElementById('kpiTours').textContent = toursSet.size;
-      document.getElementById('kpiDonors').textContent = Object.keys(donorCounts).length;
-      document.getElementById('kpiSongs').textContent = totalSongsCount;
+      // Aktualizace KPI čísel
+      document.getElementById('statRecords').textContent = data.length;
+      document.getElementById('statTours').textContent = toursSet.size;
+      document.getElementById('statCities').textContent = Object.keys(citiesMap).length;
+      document.getElementById('statVenues').textContent = Object.keys(venuesMap).length;
+      document.getElementById('statCountries').textContent = Object.keys(countriesMap).length;
 
-      // Render Charts
-      renderTimelineChart(yearCounts);
-      renderTopSongsChart(globalSongCounts);
-      renderDonorsChart(donorCounts);
-      populateTourSelect();
+      //ykreslení grafů
+      renderYearChart(yearsMap);
+      renderBarChart('chartCities', citiesMap, 10, '#38bdf8');
+      renderBarChart('chartVenues', venuesMap, 10, '#f97316');
+      renderBarChart('chartCountries', countriesMap, 15, '#facc15');
     }
 
-    function renderTimelineChart(yearCounts) {
-      const sortedYears = Object.keys(yearCounts).sort();
-      const counts = sortedYears.map(y => yearCounts[y]);
+    function renderYearChart(yearsMap) {
+      const sortedYears = Object.keys(yearsMap).sort();
+      const counts = sortedYears.map(y => yearsMap[y]);
 
-      new Chart(document.getElementById('timelineChart'), {
-        type: 'bar',
+      new Chart(document.getElementById('chartYears'), {
+        type: 'line',
         data: {
           labels: sortedYears,
           datasets: [{
-            label: 'Items in Archive',
+            label: 'Number of Tickets / Items',
             data: counts,
-            backgroundColor: '#facc15',
-            borderRadius: 4
+            borderColor: '#facc15',
+            backgroundColor: 'rgba(250, 204, 21, 0.15)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+            pointBackgroundColor: '#facc15'
           }]
         },
         options: {
@@ -389,109 +348,42 @@
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { ticks: { color: '#9ca3af' }, grid: { color: '#1f2937' } },
-            y: { ticks: { color: '#9ca3af' }, grid: { color: '#1f2937' } }
+            y: { grid: { color: '#1f2937' }, beginAtZero: true },
+            x: { grid: { color: '#1f2937' } }
           }
         }
       });
     }
 
-    function renderTopSongsChart(globalSongCounts) {
-      const sortedSongs = Object.entries(globalSongCounts)
+    function renderBarChart(canvasId, dataMap, limit, color) {
+      const sorted = Object.entries(dataMap)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 10);
+        .slice(0, limit);
 
-      const labels = sortedSongs.map(s => s[0]);
-      const data = sortedSongs.map(s => s[1]);
+      const labels = sorted.map(item => item[0]);
+      const values = sorted.map(item => item[1]);
 
-      new Chart(document.getElementById('topSongsChart'), {
+      new Chart(document.getElementById(canvasId), {
         type: 'bar',
         data: {
           labels: labels,
           datasets: [{
-            data: data,
-            backgroundColor: '#38bdf8',
-            borderRadius: 4
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { color: '#9ca3af' }, grid: { color: '#1f2937' } },
-            y: { ticks: { color: '#f3f4f6' }, grid: { display: false } }
-          }
-        }
-      });
-    }
-
-    function renderDonorsChart(donorCounts) {
-      const sortedDonors = Object.entries(donorCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10);
-
-      const labels = sortedDonors.map(d => d[0]);
-      const data = sortedDonors.map(d => d[1]);
-
-      new Chart(document.getElementById('donorsChart'), {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: '#10b981',
-            borderRadius: 4
+            data: values,
+            backgroundColor: color,
+            borderRadius: 6
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          indexAxis: 'y', // Horizontální sloupce pro lepší čitelnost
           plugins: { legend: { display: false } },
           scales: {
-            x: { ticks: { color: '#9ca3af' }, grid: { color: '#1f2937' } },
-            y: { ticks: { color: '#9ca3af' }, grid: { color: '#1f2937' } }
+            x: { grid: { color: '#1f2937' }, beginAtZero: true },
+            y: { grid: { display: false } }
           }
         }
       });
-    }
-
-    function populateTourSelect() {
-      const select = document.getElementById('tourSelect');
-      const tours = Object.keys(tourSongMap).sort();
-
-      tours.forEach(tour => {
-        const opt = document.createElement('option');
-        opt.value = tour;
-        opt.textContent = tour;
-        select.appendChild(opt);
-      });
-
-      if (tours.length > 0) {
-        updateTourSongs();
-      }
-    }
-
-    function updateTourSongs() {
-      const selectedTour = document.getElementById('tourSelect').value;
-      const songMap = tourSongMap[selectedTour] || {};
-      const songListEl = document.getElementById('tourSongList');
-
-      const sorted = Object.entries(songMap).sort((a, b) => b[1] - a[1]);
-
-      if (sorted.length === 0) {
-        songListEl.innerHTML = '<li class="song-item" style="color: var(--text-muted);">No setlist data available for this tour.</li>';
-        return;
-      }
-
-      songListEl.innerHTML = sorted.map((s, idx) => `
-        <li class="song-item">
-          <span class="song-rank">#${idx + 1}</span>
-          <span class="song-name">${s[0]}</span>
-          <span class="song-count">${s[1]}x</span>
-        </li>
-      `).join('');
     }
   </script>
 </body>
