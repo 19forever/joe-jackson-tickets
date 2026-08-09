@@ -61,16 +61,15 @@ def run_checks():
                             print(f"❌ ERROR [Row {row_num}] ({ticket_id}): Referenced scan file '{sken_file}' NOT FOUND in scans/ directory!")
                             errors += 1
 
-            # 3. Kontrola formátu pole DATUM (pokud je zadáno)
+            # 3. Kontrola formátu pole DATUM (akceptuje YYYY-MM-DD, DD.MM.YYYY i "8th October 2010")
             if date_field and date_field.lower() != 'není k dispozici':
-                # Očekáváme YYYY-MM-DD nebo DD.MM.YYYY
-                if not re.match(r'^(\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4})$', date_field):
+                if not re.match(r'^(\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4}|\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]+\s+\d{4})$', date_field):
                     print(f"⚠️ WARNING [Row {row_num}] ({ticket_id}): Unconventional date format in DATUM: '{date_field}'")
                     warnings += 1
 
     # 4. Kontrola sirotčích obrázků ve složce scans/
     orphan_files = actual_files_on_disk - referenced_files
-    # Ignorujeme skryté soubory jako .DS_Store
+    # Ignorujeme skryté soubory systému (jako .DS_Store nebo .gitkeep)
     orphan_files = {f for f in orphan_files if not f.startswith('.')}
 
     if orphan_files:
