@@ -362,6 +362,7 @@
       text-align: right;
     }
 
+    /* Tlačítko setlistu - výchozí styl */
     .setlist-toggle-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
@@ -373,12 +374,33 @@
       margin-top: 15px;
       cursor: pointer;
       text-align: center;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
-    
-    .setlist-toggle-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
+
+    /* Zvýrazněné tlačítko, pokud setlist existuje */
+    .setlist-toggle-btn.has-setlist {
+      background: rgba(250, 204, 21, 0.12);
+      border-color: rgba(250, 204, 21, 0.5);
+      color: var(--accent-yellow);
+      font-weight: 700;
+    }
+
+    .setlist-toggle-btn.has-setlist:hover {
+      background: rgba(250, 204, 21, 0.25);
       color: #fff;
+    }
+
+    /* Tlačítko pro přidání chybějícího setlistu */
+    .setlist-toggle-btn.add-setlist {
+      border: 1px dashed var(--border-color);
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .setlist-toggle-btn.add-setlist:hover {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
     }
 
     .setlist-content {
@@ -752,10 +774,6 @@
             <span>Price</span>
             <strong id="modalPrice"></strong>
           </div>
-          <div class="modal-grid-item" id="modalSeatGroup">
-            <span>Seat / Row</span>
-            <strong id="modalSeat"></strong>
-          </div>
           <div class="modal-grid-item" id="modalSupportGroup">
             <span>Supporting Act</span>
             <strong id="modalSupport"></strong>
@@ -1055,6 +1073,16 @@
       renderPaginationControls();
     }
 
+    // Pomocná funkce pro přesměrování s potvrzením na Setlist.fm
+    function promptAddSetlist(infoText, dateStr) {
+      const searchQuery = `Joe Jackson ${dateStr || ''} ${infoText || ''}`.trim();
+      const confirmed = confirm(`Setlist for this concert is missing.\n\nDo you want to search Setlist.fm to find or add the setlist?\n\nSearch term: "${searchQuery}"`);
+      if (confirmed) {
+        const setlistSearchUrl = `https://www.setlist.fm/search?query=${encodeURIComponent(searchQuery)}`;
+        window.open(setlistSearchUrl, '_blank');
+      }
+    }
+
     function renderTickets(tickets) {
       const container = document.getElementById('ticketsContainer');
       container.innerHTML = '';
@@ -1081,14 +1109,11 @@
 
         const parsed = parseInfoText(t);
 
-        // Extra details block (Only if strictly valid)
+        // Extra details block (Without Seat/Row)
         let extraRowsHTML = '';
         if (isValidValue(t.CENA)) {
           const formattedPrice = `${t.CENA} ${isValidValue(t.MENA) ? t.MENA : ''}`.trim();
           extraRowsHTML += `<div class="card-extra-row"><span>Price:</span><span>${formattedPrice}</span></div>`;
-        }
-        if (isValidValue(t.SEKTOR_RADA_SEDADLO)) {
-          extraRowsHTML += `<div class="card-extra-row"><span>Seat/Row:</span><span>${t.SEKTOR_RADA_SEDADLO}</span></div>`;
         }
         if (isValidValue(t.SUPPORTING_ACT)) {
           extraRowsHTML += `<div class="card-extra-row"><span>Support:</span><span>${t.SUPPORTING_ACT}</span></div>`;
@@ -1096,7 +1121,7 @@
 
         const extraDetailsBlock = extraRowsHTML ? `<div class="card-extra-details">${extraRowsHTML}</div>` : '';
 
-        // Setlist
+        // Setlist Section
         let setlistSection = '';
         const setlistStr = t.SETLIST || '';
         const songCount = parseInt(t.POCET_SKLADEB) || 0;
@@ -1106,16 +1131,20 @@
           const listItems = songs.map(s => `<li>${s}</li>`).join('');
           const setlistUrl = (t.SETLIST_URL && isValidValue(t.SETLIST_URL)) ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
 
+          // Zvýrazněné tlačítko
           setlistSection = `
-            <button class="setlist-toggle-btn" onclick="event.stopPropagation(); toggleSetlist('${globalIndex}')">🎵 View Setlist (${songCount})</button>
+            <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleSetlist('${globalIndex}')">🎵 View Setlist (${songCount})</button>
             <div class="setlist-content" id="setlist-${globalIndex}">
               <ol>${listItems}</ol>
               ${setlistUrl}
             </div>
           `;
         } else {
+          // Tlačítko pro přidání setlistu s potvrzovacím dialogem
+          const safeText = (parsed.text || '').replace(/'/g, "\\'");
+          const safeDate = (parsed.date || '').replace(/'/g, "\\'");
           setlistSection = `
-            <button class="setlist-toggle-btn" style="opacity: 0.5; cursor: default;" onclick="event.stopPropagation();">No setlist available</button>
+            <button class="setlist-toggle-btn add-setlist" onclick="event.stopPropagation(); promptAddSetlist('${safeText}', '${safeDate}')">➕ Add Setlist on Setlist.fm ↗</button>
           `;
         }
 
@@ -1274,7 +1303,7 @@
       document.getElementById('modalDate').textContent = parsed.date || '';
       document.getElementById('modalInfo').textContent = parsed.text || '';
 
-      // Grid Fields (Strictly hide if invalid)
+      // Grid Fields (Without Seat/Row)
       const srcGroup = document.getElementById('modalSourceGroup');
       if (isValidValue(t.ZDROJ_POSKYTNUL)) {
         document.getElementById('modalSource').textContent = t.ZDROJ_POSKYTNUL;
@@ -1289,14 +1318,6 @@
         priceGroup.style.display = 'block';
       } else {
         priceGroup.style.display = 'none';
-      }
-
-      const seatGroup = document.getElementById('modalSeatGroup');
-      if (isValidValue(t.SEKTOR_RADA_SEDADLO)) {
-        document.getElementById('modalSeat').textContent = t.SEKTOR_RADA_SEDADLO;
-        seatGroup.style.display = 'block';
-      } else {
-        seatGroup.style.display = 'none';
       }
 
       const supportGroup = document.getElementById('modalSupportGroup');
@@ -1323,7 +1344,12 @@
           ${setlistUrl}
         `;
       } else {
-        modalSetlistSec.innerHTML = `<p style="color: var(--text-muted); font-style: italic;">No setlist available for this concert.</p>`;
+        const safeText = (parsed.text || '').replace(/'/g, "\\'");
+        const safeDate = (parsed.date || '').replace(/'/g, "\\'");
+        modalSetlistSec.innerHTML = `
+          <p style="color: var(--text-muted); font-style: italic; margin-bottom: 12px;">No setlist available for this concert.</p>
+          <button class="setlist-toggle-btn add-setlist" onclick="promptAddSetlist('${safeText}', '${safeDate}')">➕ Add Setlist on Setlist.fm ↗</button>
+        `;
       }
 
       // Nav controls update
