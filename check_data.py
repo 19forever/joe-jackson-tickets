@@ -61,9 +61,9 @@ def run_checks():
                             print(f"❌ ERROR [Row {row_num}] ({ticket_id}): Referenced scan file '{sken_file}' NOT FOUND in scans/ directory!")
                             errors += 1
 
-            # 3. Kontrola formátu pole DATUM (akceptuje YYYY-MM-DD, DD.MM.YYYY i "8th October 2010")
+            # 3. Kontrola formátu pole DATUM (akceptuje YYYY-MM-DD, DD.MM.YYYY, "8th October 2010" i samostatný rok "2010")
             if date_field and date_field.lower() != 'není k dispozici':
-                if not re.match(r'^(\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4}|\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]+\s+\d{4})$', date_field):
+                if not re.match(r'^(\d{4}|\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4}|\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]+\s+\d{4})$', date_field):
                     print(f"⚠️ WARNING [Row {row_num}] ({ticket_id}): Unconventional date format in DATUM: '{date_field}'")
                     warnings += 1
 
