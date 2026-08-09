@@ -174,7 +174,7 @@
       <div class="logo">JJ</div>
       <div class="title-area">
         <h1>Museum Analytics & Geographic Insights</h1>
-        <p>Distribution of concerts across venues, cities, countries and time</p>
+        <p>Distribution of ticketed concerts across venues, cities, countries and time</p>
       </div>
     </div>
     <a href="index.html" class="btn-back">◄ Back to Museum</a>
@@ -183,7 +183,7 @@
   <!-- KPI Key Numbers -->
   <div class="stats-summary-grid">
     <div class="stat-card">
-      <span>Loaded Records</span>
+      <span>Concert Tickets</span>
       <strong id="statRecords">0</strong>
     </div>
     <div class="stat-card">
@@ -209,7 +209,7 @@
     
     <!-- Timeline Chart (Full Width) -->
     <div class="chart-box full-width">
-      <h3>📅 Concerts & Memorabilia per Year</h3>
+      <h3>📅 Concert Tickets per Year</h3>
       <div class="chart-wrapper">
         <canvas id="chartYears"></canvas>
       </div>
@@ -225,13 +225,13 @@
 
     <!-- Top Venues -->
     <div class="chart-box">
-      <h3>Ingang 🎭 Top 10 Venues / Halls</h3>
+      <h3>🎭 Top 10 Venues / Halls</h3>
       <div class="chart-wrapper">
         <canvas id="chartVenues"></canvas>
       </div>
     </div>
 
-    <!-- Country Breakdown (Full Width or Half) -->
+    <!-- Country Breakdown -->
     <div class="chart-box full-width">
       <h3>🌍 Concerts by Country</h3>
       <div class="chart-wrapper">
@@ -269,14 +269,26 @@
       const venuesMap = {};
       const countriesMap = {};
       const yearsMap = {};
+      let ticketCount = 0;
 
       data.forEach(item => {
-        if (item.TURNE) toursSet.add(item.TURNE.trim());
+        // FILTR: Počítáme výhradně položky kategorie 'Tickets'
+        const cat = (item.KATEGORIE || '').trim().toLowerCase();
+        if (cat !== '' && cat !== 'tickets') {
+          return; // Přeskočit plakáty, trička, pasy, memorabilie
+        }
+
+        ticketCount++;
+
+        if (item.TURNE && isValid(item.TURNE)) {
+          toursSet.add(item.TURNE.trim());
+        }
 
         const infoText = item.INFO_TEXT || '';
+        const datumText = item.DATUM || '';
         
-        // Extrakce roku
-        const yearMatch = infoText.match(/\b(19\d\d|20\d\d)\b/);
+        // Extrakce roku z DATUM nebo INFO_TEXT
+        const yearMatch = `${datumText} ${infoText}`.match(/\b(19\d\d|20\d\d)\b/);
         if (yearMatch) {
           const year = yearMatch[0];
           yearsMap[year] = (yearsMap[year] || 0) + 1;
@@ -289,7 +301,6 @@
         } else if (infoText.includes(' - ')) {
           const parts = infoText.split(' - ').map(p => p.trim());
           if (parts.length >= 2) {
-            // Často ve tvaru: Datum - Město, Země - Klub
             const locPart = parts[1];
             if (locPart.includes(',')) {
               const locSub = locPart.split(',');
@@ -309,14 +320,14 @@
         }
       });
 
-      // Aktualizace KPI čísel
-      document.getElementById('statRecords').textContent = data.length;
+      // Aktualizace KPI čísel na stránce
+      document.getElementById('statRecords').textContent = ticketCount;
       document.getElementById('statTours').textContent = toursSet.size;
       document.getElementById('statCities').textContent = Object.keys(citiesMap).length;
       document.getElementById('statVenues').textContent = Object.keys(venuesMap).length;
       document.getElementById('statCountries').textContent = Object.keys(countriesMap).length;
 
-      //ykreslení grafů
+      // Vykreslení grafů
       renderYearChart(yearsMap);
       renderBarChart('chartCities', citiesMap, 10, '#38bdf8');
       renderBarChart('chartVenues', venuesMap, 10, '#f97316');
@@ -332,7 +343,7 @@
         data: {
           labels: sortedYears,
           datasets: [{
-            label: 'Number of Tickets / Items',
+            label: 'Concert Tickets Count',
             data: counts,
             borderColor: '#facc15',
             backgroundColor: 'rgba(250, 204, 21, 0.15)',
@@ -376,7 +387,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          indexAxis: 'y', // Horizontální sloupce pro lepší čitelnost
+          indexAxis: 'y',
           plugins: { legend: { display: false } },
           scales: {
             x: { grid: { color: '#1f2937' }, beginAtZero: true },
