@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joe Jackson´s Memorabilia Museum</title>
+
+  <!-- Favicon (JJ Icon) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDY0IDY0Ij4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxMiIgZmlsbD0iI2Y5NzMxNiIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAnU2Vnb2UgVUknLCBSb2JvdG8sIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGxldHRlci1zcGFjaW5nPSItMiI+Sko8L3RleHQ+Cjwvc3ZnPg==">
+
+  <!-- External Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <!-- Viewer.js (Image Zoom & Inspection) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
+</head>
+<body>
+
+  <div class="top-header-container">
+    <header>
+      <div class="header-left">
+        <div class="logo">JJ</div>
+        <div class="title-area">
+          <h1>Joe Jackson´s Memorabilia Museum <span class="year-badge" id="yearBadge">...</span></h1>
+          <p>Historical archive of Joe Jackson´s concert tickets, venues & memorabilia</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- On This Day in History Banner -->
+    <div class="on-this-day-banner" id="otdBanner">
+      <div class="otd-left">
+        <div class="otd-icon">📅</div>
+        <div class="otd-text">
+          <h4>On This Day In History</h4>
+          <p id="otdTitle">...</p>
+        </div>
+      </div>
+      <button class="otd-btn" id="otdBtn">🎫 View Anniversary Show</button>
+    </div>
+
+    <div class="category-tabs" id="categoryTabs"></div>
+
+    <div class="controls">
+      <div class="search-input-wrapper">
+        <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, date..." onkeyup="handleSearchInput()">
+        <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearchInput()" title="Clear search">✕</button>
+      </div>
+
+      <button class="surprise-btn" onclick="openSurpriseTicket()" title="Open a random memorabilia record">🎲 Surprise Me!</button>
+
+      <select id="yearFilter" onchange="filterData()"><option value="">All Years</option></select>
+      <select id="cityFilter" onchange="filterData()"><option value="">All Cities</option></select>
+      <select id="sortFilter" onchange="filterData()">
+        <option value="oldest">Date (Oldest First)</option>
+        <option value="newest">Date (Newest First)</option>
+      </select>
+      <select id="pageSizeFilter" onchange="changePageSize()">
+        <option value="25">25 / page</option>
+        <option value="50" selected>50 / page</option>
+        <option value="100">100 / page</option>
+        <option value="ALL">ALL</option>
+      </select>
+      <div class="layout-toggles">
+        <button class="toggle-btn active" id="btnGrid" onclick="setLayout('grid')">⊞</button>
+        <button class="toggle-btn" id="btnList" onclick="setLayout('list')">≡</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="ticketsContainer" class="tickets-container grid-view"></div>
+  <div id="paginationContainer" class="pagination-container"></div>
+
+  <!-- Detail Modal Window (Flashcard) -->
+  <div class="modal-overlay" id="detailModal" onclick="closeModalOnOverlay(event)">
+    <div class="modal-card">
+      <div class="modal-nav-bar">
+        <button class="modal-nav-btn" id="modalPrevBtn" onclick="navigateModal(-1)">◄ Previous</button>
+        <div class="modal-counter" id="modalCounter">0 / 0</div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#" id="modalEditLink" target="_blank" class="modal-edit-btn" title="Edit this record">✏️ Edit</a>
+          <button class="modal-nav-btn" id="modalNextBtn" onclick="navigateModal(1)">Next ►</button>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+      </div>
+
+      <div class="modal-img-container">
+        <div id="modalViewerWrapper">
+          <img id="modalImg" src="" alt="Ticket Full View">
+        </div>
+        <div class="modal-thumbnails" id="modalThumbnails"></div>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-date" id="modalDate"></div>
+        <div class="modal-title" id="modalInfo"></div>
+        
+        <div class="modal-grid" id="modalGrid">
+          <div class="modal-grid-item" id="modalSupportGroup">
+            <span>Supporting Act</span>
+            <strong id="modalSupport"></strong>
+          </div>
+          <div class="modal-grid-item" id="modalSeatGroup">
+            <span>Seating / Section</span>
+            <strong id="modalSeat"></strong>
+          </div>
+        </div>
+
+        <!-- 2-Column Flashcard Section: Line-up & Setlist -->
+        <div class="flashcard-columns" id="modalColumnsSection"></div>
+
+        <!-- External Media Links & Embeds -->
+        <div id="modalMediaContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skrytý prvek pro spuštění Lupy (Viewer.js) nad souvisejícími obrázky -->
+  <img id="quickViewerImg" src="" style="display: none;" alt="Quick Viewer">
+
+  <!-- External Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
