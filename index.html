@@ -90,22 +90,6 @@
 
     .title-area p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
 
-    .stats-bar {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-bottom: 15px;
-      letter-spacing: 0.5px;
-    }
-
-    .stats-bar span { color: var(--border-color); }
-    .stat-val-yellow { color: var(--accent-yellow); }
-    .stat-val-white { color: #fff; }
-
     /* Banner "On This Day in History" */
     .on-this-day-banner {
       background: linear-gradient(135deg, rgba(250, 204, 21, 0.15), rgba(56, 189, 248, 0.1));
@@ -333,18 +317,24 @@
       border-color: #38bdf8;
     }
 
-    .setlist-toggle-btn {
+    .collapsible-group {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    .setlist-toggle-btn, .lineup-toggle-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      width: 100%;
-      padding: 8px;
+      padding: 8px 12px;
       border-radius: 6px;
       font-size: 0.8rem;
-      margin-top: 10px;
       cursor: pointer;
       text-align: center;
       transition: all 0.2s;
+      flex-grow: 1;
     }
 
     .setlist-toggle-btn.has-setlist {
@@ -358,9 +348,41 @@
       background: rgba(250, 204, 21, 0.25);
     }
 
-    .setlist-content {
+    .lineup-toggle-btn.has-lineup {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.5);
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .lineup-toggle-btn.has-lineup:hover {
+      background: rgba(56, 189, 248, 0.25);
+    }
+
+    .external-link-icon-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .external-link-icon-btn:hover {
+      border-color: var(--accent-yellow);
+      color: var(--accent-yellow);
+      background: rgba(250, 204, 21, 0.15);
+    }
+
+    .collapsible-content {
       display: none;
-      margin-top: 10px;
+      margin-top: 8px;
       background: rgba(0,0,0,0.3);
       padding: 10px;
       border-radius: 6px;
@@ -368,8 +390,8 @@
       color: var(--text-muted);
     }
 
-    .setlist-content.open { display: block; }
-    .setlist-content ol { padding-left: 20px; margin: 10px 0; }
+    .collapsible-content.open { display: block; }
+    .collapsible-content ol, .collapsible-content ul { padding-left: 20px; margin: 8px 0; }
 
     .pagination-container {
       display: flex;
@@ -564,11 +586,6 @@
       </div>
     </header>
 
-    <div class="stats-bar">
-      <div>LOADED RECORDS: <strong class="stat-val-yellow" id="stat-tickets">0</strong></div> <span>|</span>
-      <div>TOURS REPRESENTED: <strong class="stat-val-white" id="stat-tours">0</strong></div>
-    </div>
-
     <!-- On This Day in History Banner -->
     <div class="on-this-day-banner" id="otdBanner">
       <div class="otd-left">
@@ -586,7 +603,7 @@
     <div class="controls">
       <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, date, tour..." onkeyup="filterData()">
       <select id="tourFilter" onchange="filterData()"><option value="">All Tours & Eras</option></select>
-      <select id="venueFilter" onchange="filterData()"><option value="">All Venues / Cities</option></select>
+      <select id="cityFilter" onchange="filterData()"><option value="">All Cities</option></select>
       <select id="sortFilter" onchange="filterData()">
         <option value="oldest">Date (Oldest First)</option>
         <option value="newest">Date (Newest First)</option>
@@ -644,6 +661,9 @@
             <strong id="modalSeat"></strong>
           </div>
         </div>
+
+        <!-- Line-up Section in Modal -->
+        <div id="modalLineupSection"></div>
 
         <!-- External Media Links & Embeds -->
         <div id="modalMediaContainer"></div>
@@ -705,6 +725,20 @@
       return { date: extractedDate, text: cleanedText || rawText };
     }
 
+    function extractCityOnly(t) {
+      if (isValidValue(t.MESTO)) {
+        // Pokud pole MESTO obsahuje i venue oddělené pomlčkou, vezmeme pouze město (první část)
+        return t.MESTO.split('-')[0].trim();
+      }
+      const parsed = parseInfoText(t);
+      if (parsed.text && parsed.text.trim()) {
+        // Z textu předpokládáme název města na začátku před čárkou nebo pomlčkou
+        const cityCandidate = parsed.text.split(',')[0].split('-')[0].trim();
+        return cityCandidate;
+      }
+      return '';
+    }
+
     function parseToDate(t) {
       const parsed = parseInfoText(t);
       if (!parsed.date) return new Date(0);
@@ -760,7 +794,7 @@
           } else {
             document.getElementById('searchInput').value = '';
             document.getElementById('tourFilter').value = '';
-            document.getElementById('venueFilter').value = '';
+            document.getElementById('cityFilter').value = '';
             currentCategory = 'ALL';
             filterData();
             setTimeout(() => {
@@ -778,7 +812,7 @@
         skipEmptyLines: true,
         complete: function(results) {
           allTickets = results.data;
-          updateStats();
+          updateYearBadge();
           populateFilters();
           filterData();
           checkOnThisDayAnniversary();
@@ -786,11 +820,7 @@
       });
     });
 
-    function updateStats() {
-      document.getElementById('stat-tickets').textContent = allTickets.length;
-      const uniqueTours = new Set(allTickets.map(t => t.TURNE).filter(isValidValue));
-      document.getElementById('stat-tours').textContent = uniqueTours.size;
-
+    function updateYearBadge() {
       const years = allTickets
         .map(t => parseToDate(t).getFullYear())
         .filter(y => y > 1900);
@@ -811,30 +841,22 @@
         tourSelect.appendChild(opt);
       });
 
-      // Venues / Cities Filter - Vytvoření UNIKÁTNÍHO seznamu
-      const venueSelect = document.getElementById('venueFilter');
-      const venueSet = new Set();
+      // Cities Filter - Vytvoření UNIKÁTNÍHO seznamu pouze měst
+      const citySelect = document.getElementById('cityFilter');
+      const citySet = new Set();
 
       allTickets.forEach(t => {
-        if (isValidValue(t.MESTO)) {
-          venueSet.add(t.MESTO.trim());
-        } else {
-          const parsed = parseInfoText(t);
-          if (parsed.text && parsed.text.trim()) {
-            venueSet.add(parsed.text.trim());
-          }
-        }
+        const cityName = extractCityOnly(t);
+        if (cityName) citySet.add(cityName);
       });
 
-      const uniqueVenues = [...venueSet].sort((a, b) => a.localeCompare(b));
+      const uniqueCities = [...citySet].sort((a, b) => a.localeCompare(b));
       
-      uniqueVenues.forEach(venue => {
-        if (venue) {
-          const opt = document.createElement('option');
-          opt.value = venue; 
-          opt.textContent = venue;
-          venueSelect.appendChild(opt);
-        }
+      uniqueCities.forEach(city => {
+        const opt = document.createElement('option');
+        opt.value = city; 
+        opt.textContent = city;
+        citySelect.appendChild(opt);
       });
     }
 
@@ -882,22 +904,23 @@
     function filterData() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const tour = document.getElementById('tourFilter').value;
-      const venue = document.getElementById('venueFilter').value;
+      const selectedCity = document.getElementById('cityFilter').value;
       const sort = document.getElementById('sortFilter').value;
 
       const matchesBase = allTickets.filter(t => {
         const parsed = parseInfoText(t);
-        const venueVal = (t.MESTO || parsed.text || '').trim();
+        const cityVal = extractCityOnly(t);
 
         const qMatch = !query || 
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
           (t.MESTO || '').toLowerCase().includes(query) ||
           (t.SUPPORTING_ACT || '').toLowerCase().includes(query) ||
+          (t.LINEUP || '').toLowerCase().includes(query) ||
           (t.SETLIST || '').toLowerCase().includes(query);
           
         const tMatch = !tour || t.TURNE === tour;
-        const vMatch = !venue || venueVal === venue || (t.INFO_TEXT || '').includes(venue);
-        return qMatch && tMatch && vMatch;
+        const cMatch = !selectedCity || cityVal.toLowerCase() === selectedCity.toLowerCase() || (t.INFO_TEXT || '').toLowerCase().includes(selectedCity.toLowerCase());
+        return qMatch && tMatch && cMatch;
       });
 
       renderCategoryTabs(matchesBase);
@@ -958,7 +981,7 @@
         const card = document.createElement('div');
         card.className = 'ticket-card';
         card.onclick = (e) => {
-          if (e.target.closest('.setlist-toggle-btn') || e.target.closest('.related-btn') || e.target.closest('.edit-icon-btn')) return;
+          if (e.target.closest('.setlist-toggle-btn') || e.target.closest('.lineup-toggle-btn') || e.target.closest('.external-link-icon-btn') || e.target.closest('.related-btn') || e.target.closest('.edit-icon-btn')) return;
           openModal(globalIndex);
         };
 
@@ -998,17 +1021,50 @@
           supportActHTML = `<div class="card-support-tag">🎸 Support: ${t.SUPPORTING_ACT.trim()}</div>`;
         }
 
-        let setlistSection = '';
+        // Setlist & Lineup controls
+        let collapsibleGroupHTML = '';
         const setlistStr = t.SETLIST || '';
         const songCount = parseInt(t.POCET_SKLADEB) || 0;
-        
-        if (setlistStr && isValidValue(setlistStr) && songCount > 0) {
-          const songs = setlistStr.split(',').map(s => s.trim());
-          const listItems = songs.map(s => `<li>${s}</li>`).join('');
-          setlistSection = `
-            <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleSetlist('${globalIndex}')">🎵 View Setlist.fm (${songCount})</button>
-            <div class="setlist-content" id="setlist-${globalIndex}"><ol>${listItems}</ol></div>
-          `;
+        const setlistUrl = t.SETLIST_URL || '';
+        const lineupStr = t.LINEUP || '';
+
+        const hasSetlist = setlistStr && isValidValue(setlistStr) && songCount > 0;
+        const hasLineup = lineupStr && isValidValue(lineupStr);
+
+        if (hasSetlist || hasLineup || setlistUrl) {
+          collapsibleGroupHTML += '<div class="collapsible-group">';
+          
+          if (hasSetlist) {
+            collapsibleGroupHTML += `
+              <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleCollapsible('setlist-${globalIndex}')">🎵 View Setlist.fm (${songCount})</button>
+            `;
+          }
+
+          if (setlistUrl && isValidValue(setlistUrl)) {
+            collapsibleGroupHTML += `
+              <a href="${setlistUrl}" target="_blank" class="external-link-icon-btn" title="Open directly on Setlist.fm ↗" onclick="event.stopPropagation();">🔗</a>
+            `;
+          }
+
+          if (hasLineup) {
+            collapsibleGroupHTML += `
+              <button class="lineup-toggle-btn has-lineup" onclick="event.stopPropagation(); toggleCollapsible('lineup-${globalIndex}')">👥 Line-up</button>
+            `;
+          }
+
+          collapsibleGroupHTML += '</div>';
+
+          if (hasSetlist) {
+            const songs = setlistStr.split(',').map(s => s.trim());
+            const listItems = songs.map(s => `<li>${s}</li>`).join('');
+            collapsibleGroupHTML += `<div class="collapsible-content" id="setlist-${globalIndex}"><ol>${listItems}</ol></div>`;
+          }
+
+          if (hasLineup) {
+            const members = lineupStr.split(';').map(m => m.trim());
+            const memberItems = members.map(m => `<li>${m}</li>`).join('');
+            collapsibleGroupHTML += `<div class="collapsible-content" id="lineup-${globalIndex}"><ul>${memberItems}</ul></div>`;
+          }
         }
 
         const editUrl = `edit_ticket.html?id=${encodeURIComponent(t.ID_LISTKU || '')}`;
@@ -1025,7 +1081,7 @@
             <div class="info-text">${parsed.text}</div>
             ${supportActHTML}
             ${relatedHTML}
-            ${setlistSection}
+            ${collapsibleGroupHTML}
           </div>
         `;
         
@@ -1067,8 +1123,8 @@
       container.appendChild(nextBtn);
     }
 
-    function toggleSetlist(id) {
-      const el = document.getElementById(`setlist-${id}`);
+    function toggleCollapsible(id) {
+      const el = document.getElementById(id);
       if (el) el.classList.toggle('open');
     }
 
@@ -1126,6 +1182,21 @@
         document.getElementById('modalSeat').textContent = t.SEKTOR_RADA_SEDADLO;
         seatGroup.style.display = 'block';
       } else { seatGroup.style.display = 'none'; }
+
+      // Line-up Section
+      const modalLineupSec = document.getElementById('modalLineupSection');
+      const lineupStr = t.LINEUP || '';
+      if (isValidValue(lineupStr)) {
+        const members = lineupStr.split(';').map(m => m.trim());
+        const memberItems = members.map(m => `<li>${m}</li>`).join('');
+        modalLineupSec.innerHTML = `
+          <div style="margin-top: 15px; padding: 12px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px;">
+            <h4 style="color: var(--accent-blue); margin-bottom: 8px; font-size: 0.85rem; text-transform: uppercase;">👥 Band Line-up</h4>
+            <ul style="padding-left: 20px; color: var(--text-main); font-size: 0.85rem; line-height: 1.5;">${memberItems}</ul>
+          </div>`;
+      } else {
+        modalLineupSec.innerHTML = '';
+      }
 
       // External Media Container (YouTube, Setlist.fm, Press Reviews)
       const mediaContainer = document.getElementById('modalMediaContainer');
