@@ -18,15 +18,12 @@
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
       --accent-yellow: #facc15;
+      --accent-blue: #38bdf8;
       --border-color: #1f2937;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: var(--font-family);
@@ -36,12 +33,8 @@
       min-height: 100vh;
     }
 
-    /* Fix Viewer.js overlay above Modal window */
-    .viewer-container {
-      z-index: 99999 !important;
-    }
+    .viewer-container { z-index: 99999 !important; }
 
-    /* Fixed / Sticky Top Header Wrapper */
     .top-header-container {
       position: sticky;
       top: 0;
@@ -60,11 +53,7 @@
       margin-bottom: 15px;
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+    .header-left { display: flex; align-items: center; gap: 15px; }
 
     .logo {
       background-color: #f97316;
@@ -99,11 +88,7 @@
       font-weight: 600;
     }
 
-    .title-area p {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: 4px;
-    }
+    .title-area p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
 
     .stats-bar {
       display: flex;
@@ -117,14 +102,10 @@
       letter-spacing: 0.5px;
     }
 
-    .stats-bar span {
-      color: var(--border-color);
-    }
-
+    .stats-bar span { color: var(--border-color); }
     .stat-val-yellow { color: var(--accent-yellow); }
     .stat-val-white { color: #fff; }
 
-    /* Dynamic Category Tabs */
     .category-tabs {
       display: flex;
       gap: 8px;
@@ -149,16 +130,8 @@
       gap: 6px;
     }
 
-    .tab-btn:hover {
-      border-color: #38bdf8;
-      color: #fff;
-    }
-
-    .tab-btn.active {
-      background-color: var(--accent-yellow);
-      color: #000;
-      border-color: var(--accent-yellow);
-    }
+    .tab-btn:hover { border-color: #38bdf8; color: #fff; }
+    .tab-btn.active { background-color: var(--accent-yellow); color: #000; border-color: var(--accent-yellow); }
 
     .controls {
       display: grid;
@@ -181,14 +154,9 @@
       outline: none;
     }
 
-    .controls input:focus, .controls select:focus {
-      border-color: #3b82f6;
-    }
+    .controls input:focus, .controls select:focus { border-color: var(--accent-blue); }
 
-    .layout-toggles {
-      display: flex;
-      gap: 5px;
-    }
+    .layout-toggles { display: flex; gap: 5px; }
 
     .toggle-btn {
       background-color: var(--bg-main);
@@ -204,37 +172,22 @@
       font-size: 1.1rem;
     }
 
-    .toggle-btn.active {
-      background-color: var(--accent-yellow);
-      color: #000;
-      border-color: var(--accent-yellow);
-    }
+    .toggle-btn.active { background-color: var(--accent-yellow); color: #000; border-color: var(--accent-yellow); }
 
-    /* Grid Layout */
     .tickets-container.grid-view {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 20px;
     }
 
-    /* List Layout */
     .tickets-container.list-view {
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
 
-    .tickets-container.list-view .ticket-card {
-      flex-direction: row;
-      align-items: center;
-      height: auto;
-    }
-
-    .tickets-container.list-view .card-img-wrapper {
-      width: 180px;
-      height: 120px;
-      flex-shrink: 0;
-    }
+    .tickets-container.list-view .ticket-card { flex-direction: row; align-items: center; height: auto; }
+    .tickets-container.list-view .card-img-wrapper { width: 180px; height: 120px; flex-shrink: 0; }
 
     .ticket-card {
       background-color: var(--bg-card);
@@ -248,17 +201,9 @@
       transition: transform 0.2s, border-color 0.2s;
     }
 
-    .ticket-card:hover {
-      border-color: #38bdf8;
-      transform: translateY(-2px);
-    }
+    .ticket-card:hover { border-color: #38bdf8; transform: translateY(-2px); }
 
-    .card-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
+    .card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 
     .edit-icon-btn {
       color: var(--text-muted);
@@ -271,11 +216,7 @@
       transition: all 0.2s;
     }
 
-    .edit-icon-btn:hover {
-      color: var(--accent-yellow);
-      border-color: var(--accent-yellow);
-      background: rgba(250, 204, 21, 0.1);
-    }
+    .edit-icon-btn:hover { color: var(--accent-yellow); border-color: var(--accent-yellow); }
 
     .card-img-wrapper {
       position: relative;
@@ -287,84 +228,62 @@
       overflow: hidden;
     }
 
-    .card-img-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-    .card-content {
-      padding: 15px;
+    .card-content { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+
+    .tour-name { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .card-date { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .info-text { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px; flex-grow: 1; }
+
+    /* Related Item Badge Buttons */
+    .related-items-bar {
       display: flex;
-      flex-direction: column;
-      flex-grow: 1;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      margin-bottom: 6px;
     }
 
-    .tour-name {
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    .related-btn {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      font-size: 0.75rem;
       font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
     }
 
-    .card-date {
-      font-size: 0.95rem;
-      font-weight: 700;
+    .related-btn:hover {
+      background: rgba(56, 189, 248, 0.3);
       color: #fff;
-      margin-bottom: 4px;
+      border-color: #38bdf8;
     }
 
-    .info-text {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      line-height: 1.4;
-      margin-bottom: 12px;
-      flex-grow: 1;
-    }
-
-    .card-extra-details {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      background: rgba(0, 0, 0, 0.2);
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .card-extra-row {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .card-extra-row span:last-child {
-      color: var(--text-main);
-      font-weight: 600;
-    }
-
-    .source-row {
+    .meta-details-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 0.75rem;
       color: var(--text-muted);
       border-top: 1px solid var(--border-color);
-      padding-top: 10px;
-      margin-top: 8px;
+      padding-top: 8px;
+      margin-top: 6px;
     }
 
-    .source-val {
-      color: var(--text-main);
-      text-align: right;
-      font-weight: 600;
+    .price-tag {
+      color: var(--accent-yellow);
+      font-weight: 700;
     }
 
-    /* Setlist toggle buttons */
+    .source-val { color: var(--text-main); font-weight: 600; text-align: right; }
+
     .setlist-toggle-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
@@ -373,7 +292,7 @@
       padding: 8px;
       border-radius: 6px;
       font-size: 0.8rem;
-      margin-top: 15px;
+      margin-top: 10px;
       cursor: pointer;
       text-align: center;
       transition: all 0.2s;
@@ -388,19 +307,6 @@
 
     .setlist-toggle-btn.has-setlist:hover {
       background: rgba(250, 204, 21, 0.25);
-      color: #fff;
-    }
-
-    .setlist-toggle-btn.add-setlist {
-      border: 1px dashed var(--border-color);
-      color: var(--text-muted);
-      font-style: italic;
-    }
-
-    .setlist-toggle-btn.add-setlist:hover {
-      border-color: #38bdf8;
-      color: #38bdf8;
-      background: rgba(56, 189, 248, 0.08);
     }
 
     .setlist-content {
@@ -413,31 +319,9 @@
       color: var(--text-muted);
     }
 
-    .setlist-content.open {
-      display: block;
-    }
+    .setlist-content.open { display: block; }
+    .setlist-content ol { padding-left: 20px; margin: 10px 0; }
 
-    .setlist-content ol {
-      padding-left: 20px;
-      margin: 10px 0;
-    }
-
-    .setlist-content li {
-      margin-bottom: 4px;
-    }
-    
-    .setlist-link {
-      color: #38bdf8;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 8px;
-    }
-
-    .setlist-link:hover {
-      text-decoration: underline;
-    }
-
-    /* Pagination Controls */
     .pagination-container {
       display: flex;
       justify-content: center;
@@ -457,12 +341,6 @@
       border-radius: 6px;
       font-size: 0.85rem;
       cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .page-btn:hover:not(:disabled) {
-      background-color: #1f2937;
-      border-color: #38bdf8;
     }
 
     .page-btn.active {
@@ -472,18 +350,10 @@
       font-weight: 700;
     }
 
-    .page-btn:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-
     /* Modal / Detail View Overlay */
     .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(5px);
       display: none;
@@ -493,9 +363,7 @@
       padding: 20px;
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
 
     .modal-card {
       background-color: var(--bg-panel);
@@ -508,7 +376,6 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
     .modal-nav-bar {
@@ -529,43 +396,20 @@
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
-    .modal-nav-btn:hover:not(:disabled) {
-      background: #1f2937;
-      border-color: #38bdf8;
-      color: #fff;
-    }
-
-    .modal-nav-btn:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-
-    .modal-counter {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
+    .modal-nav-btn:hover:not(:disabled) { border-color: var(--accent-blue); color: var(--accent-blue); }
+    .modal-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
     .modal-close {
       background: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: #fff;
-      font-size: 1.2rem;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border: none; color: #fff;
+      font-size: 1.2rem; width: 32px; height: 32px;
+      border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
 
-    .modal-close:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
+    .modal-close:hover { background: rgba(239, 68, 68, 0.8); }
 
     .modal-img-container {
       background: #000;
@@ -584,59 +428,31 @@
 
     .modal-thumbnails {
       display: flex;
-      justify-content: center;
       gap: 10px;
-      margin-top: 12px;
-      padding: 0 10px;
+      justify-content: center;
+      margin-top: 10px;
     }
 
     .modal-thumb {
-      width: 60px;
-      height: 45px;
-      border-radius: 4px;
+      width: 50px;
+      height: 38px;
       object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
       cursor: pointer;
-      border: 2px solid var(--border-color);
       opacity: 0.6;
-      transition: all 0.2s;
     }
 
-    .modal-thumb:hover, .modal-thumb.active {
-      opacity: 1;
-      border-color: var(--accent-yellow);
-    }
+    .modal-thumb:hover, .modal-thumb.active { opacity: 1; border-color: var(--accent-yellow); }
 
-    .modal-body {
-      padding: 25px;
-    }
-
-    .modal-tour {
-      color: var(--accent-yellow);
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-
-    .modal-date {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .modal-title {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-      line-height: 1.4;
-    }
+    .modal-body { padding: 25px; }
+    .modal-tour { color: var(--accent-yellow); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+    .modal-date { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .modal-title { font-size: 0.95rem; font-weight: 500; color: var(--text-muted); margin-bottom: 20px; }
 
     .modal-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 15px;
       background: rgba(0, 0, 0, 0.2);
       padding: 15px;
@@ -645,49 +461,50 @@
       margin-bottom: 20px;
     }
 
-    .modal-grid-item span {
-      display: block;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      margin-bottom: 2px;
+    .modal-grid-item span { display: block; color: var(--text-muted); font-size: 0.75rem; margin-bottom: 2px; }
+    .modal-grid-item strong { font-size: 0.9rem; color: var(--text-main); }
+
+    .media-embed-box {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
     }
 
-    .modal-grid-item strong {
-      font-size: 0.95rem;
+    .media-embed-box h4 {
+      font-size: 0.85rem;
+      color: var(--accent-blue);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .media-links-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .media-link-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
       color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
     }
 
-    /* Mobile Responsive Overrides */
-    @media (max-width: 768px) {
-      body { padding: 0 12px 20px 12px; }
-      .top-header-container { 
-        position: relative; 
-        top: auto; 
-        padding-top: 12px; 
-        padding-bottom: 12px; 
-        margin-bottom: 15px; 
-      }
-      header { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .title-area h1 { font-size: 1.15rem; flex-wrap: wrap; }
-      .stats-bar { flex-wrap: wrap; gap: 6px 10px; font-size: 0.7rem; margin-bottom: 10px; }
-      .stats-bar span { display: none; }
-      .stats-bar div { background: rgba(255, 255, 255, 0.03); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); }
-      .controls { grid-template-columns: 1fr; gap: 10px; padding: 10px; }
-      .controls input, .controls select { font-size: 16px !important; padding: 10px 12px; height: 46px; }
-      .layout-toggles { justify-content: flex-end; height: 42px; }
-      .tickets-container.grid-view { grid-template-columns: 1fr; gap: 15px; }
-      .tickets-container.list-view .ticket-card { flex-direction: column; }
-      .tickets-container.list-view .card-img-wrapper { width: 100%; height: 160px; }
-      .modal-overlay { padding: 10px; }
-      .modal-card { max-height: 95vh; border-radius: 8px; }
-      .modal-body { padding: 15px; }
-      .modal-grid { grid-template-columns: 1fr; gap: 10px; }
-    }
+    .media-link-btn:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
   </style>
 </head>
 <body>
 
-  <!-- Fixed Top Header Bar -->
   <div class="top-header-container">
     <header>
       <div class="header-left">
@@ -705,17 +522,12 @@
       <div>CONTRIBUTORS / DONORS: <strong class="stat-val-white" id="stat-donors">0</strong></div>
     </div>
 
-    <!-- Category Tabs -->
     <div class="category-tabs" id="categoryTabs"></div>
 
     <div class="controls">
       <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, donor, date, tour..." onkeyup="filterData()">
-      <select id="tourFilter" onchange="filterData()">
-        <option value="">All Tours & Eras</option>
-      </select>
-      <select id="donorFilter" onchange="filterData()">
-        <option value="">All Donors / Sources</option>
-      </select>
+      <select id="tourFilter" onchange="filterData()"><option value="">All Tours & Eras</option></select>
+      <select id="donorFilter" onchange="filterData()"><option value="">All Donors / Sources</option></select>
       <select id="sortFilter" onchange="filterData()">
         <option value="oldest">Date (Oldest First)</option>
         <option value="newest">Date (Newest First)</option>
@@ -733,17 +545,12 @@
     </div>
   </div>
 
-  <!-- Main Grid / List Container -->
   <div id="ticketsContainer" class="tickets-container grid-view"></div>
-
-  <!-- Pagination Controls -->
   <div id="paginationContainer" class="pagination-container"></div>
 
-  <!-- Detail Modal Window (Flash Card) -->
+  <!-- Detail Modal Window -->
   <div class="modal-overlay" id="detailModal" onclick="closeModalOnOverlay(event)">
     <div class="modal-card">
-      
-      <!-- Top Navigation Bar for Modal -->
       <div class="modal-nav-bar">
         <button class="modal-nav-btn" id="modalPrevBtn" onclick="navigateModal(-1)">◄ Previous</button>
         <div class="modal-counter" id="modalCounter">0 / 0</div>
@@ -755,7 +562,7 @@
 
       <div class="modal-img-container">
         <div id="modalViewerWrapper">
-          <img id="modalImg" src="" alt="Ticket Full View" title="Click to zoom / inspect image">
+          <img id="modalImg" src="" alt="Ticket Full View">
         </div>
         <div class="modal-thumbnails" id="modalThumbnails"></div>
       </div>
@@ -774,12 +581,27 @@
             <span>Supporting Act</span>
             <strong id="modalSupport"></strong>
           </div>
+          <div class="modal-grid-item" id="modalPriceGroup">
+            <span>Original Price</span>
+            <strong id="modalPrice"></strong>
+          </div>
+          <div class="modal-grid-item" id="modalSeatGroup">
+            <span>Seating / Section</span>
+            <strong id="modalSeat"></strong>
+          </div>
         </div>
 
-        <div id="modalSetlistSection"></div>
+        <!-- External Media Links & Embeds -->
+        <div id="modalMediaContainer"></div>
+
+        <!-- Full Setlist Section -->
+        <div id="modalSetlistSection" style="margin-top: 20px;"></div>
       </div>
     </div>
   </div>
+
+  <!-- Skrytý prvek pro spuštění Lupy (Viewer.js) nad souvisejícími obrázky -->
+  <img id="quickViewerImg" src="" style="display: none;" alt="Quick Viewer">
 
   <script>
     let allTickets = [];
@@ -791,17 +613,12 @@
     let currentModalIndex = -1;
 
     let imageViewerInstance = null;
+    let quickViewerInstance = null;
 
     function isValidValue(val) {
       if (!val) return false;
       const clean = String(val).trim().toLowerCase();
-      return clean !== '' && 
-             clean !== 'není k dispozici' && 
-             clean !== 'n/a' && 
-             clean !== 'undefined' && 
-             clean !== 'null' && 
-             clean !== '-' && 
-             clean !== 'none';
+      return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'undefined' && clean !== 'null';
     }
 
     function getTicketCategory(t) {
@@ -814,26 +631,12 @@
         if (cat.includes('memo')) return 'Memorabilia';
         if (cat.includes('ticket')) return 'Tickets';
       }
-      const text = `${t.INFO_TEXT || ''} ${t.TURNE || ''}`.toLowerCase();
-      if (text.includes('pass') || text.includes('backstage') || text.includes('vip')) {
-        return 'Passes';
-      }
-      if (text.includes('program') || text.includes('catalog') || text.includes('book')) {
-        return 'Programs';
-      }
-      if (text.includes('poster') || text.includes('plakát')) {
-        return 'Posters';
-      }
-      if (text.includes('t-shirt') || text.includes('shirt') || text.includes('tričko')) {
-        return 'T-shirts';
-      }
       return 'Tickets';
     }
 
     function parseInfoText(t) {
       let rawText = (t.INFO_TEXT || '').trim();
       let explicitDate = (t.DATUM || '').trim();
-
       const dateRegex = /\b(\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]+\s+\d{4}|\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4})\b/i;
       const match = rawText.match(dateRegex);
 
@@ -841,26 +644,30 @@
       let cleanedText = rawText;
 
       if (match) {
-        if (!extractedDate) {
-          extractedDate = match[0];
-        }
+        if (!extractedDate) extractedDate = match[0];
         cleanedText = rawText.replace(match[0], '').replace(/^[\s–—\-]+|[\s–—\-]+$/g, '').trim();
       }
 
-      return {
-        date: extractedDate,
-        text: cleanedText || rawText
-      };
+      return { date: extractedDate, text: cleanedText || rawText };
     }
 
     function parseToDate(t) {
       const parsed = parseInfoText(t);
       if (!parsed.date) return new Date(0);
-
       let cleanDateStr = parsed.date.replace(/(\d+)(st|nd|rd|th)/i, '$1').replace(/\./g, '/');
       let timestamp = Date.parse(cleanDateStr);
-
       return isNaN(timestamp) ? new Date(0) : new Date(timestamp);
+    }
+
+    function getRelatedItems(currentRecord) {
+      const currentInfo = (currentRecord.INFO_TEXT || '').trim().toLowerCase();
+      if (!currentInfo) return [];
+
+      return allTickets.filter(item => {
+        if (item.ID_LISTKU === currentRecord.ID_LISTKU) return false;
+        const itemInfo = (item.INFO_TEXT || '').trim().toLowerCase();
+        return itemInfo === currentInfo;
+      });
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -873,46 +680,24 @@
           updateStats();
           populateFilters();
           filterData();
-        },
-        error: function(err) {
-          document.getElementById('ticketsContainer').innerHTML = '<p style="color:red">Failed to load CSV file. Ensure it is in the same directory.</p>';
         }
       });
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (document.getElementById('detailModal').classList.contains('active')) {
-        if (e.key === 'Escape') closeModal();
-        if (e.key === 'ArrowLeft') navigateModal(-1);
-        if (e.key === 'ArrowRight') navigateModal(1);
-      }
     });
 
     function updateStats() {
       document.getElementById('stat-tickets').textContent = allTickets.length;
-      
       const uniqueTours = new Set(allTickets.map(t => t.TURNE).filter(isValidValue));
       document.getElementById('stat-tours').textContent = uniqueTours.size;
-
-      const uniqueDonors = new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT).filter(isValidValue));
+      const uniqueDonors = new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL).filter(isValidValue));
       document.getElementById('stat-donors').textContent = uniqueDonors.size;
 
-      const years = [];
-      allTickets.forEach(t => {
-        const textToSearch = `${t.DATUM || ''} ${t.INFO_TEXT || ''}`;
-        const matches = textToSearch.match(/\b(19\d\d|20\d\d)\b/g);
-        if (matches) {
-          matches.forEach(y => years.push(parseInt(y, 10)));
-        }
-      });
-
+      const years = allTickets
+        .map(t => parseToDate(t).getFullYear())
+        .filter(y => y > 1900);
       if (years.length > 0) {
         const minYear = Math.min(...years);
         const maxYear = Math.max(...years);
-        const badge = document.getElementById('yearBadge');
-        if (badge) {
-          badge.textContent = minYear === maxYear ? `${minYear}` : `${minYear}-${maxYear}`;
-        }
+        document.getElementById('yearBadge').textContent = `${minYear} – ${maxYear}`;
       }
     }
 
@@ -921,17 +706,15 @@
       const tours = [...new Set(allTickets.map(t => t.TURNE).filter(isValidValue))].sort();
       tours.forEach(tour => {
         const opt = document.createElement('option');
-        opt.value = tour;
-        opt.textContent = tour;
+        opt.value = tour; opt.textContent = tour;
         tourSelect.appendChild(opt);
       });
 
       const donorSelect = document.getElementById('donorFilter');
-      const donors = [...new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT).filter(isValidValue))].sort();
+      const donors = [...new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL).filter(isValidValue))].sort();
       donors.forEach(donor => {
         const opt = document.createElement('option');
-        opt.value = donor;
-        opt.textContent = donor;
+        opt.value = donor; opt.textContent = donor;
         donorSelect.appendChild(opt);
       });
     }
@@ -940,48 +723,23 @@
       const tabsContainer = document.getElementById('categoryTabs');
       tabsContainer.innerHTML = '';
 
-      const counts = {
-        'Tickets': 0,
-        'Passes': 0,
-        'Programs': 0,
-        'Posters': 0,
-        'T-shirts': 0,
-        'Memorabilia': 0,
-        'ALL': matchesBeforeCategoryFilter.length
-      };
+      const counts = { 'Tickets': 0, 'Passes': 0, 'Programs': 0, 'Posters': 0, 'T-shirts': 0, 'Memorabilia': 0, 'ALL': matchesBeforeCategoryFilter.length };
 
       matchesBeforeCategoryFilter.forEach(t => {
         const cat = getTicketCategory(t);
-        if (counts[cat] !== undefined) {
-          counts[cat]++;
-        } else {
-          counts[cat] = 1;
-        }
+        if (counts[cat] !== undefined) counts[cat]++;
       });
 
       const categoryOrder = ['Tickets', 'Passes', 'Programs', 'Posters', 'T-shirts', 'Memorabilia', 'ALL'];
-
-      const categoryLabels = {
-        'Tickets': '🎫 Tickets',
-        'Passes': '🪪 Passes',
-        'Programs': '📖 Programs',
-        'Posters': '🖼️ Posters',
-        'T-shirts': '🎽 T-shirts',
-        'Memorabilia': '⭐ Memorabilia',
-        'ALL': '✨ All Records'
-      };
+      const categoryLabels = { 'Tickets': '🎫 Tickets', 'Passes': '🪪 Passes', 'Programs': '📖 Programs', 'Posters': '🖼️ Posters', 'T-shirts': '🎽 T-shirts', 'Memorabilia': '⭐ Memorabilia', 'ALL': '✨ All Records' };
 
       categoryOrder.forEach(catKey => {
         const count = counts[catKey];
         if (count > 0 || catKey === 'ALL' || catKey === 'Tickets') {
           const btn = document.createElement('button');
           btn.className = `tab-btn ${currentCategory === catKey ? 'active' : ''}`;
-          const labelText = categoryLabels[catKey] || catKey;
-          btn.innerHTML = `${labelText} <span style="opacity: 0.75; font-size: 0.8em;">(${count})</span>`;
-          btn.onclick = () => {
-            currentCategory = catKey;
-            filterData();
-          };
+          btn.innerHTML = `${categoryLabels[catKey]} <span style="opacity: 0.75; font-size: 0.8em;">(${count})</span>`;
+          btn.onclick = () => { currentCategory = catKey; filterData(); };
           tabsContainer.appendChild(btn);
         }
       });
@@ -989,25 +747,9 @@
 
     function setLayout(layout) {
       currentLayout = layout;
-      const container = document.getElementById('ticketsContainer');
-      const paginationCont = document.getElementById('paginationContainer');
-
-      const btnGrid = document.getElementById('btnGrid');
-      const btnList = document.getElementById('btnList');
-
-      btnGrid.classList.remove('active');
-      btnList.classList.remove('active');
-
-      container.style.display = 'grid';
-      paginationCont.style.display = 'flex';
-
-      if (layout === 'grid') {
-        container.className = 'tickets-container grid-view';
-        btnGrid.classList.add('active');
-      } else {
-        container.className = 'tickets-container list-view';
-        btnList.classList.add('active');
-      }
+      document.getElementById('btnGrid').className = `toggle-btn ${layout === 'grid' ? 'active' : ''}`;
+      document.getElementById('btnList').className = `toggle-btn ${layout === 'list' ? 'active' : ''}`;
+      document.getElementById('ticketsContainer').className = `tickets-container ${layout}-view`;
       renderPaginated();
     }
 
@@ -1025,15 +767,15 @@
       const sort = document.getElementById('sortFilter').value;
 
       const matchesBase = allTickets.filter(t => {
+        const donorVal = t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL || '';
         const qMatch = !query || 
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
-          (t.CONTRIBUTOR_TEXT || '').toLowerCase().includes(query) ||
+          donorVal.toLowerCase().includes(query) ||
           (t.MESTO || '').toLowerCase().includes(query) ||
           (t.SETLIST || '').toLowerCase().includes(query);
           
         const tMatch = !tour || t.TURNE === tour;
-        const dMatch = !donor || t.CONTRIBUTOR_TEXT === donor;
-
+        const dMatch = !donor || donorVal === donor;
         return qMatch && tMatch && dMatch;
       });
 
@@ -1051,31 +793,34 @@
       });
 
       currentPage = 1;
-
       renderPaginated();
     }
 
     function renderPaginated() {
-      let pageData = [];
-      if (pageSize === 'ALL') {
-        pageData = filteredTickets;
-      } else {
-        const start = (currentPage - 1) * pageSize;
-        const end = start + pageSize;
-        pageData = filteredTickets.slice(start, end);
-      }
-
+      let pageData = pageSize === 'ALL' ? filteredTickets : filteredTickets.slice((currentPage - 1) * pageSize, currentPage * pageSize);
       renderTickets(pageData);
       renderPaginationControls();
     }
 
-    function promptAddSetlist(infoText, dateStr) {
-      const searchQuery = `Joe Jackson ${dateStr || ''} ${infoText || ''}`.trim();
-      const confirmed = confirm(`Setlist for this concert is missing.\n\nDo you want to search Setlist.fm to find or add the setlist?\n\nSearch term: "${searchQuery}"`);
-      if (confirmed) {
-        const setlistSearchUrl = `https://www.setlist.fm/search?query=${encodeURIComponent(searchQuery)}`;
-        window.open(setlistSearchUrl, '_blank');
+    function openQuickImageModal(scanFileName) {
+      if (!scanFileName) return;
+
+      const firstFile = scanFileName.split(',')[0].trim();
+      const quickImg = document.getElementById('quickViewerImg');
+      quickImg.src = `./scans/${firstFile}`;
+
+      if (quickViewerInstance) {
+        quickViewerInstance.destroy();
       }
+
+      quickViewerInstance = new Viewer(quickImg, {
+        hidden: function() {
+          quickViewerInstance.destroy();
+          quickViewerInstance = null;
+        }
+      });
+
+      quickViewerInstance.show();
     }
 
     function renderTickets(tickets) {
@@ -1092,9 +837,7 @@
         const card = document.createElement('div');
         card.className = 'ticket-card';
         card.onclick = (e) => {
-          if (e.target.classList.contains('setlist-toggle-btn') || e.target.classList.contains('setlist-link') || e.target.classList.contains('edit-icon-btn')) {
-            return;
-          }
+          if (e.target.closest('.setlist-toggle-btn') || e.target.closest('.related-btn') || e.target.closest('.edit-icon-btn')) return;
           openModal(globalIndex);
         };
 
@@ -1104,22 +847,42 @@
 
         const parsed = parseInfoText(t);
 
-        // Extra details block (Support act)
-        let extraRowsHTML = '';
-        if (isValidValue(t.SUPPORTING_ACT)) {
-          extraRowsHTML += `<div class="card-extra-row"><span>Support:</span><span>${t.SUPPORTING_ACT}</span></div>`;
+        const relatedItems = getRelatedItems(t);
+        let relatedHTML = '';
+
+        if (relatedItems.length > 0) {
+          relatedHTML += '<div class="related-items-bar">';
+          relatedItems.forEach(rel => {
+            const relCat = getTicketCategory(rel);
+            let icon = '🖼️';
+            let label = 'Poster';
+
+            if (relCat === 'Tickets') { icon = '🎫'; label = 'Ticket'; }
+            else if (relCat === 'Passes') { icon = '🪪'; label = 'Pass'; }
+            else if (relCat === 'Programs') { icon = '📖'; label = 'Program'; }
+
+            const relFile = (rel.SOUBOR_SKEN || '').split(',')[0].trim();
+
+            relatedHTML += `
+              <button class="related-btn" title="Click to view image" onclick="event.stopPropagation(); openQuickImageModal('${relFile}')">
+                ${icon} View ${label}
+              </button>
+            `;
+          });
+          relatedHTML += '</div>';
         }
 
-        const extraDetailsBlock = extraRowsHTML ? `<div class="card-extra-details">${extraRowsHTML}</div>` : '';
+        const donorVal = t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL || '';
+        const hasPrice = isValidValue(t.CENA) && t.CENA !== '0.00';
+        const priceHTML = hasPrice ? `<span class="price-tag">${t.CENA} ${t.MENA || ''}</span>` : '<span></span>';
+        const donorHTML = isValidValue(donorVal) ? `<span class="source-val">${donorVal}</span>` : '';
 
-        // Contributor / Donor
-        const sourceHTML = isValidValue(t.CONTRIBUTOR_TEXT) ? `
-          <div class="source-row">
-            <span>Source:</span>
-            <span class="source-val">${t.CONTRIBUTOR_TEXT}</span>
+        const metaRowHTML = (hasPrice || donorHTML) ? `
+          <div class="meta-details-row">
+            ${priceHTML}
+            ${donorHTML}
           </div>` : '';
 
-        // Setlist Section
         let setlistSection = '';
         const setlistStr = t.SETLIST || '';
         const songCount = parseInt(t.POCET_SKLADEB) || 0;
@@ -1127,20 +890,9 @@
         if (setlistStr && isValidValue(setlistStr) && songCount > 0) {
           const songs = setlistStr.split(',').map(s => s.trim());
           const listItems = songs.map(s => `<li>${s}</li>`).join('');
-          const setlistUrl = (t.SETLIST_URL && isValidValue(t.SETLIST_URL)) ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
-
           setlistSection = `
             <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleSetlist('${globalIndex}')">🎵 View Setlist (${songCount})</button>
-            <div class="setlist-content" id="setlist-${globalIndex}">
-              <ol>${listItems}</ol>
-              ${setlistUrl}
-            </div>
-          `;
-        } else {
-          const safeText = (parsed.text || '').replace(/'/g, "\\'");
-          const safeDate = (parsed.date || '').replace(/'/g, "\\'");
-          setlistSection = `
-            <button class="setlist-toggle-btn add-setlist" onclick="event.stopPropagation(); promptAddSetlist('${safeText}', '${safeDate}')">➕ Add Setlist on Setlist.fm ↗</button>
+            <div class="setlist-content" id="setlist-${globalIndex}"><ol>${listItems}</ol></div>
           `;
         }
 
@@ -1153,13 +905,13 @@
           <div class="card-content">
             <div class="card-header-row">
               <div class="tour-name">${t.TURNE || 'UNKNOWN TOUR'}</div>
-              <a href="${editUrl}" target="_blank" class="edit-icon-btn" onclick="event.stopPropagation();" title="Edit this record">✏️</a>
+              <a href="${editUrl}" target="_blank" class="edit-icon-btn" onclick="event.stopPropagation();" title="Edit this record">✏️ Edit</a>
             </div>
             ${parsed.date ? `<div class="card-date">${parsed.date}</div>` : ''}
             <div class="info-text">${parsed.text}</div>
             
-            ${extraDetailsBlock}
-            ${sourceHTML}
+            ${relatedHTML}
+            ${metaRowHTML}
             ${setlistSection}
           </div>
         `;
@@ -1171,68 +923,40 @@
     function renderPaginationControls() {
       const container = document.getElementById('paginationContainer');
       container.innerHTML = '';
-
-      if (pageSize === 'ALL' || filteredTickets.length <= pageSize) {
-        return;
-      }
+      if (pageSize === 'ALL' || filteredTickets.length <= pageSize) return;
 
       const totalPages = Math.ceil(filteredTickets.length / pageSize);
 
       const prevBtn = document.createElement('button');
-      prevBtn.className = 'page-btn';
-      prevBtn.textContent = '◄ Prev';
+      prevBtn.className = 'page-btn'; prevBtn.textContent = '◄ Prev';
       prevBtn.disabled = currentPage === 1;
-      prevBtn.onclick = () => {
-        if (currentPage > 1) {
-          currentPage--;
-          renderPaginated();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      };
+      prevBtn.onclick = () => { currentPage--; renderPaginated(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
       container.appendChild(prevBtn);
 
       for (let i = 1; i <= totalPages; i++) {
         if (totalPages > 10 && Math.abs(i - currentPage) > 3 && i !== 1 && i !== totalPages) {
           if (i === 2 || i === totalPages - 1) {
-            const dots = document.createElement('span');
-            dots.textContent = '...';
-            dots.style.color = 'var(--text-muted)';
-            dots.style.padding = '0 4px';
+            const dots = document.createElement('span'); dots.textContent = '...'; dots.style.color = 'var(--text-muted)';
             container.appendChild(dots);
           }
           continue;
         }
-
         const pageBtn = document.createElement('button');
-        pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-        pageBtn.textContent = i;
-        pageBtn.onclick = () => {
-          currentPage = i;
-          renderPaginated();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
+        pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`; pageBtn.textContent = i;
+        pageBtn.onclick = () => { currentPage = i; renderPaginated(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
         container.appendChild(pageBtn);
       }
 
       const nextBtn = document.createElement('button');
-      nextBtn.className = 'page-btn';
-      nextBtn.textContent = 'Next ►';
+      nextBtn.className = 'page-btn'; nextBtn.textContent = 'Next ►';
       nextBtn.disabled = currentPage === totalPages;
-      nextBtn.onclick = () => {
-        if (currentPage < totalPages) {
-          currentPage++;
-          renderPaginated();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      };
+      nextBtn.onclick = () => { currentPage++; renderPaginated(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
       container.appendChild(nextBtn);
     }
 
     function toggleSetlist(id) {
       const el = document.getElementById(`setlist-${id}`);
-      if (el) {
-        el.classList.toggle('open');
-      }
+      if (el) el.classList.toggle('open');
     }
 
     function openModal(index) {
@@ -1240,20 +964,15 @@
       currentModalIndex = index;
       const t = filteredTickets[currentModalIndex];
 
-      if (imageViewerInstance) {
-        imageViewerInstance.destroy();
-        imageViewerInstance = null;
-      }
+      if (imageViewerInstance) { imageViewerInstance.destroy(); imageViewerInstance = null; }
 
       const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
       const modalImg = document.getElementById('modalImg');
       const thumbContainer = document.getElementById('modalThumbnails');
-      
       thumbContainer.innerHTML = '';
 
       if (skenFiles.length > 0) {
         modalImg.src = `./scans/${skenFiles[0]}`;
-
         if (skenFiles.length > 1) {
           skenFiles.forEach((file, idx) => {
             const thumb = document.createElement('img');
@@ -1263,51 +982,78 @@
               modalImg.src = `./scans/${file}`;
               document.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
               thumb.classList.add('active');
-              
-              if (imageViewerInstance) {
-                imageViewerInstance.destroy();
-                imageViewerInstance = new Viewer(modalImg, { toolbar: true, navbar: false });
-              }
             };
             thumbContainer.appendChild(thumb);
           });
         }
-      } else {
-        modalImg.src = '';
-      }
+      } else { modalImg.src = ''; }
 
       setTimeout(() => {
-        imageViewerInstance = new Viewer(modalImg, { 
-          toolbar: true, 
-          navbar: false,
-          title: false
-        });
+        imageViewerInstance = new Viewer(modalImg, { toolbar: true, navbar: false, title: false });
       }, 100);
 
       const parsed = parseInfoText(t);
-
       document.getElementById('modalTour').textContent = t.TURNE || 'UNKNOWN TOUR';
       document.getElementById('modalDate').textContent = parsed.date || '';
       document.getElementById('modalInfo').textContent = parsed.text || '';
 
-      // Grid Fields
+      const donorVal = t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL || '';
       const srcGroup = document.getElementById('modalSourceGroup');
-      if (isValidValue(t.CONTRIBUTOR_TEXT)) {
-        document.getElementById('modalSource').textContent = t.CONTRIBUTOR_TEXT;
+      if (isValidValue(donorVal)) {
+        document.getElementById('modalSource').textContent = donorVal;
         srcGroup.style.display = 'block';
-      } else {
-        srcGroup.style.display = 'none';
-      }
+      } else { srcGroup.style.display = 'none'; }
 
       const supportGroup = document.getElementById('modalSupportGroup');
       if (isValidValue(t.SUPPORTING_ACT)) {
         document.getElementById('modalSupport').textContent = t.SUPPORTING_ACT.trim();
         supportGroup.style.display = 'block';
-      } else {
-        supportGroup.style.display = 'none';
+      } else { supportGroup.style.display = 'none'; }
+
+      const priceGroup = document.getElementById('modalPriceGroup');
+      if (isValidValue(t.CENA) && t.CENA !== '0.00') {
+        document.getElementById('modalPrice').textContent = `${t.CENA} ${t.MENA || ''}`;
+        priceGroup.style.display = 'block';
+      } else { priceGroup.style.display = 'none'; }
+
+      const seatGroup = document.getElementById('modalSeatGroup');
+      if (isValidValue(t.SEKTOR_RADA_SEDADLO)) {
+        document.getElementById('modalSeat').textContent = t.SEKTOR_RADA_SEDADLO;
+        seatGroup.style.display = 'block';
+      } else { seatGroup.style.display = 'none'; }
+
+      // External Media Container (YouTube, Setlist.fm, Press Reviews)
+      const mediaContainer = document.getElementById('modalMediaContainer');
+      let mediaHTML = '';
+
+      if (isValidValue(t.YOUTUBE_URL)) {
+        mediaHTML += `
+          <div class="media-embed-box">
+            <h4>🎬 Concert Video / Bootleg</h4>
+            <div style="margin-bottom: 8px;">
+              <a href="${t.YOUTUBE_URL}" target="_blank" class="media-link-btn">▶ Watch Video on YouTube ↗</a>
+            </div>
+          </div>`;
       }
 
-      // Setlist for Modal
+      if (isValidValue(t.REVIEW_URL)) {
+        mediaHTML += `
+          <div class="media-embed-box">
+            <h4>📰 Press & Archive Review</h4>
+            <iframe src="${t.REVIEW_URL}" width="100%" height="250" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen style="border-radius:6px; background:#000;"></iframe>
+          </div>`;
+      }
+
+      if (isValidValue(t.SETLIST_URL)) {
+        mediaHTML += `
+          <div class="media-links-bar">
+            <a href="${t.SETLIST_URL}" target="_blank" class="media-link-btn">📊 View Show Details on Setlist.fm ↗</a>
+          </div>`;
+      }
+
+      mediaContainer.innerHTML = mediaHTML;
+
+      // Full Setlist Section
       const modalSetlistSec = document.getElementById('modalSetlistSection');
       const setlistStr = t.SETLIST || '';
       const songCount = parseInt(t.POCET_SKLADEB) || 0;
@@ -1315,23 +1061,9 @@
       if (setlistStr && isValidValue(setlistStr) && songCount > 0) {
         const songs = setlistStr.split(',').map(s => s.trim());
         const listItems = songs.map(s => `<li>${s}</li>`).join('');
-        const setlistUrl = (t.SETLIST_URL && isValidValue(t.SETLIST_URL)) ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
+        modalSetlistSec.innerHTML = `<h4 style="color: var(--accent-yellow); margin-bottom: 10px;">🎵 Full Setlist (${songCount} songs)</h4><ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">${listItems}</ol>`;
+      } else { modalSetlistSec.innerHTML = ''; }
 
-        modalSetlistSec.innerHTML = `
-          <h4 style="color: var(--accent-yellow); margin-bottom: 10px;">🎵 Full Setlist (${songCount} songs)</h4>
-          <ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">${listItems}</ol>
-          ${setlistUrl}
-        `;
-      } else {
-        const safeText = (parsed.text || '').replace(/'/g, "\\'");
-        const safeDate = (parsed.date || '').replace(/'/g, "\\'");
-        modalSetlistSec.innerHTML = `
-          <p style="color: var(--text-muted); font-style: italic; margin-bottom: 12px;">No setlist available for this concert.</p>
-          <button class="setlist-toggle-btn add-setlist" onclick="promptAddSetlist('${safeText}', '${safeDate}')">➕ Add Setlist on Setlist.fm ↗</button>
-        `;
-      }
-
-      // Nav controls update
       document.getElementById('modalCounter').textContent = `${currentModalIndex + 1} / ${filteredTickets.length}`;
       document.getElementById('modalPrevBtn').disabled = currentModalIndex === 0;
       document.getElementById('modalNextBtn').disabled = currentModalIndex === filteredTickets.length - 1;
@@ -1341,24 +1073,17 @@
 
     function navigateModal(direction) {
       const newIndex = currentModalIndex + direction;
-      if (newIndex >= 0 && newIndex < filteredTickets.length) {
-        openModal(newIndex);
-      }
+      if (newIndex >= 0 && newIndex < filteredTickets.length) openModal(newIndex);
     }
 
     function closeModal() {
       document.getElementById('detailModal').classList.remove('active');
-      if (imageViewerInstance) {
-        imageViewerInstance.destroy();
-        imageViewerInstance = null;
-      }
+      if (imageViewerInstance) { imageViewerInstance.destroy(); imageViewerInstance = null; }
       currentModalIndex = -1;
     }
 
     function closeModalOnOverlay(e) {
-      if (e.target.id === 'detailModal') {
-        closeModal();
-      }
+      if (e.target.id === 'detailModal') closeModal();
     }
   </script>
 </body>
