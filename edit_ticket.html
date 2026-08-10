@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Ticket Record - Joe Jackson Museum</title>
+  <title>Edit Record - Joe Jackson Museum</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
-  <!-- Viewer.js pro přibližování a inspekci obrázku -->
+  <!-- Viewer.js (Image Inspection & Zoom) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
 
@@ -29,8 +29,8 @@
       font-family: var(--font-family);
       background-color: var(--bg-main);
       color: var(--text-main);
-      padding: 30px;
-      max-width: 1100px;
+      padding: 20px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
@@ -38,14 +38,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
-      flex-wrap: wrap;
-      gap: 15px;
     }
 
-    h1 { font-size: 1.5rem; color: #fff; }
+    h1 { font-size: 1.3rem; color: #fff; }
 
     .header-actions {
       display: flex;
@@ -53,52 +51,11 @@
       align-items: center;
     }
 
-    /* Record Navigation Bar */
-    .record-nav-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: var(--bg-panel);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 10px 15px;
-      margin-bottom: 20px;
-    }
-
-    .nav-btn {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .nav-btn:hover:not(:disabled) {
-      border-color: var(--accent-blue);
-      color: var(--accent-blue);
-      background-color: #1f2937;
-    }
-
-    .nav-btn:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-
-    .record-counter {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
     .btn-token {
       background-color: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
-      padding: 8px 12px;
+      padding: 6px 12px;
       border-radius: 6px;
       font-size: 0.8rem;
       cursor: pointer;
@@ -110,7 +67,7 @@
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 8px 16px;
+      padding: 6px 14px;
       border-radius: 6px;
       text-decoration: none;
       font-size: 0.85rem;
@@ -118,61 +75,102 @@
 
     .btn-back:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
 
-    /* Scan Preview Box */
-    .scan-preview-card {
+    /* Navigation Bar */
+    .record-nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 15px;
+      border-radius: 8px;
+      padding: 8px 15px;
       margin-bottom: 20px;
-      text-align: center;
     }
 
-    .scan-preview-card h3 {
-      font-size: 0.9rem;
+    .nav-btn {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .record-counter { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+
+    /* Main 2-Column Layout */
+    .main-editor-layout {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .main-editor-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Left Column: Image Preview Sticky Box */
+    .scan-preview-sticky {
+      position: sticky;
+      top: 20px;
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .scan-preview-sticky h3 {
+      font-size: 0.8rem;
       color: var(--accent-yellow);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      text-align: left;
     }
 
-    .img-container {
+    .img-box {
       background-color: #000;
       border-radius: 6px;
-      padding: 15px;
+      padding: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 200px;
-      max-height: 450px;
+      min-height: 250px;
+      max-height: 520px;
       overflow: hidden;
     }
 
-    .img-container img {
+    .img-box img {
       max-width: 100%;
-      max-height: 420px;
+      max-height: 500px;
       object-fit: contain;
       cursor: zoom-in;
-      border-radius: 4px;
     }
 
     .thumb-list {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
       margin-top: 10px;
     }
 
     .thumb-item {
-      width: 60px;
-      height: 45px;
+      width: 50px;
+      height: 38px;
       object-fit: cover;
       border-radius: 4px;
-      border: 2px solid var(--border-color);
+      border: 1px solid var(--border-color);
       cursor: pointer;
       opacity: 0.6;
-      transition: all 0.2s;
     }
 
     .thumb-item:hover, .thumb-item.active {
@@ -180,41 +178,40 @@
       border-color: var(--accent-yellow);
     }
 
-    /* Form Layout */
-    .form-section {
+    /* Right Column: Form Panels */
+    .form-panel {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    .form-section h3 {
-      font-size: 1rem;
-      color: var(--accent-yellow);
+      border-radius: 8px;
+      padding: 15px;
       margin-bottom: 15px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 8px;
     }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
+    .form-panel h3 {
+      font-size: 0.85rem;
+      color: var(--accent-yellow);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
+      margin-bottom: 8px;
     }
 
-    .form-group.full-width {
-      grid-column: 1 / -1;
-    }
+    .form-group.full-width { grid-column: 1 / -1; }
 
     label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
       font-weight: 600;
     }
@@ -223,72 +220,56 @@
       background-color: var(--bg-main);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 0.9rem;
+      padding: 8px 10px;
+      border-radius: 5px;
+      font-size: 0.85rem;
       outline: none;
       font-family: inherit;
     }
 
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--accent-blue);
-    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); }
 
-    textarea { resize: vertical; min-height: 80px; }
+    textarea { resize: vertical; min-height: 60px; }
 
     .action-bar {
       display: flex;
-      gap: 15px;
+      gap: 12px;
       justify-content: flex-end;
-      margin-top: 25px;
-      flex-wrap: wrap;
+      margin-top: 15px;
     }
 
     .btn-submit {
       background-color: var(--accent-yellow);
       color: #000;
       border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
+      padding: 10px 20px;
+      border-radius: 5px;
       font-weight: 700;
       cursor: pointer;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
     }
-
-    .btn-submit:hover { background-color: #fde047; }
 
     .btn-github {
       background-color: #238636;
       color: #fff;
       border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
+      padding: 10px 20px;
+      border-radius: 5px;
       font-weight: 700;
       cursor: pointer;
-      font-size: 0.95rem;
-    }
-
-    .btn-github:hover { background-color: #2ea043; }
-
-    #statusMessage {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 6px;
-      display: none;
-      font-size: 0.9rem;
-    }
-
-    .yt-preview {
-      margin-top: 8px;
       font-size: 0.85rem;
     }
 
-    .yt-preview a {
-      color: var(--accent-blue);
-      text-decoration: none;
+    #statusMessage {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+      font-size: 0.85rem;
     }
 
-    .yt-preview a:hover { text-decoration: underline; }
+    .yt-preview { margin-top: 4px; font-size: 0.8rem; }
+    .yt-preview a { color: var(--accent-blue); text-decoration: none; }
   </style>
 </head>
 <body>
@@ -301,135 +282,152 @@
     </div>
   </header>
 
-  <!-- Navigation Bar between Records -->
+  <!-- Navigation Bar -->
   <div class="record-nav-bar">
     <button class="nav-btn" id="prevBtn" onclick="navigateRecord(-1)">◄ Previous Record</button>
     <div class="record-counter" id="recordCounter">Record 0 of 0</div>
     <button class="nav-btn" id="nextBtn" onclick="navigateRecord(1)">Next Record ►</button>
   </div>
 
-  <!-- Scan Image Preview Section -->
-  <div class="scan-preview-card">
-    <h3>🔍 Scan Preview (Click to Inspect / Zoom)</h3>
-    <div class="img-container">
-      <img id="previewImg" src="" alt="Ticket Scan Preview" title="Click to open zoom viewer">
-    </div>
-    <div class="thumb-list" id="thumbList"></div>
-  </div>
-
-  <form id="editForm" onsubmit="event.preventDefault();">
+  <div class="main-editor-layout">
     
-    <!-- Basic Metadata -->
-    <div class="form-section">
-      <h3>Basic Metadata</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="ID_LISTKU">ID (ID_LISTKU)</label>
-          <input type="text" id="ID_LISTKU" readonly style="opacity: 0.6; cursor: not-allowed;">
+    <!-- Left Sticky Column: Image Inspection -->
+    <div class="scan-preview-sticky">
+      <h3>🔍 Scan Inspection (Click to Zoom)</h3>
+      <div class="img-box">
+        <img id="previewImg" src="" alt="Ticket Scan" title="Click to open full zoom viewer">
+      </div>
+      <div class="thumb-list" id="thumbList"></div>
+    </div>
+
+    <!-- Right Column: Compact Form -->
+    <form id="editForm" onsubmit="event.preventDefault();">
+      
+      <!-- Primary Classification -->
+      <div class="form-panel">
+        <h3>Primary Metadata</h3>
+        <div class="grid-3">
+          <div class="form-group">
+            <label for="ID_LISTKU">Record ID (ID_LISTKU)</label>
+            <input type="text" id="ID_LISTKU" readonly style="opacity: 0.6; cursor: not-allowed;">
+          </div>
+          <div class="form-group">
+            <label for="KATEGORIE">Category (KATEGORIE)</label>
+            <select id="KATEGORIE">
+              <option value="tickets">Tickets</option>
+              <option value="passes">Passes</option>
+              <option value="programs">Programs</option>
+              <option value="posters">Posters</option>
+              <option value="t-shirts">T-shirts</option>
+              <option value="memorabilia">Memorabilia</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="TURNE">Tour / Era (TURNE)</label>
+            <select id="TURNE" onchange="handleDropdownCustom('TURNE')">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="TURNE">Tour / Era (TURNE)</label>
-          <input type="text" id="TURNE">
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="DATUM">Concert Date (DATUM)</label>
+            <input type="text" id="DATUM" placeholder="e.g. 1st October 2010">
+          </div>
+          <div class="form-group">
+            <label for="MESTO">City & Venue (MESTO)</label>
+            <input type="text" id="MESTO" placeholder="e.g. London, U.K. - Royal Albert Hall">
+          </div>
         </div>
-        <div class="form-group">
-          <label for="KATEGORIE">Category (KATEGORIE)</label>
-          <select id="KATEGORIE">
-            <option value="tickets">Tickets</option>
-            <option value="passes">Passes</option>
-            <option value="programs">Programs</option>
-            <option value="posters">Posters</option>
-            <option value="t-shirts">T-shirts</option>
-            <option value="memorabilia">Memorabilia</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="DATUM">Date (DATUM)</label>
-          <input type="text" id="DATUM" placeholder="e.g. 1st October 2010 or 2010-10-01">
-        </div>
-        <div class="form-group">
-          <label for="MESTO">City / Venue (MESTO)</label>
-          <input type="text" id="MESTO">
-        </div>
-        <div class="form-group">
-          <label for="ZDROJOVY_SOUBOR">Source File / HTML (ZDROJOVY_SOUBOR)</label>
-          <input type="text" id="ZDROJOVY_SOUBOR">
-        </div>
+
         <div class="form-group full-width">
-          <label for="INFO_TEXT">Info / Description (INFO_TEXT)</label>
+          <label for="INFO_TEXT">Info & Description (INFO_TEXT)</label>
           <textarea id="INFO_TEXT"></textarea>
         </div>
       </div>
-    </div>
 
-    <!-- Scans, Source & Contributor -->
-    <div class="form-section">
-      <h3>Files & Contributor</h3>
-      <div class="form-grid">
-        <div class="form-group full-width">
-          <label for="SOUBOR_SKEN">Scan File(s) (SOUBOR_SKEN)</label>
-          <input type="text" id="SOUBOR_SKEN" placeholder="kk-file1.jpg, kk-file2.webp" oninput="updateImageFromInput()">
-        </div>
-        <div class="form-group full-width">
-          <label for="CONTRIBUTOR_TEXT">Source / Contributor (CONTRIBUTOR_TEXT)</label>
-          <input type="text" id="CONTRIBUTOR_TEXT">
+      <!-- Scans & Contributor -->
+      <div class="form-panel">
+        <h3>Files & Contributor</h3>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="SOUBOR_SKEN">Scan Image Filename(s) (SOUBOR_SKEN)</label>
+            <input type="text" id="SOUBOR_SKEN" placeholder="file1.jpg, file2.webp" oninput="updateImageFromInput()">
+          </div>
+          <div class="form-group">
+            <label for="CONTRIBUTOR_TEXT">Donor / Contributor (CONTRIBUTOR_TEXT)</label>
+            <select id="CONTRIBUTOR_TEXT" onchange="handleDropdownCustom('CONTRIBUTOR_TEXT')">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Ticket Seat & Price Details -->
-    <div class="form-section">
-      <h3>Ticket Details & Support Act</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="CENA">Price (CENA)</label>
-          <input type="text" id="CENA">
-        </div>
-        <div class="form-group">
-          <label for="MENA">Currency (MENA)</label>
-          <input type="text" id="MENA" placeholder="EUR, USD, GBP, CHF...">
-        </div>
-        <div class="form-group">
-          <label for="SEKTOR_RADA_SEDADLO">Seat / Row / Section (SEKTOR_RADA_SEDADLO)</label>
-          <input type="text" id="SEKTOR_RADA_SEDADLO">
-        </div>
-        <div class="form-group">
-          <label for="SUPPORTING_ACT">Supporting Act (SUPPORTING_ACT)</label>
-          <input type="text" id="SUPPORTING_ACT">
+      <!-- Seating, Price & Support Act -->
+      <div class="form-panel">
+        <h3>Ticket Details</h3>
+        <div class="grid-4">
+          <div class="form-group">
+            <label for="CENA">Price (CENA)</label>
+            <input type="text" id="CENA">
+          </div>
+          <div class="form-group">
+            <label for="MENA">Currency (MENA)</label>
+            <input type="text" id="MENA" placeholder="EUR, USD, GBP...">
+          </div>
+          <div class="form-group">
+            <label for="SEKTOR_RADA_SEDADLO">Seat / Row / Section</label>
+            <input type="text" id="SEKTOR_RADA_SEDADLO">
+          </div>
+          <div class="form-group">
+            <label for="SUPPORTING_ACT">Supporting Act</label>
+            <input type="text" id="SUPPORTING_ACT">
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Media, Videos & Setlist -->
-    <div class="form-section">
-      <h3>Setlist, Media Links & Reviews</h3>
-      <div class="form-grid">
-        <div class="form-group full-width">
-          <label for="YOUTUBE_URL">🎬 YouTube Concert Video URL (YOUTUBE_URL)</label>
-          <input type="url" id="YOUTUBE_URL" placeholder="https://www.youtube.com/watch?v=..." oninput="updateYtPreview()">
-          <div class="yt-preview" id="ytPreview"></div>
+      <!-- Setlist & Media -->
+      <div class="form-panel">
+        <h3>Setlist & Media Links</h3>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="YOUTUBE_URL">🎬 YouTube Video URL (YOUTUBE_URL)</label>
+            <input type="url" id="YOUTUBE_URL" placeholder="https://www.youtube.com/watch?v=..." oninput="updateYtPreview()">
+            <div class="yt-preview" id="ytPreview"></div>
+          </div>
+          <div class="form-group">
+            <label for="REVIEW_URL">📰 Press / Archive.org Embed URL (REVIEW_URL)</label>
+            <input type="url" id="REVIEW_URL" placeholder="https://archive.org/embed/...">
+          </div>
         </div>
-        <div class="form-group full-width">
-          <label for="REVIEW_URL">📰 Press / Archive.org Review Embed URL (REVIEW_URL)</label>
-          <input type="url" id="REVIEW_URL" placeholder="https://archive.org/embed/...">
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="SETLIST_URL">Setlist.fm Link (SETLIST_URL)</label>
+            <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
+          </div>
+          <div class="form-group">
+            <label for="POCET_SKLADEB">Song Count (POCET_SKLADEB)</label>
+            <input type="number" id="POCET_SKLADEB" readonly style="opacity: 0.6; cursor: not-allowed;">
+          </div>
         </div>
-        <div class="form-group full-width">
-          <label for="SETLIST_URL">Setlist.fm Link (SETLIST_URL)</label>
-          <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
-        </div>
+
         <div class="form-group full-width">
           <label for="SETLIST">Setlist Songs (Comma separated)</label>
-          <textarea id="SETLIST" placeholder="Song 1, Song 2, Song 3..."></textarea>
+          <textarea id="SETLIST" placeholder="Song 1, Song 2, Song 3..." oninput="recalculateSongCount()"></textarea>
         </div>
       </div>
-    </div>
 
-    <div class="action-bar">
-      <button class="btn-submit" onclick="downloadUpdatedCSV()">💾 Download Updated CSV</button>
-      <button class="btn-github" onclick="commitToGitHub()">🚀 Save Directly to GitHub</button>
-    </div>
+      <div class="action-bar">
+        <button class="btn-submit" onclick="downloadUpdatedCSV()">💾 Download Updated CSV</button>
+        <button class="btn-github" onclick="commitToGitHub()">🚀 Save Directly to GitHub</button>
+      </div>
 
-    <div id="statusMessage"></div>
-  </form>
+      <div id="statusMessage"></div>
+    </form>
+
+  </div>
 
   <script>
     const CSV_FILENAME = 'joe_jackson_tickets_master_with_setlists.csv';
@@ -438,10 +436,10 @@
     let viewerInstance = null;
 
     const fields = [
-      'ID_LISTKU', 'ZDROJOVY_SOUBOR', 'TURNE', 'KATEGORIE', 'DATUM', 'MESTO', 'INFO_TEXT',
+      'ID_LISTKU', 'TURNE', 'KATEGORIE', 'DATUM', 'MESTO', 'INFO_TEXT',
       'SOUBOR_SKEN', 'CONTRIBUTOR_TEXT', 'CENA', 'MENA',
       'SEKTOR_RADA_SEDADLO', 'SUPPORTING_ACT', 'YOUTUBE_URL', 'REVIEW_URL',
-      'SETLIST_URL', 'SETLIST'
+      'SETLIST_URL', 'SETLIST', 'POCET_SKLADEB'
     ];
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -455,6 +453,8 @@
         complete: function(results) {
           fullCsvData = results.data;
           
+          populateDropdowns();
+
           if (targetId) {
             currentRecordIndex = fullCsvData.findIndex(r => r.ID_LISTKU === targetId);
           }
@@ -484,6 +484,53 @@
       }
     });
 
+    function isValid(val) {
+      if (!val) return false;
+      const clean = String(val).trim().toLowerCase();
+      return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'null';
+    }
+
+    function populateDropdowns() {
+      // 1. Tours Pop-up
+      const tourSelect = document.getElementById('TURNE');
+      const uniqueTours = [...new Set(fullCsvData.map(r => r.TURNE).filter(isValid))].sort();
+      
+      tourSelect.innerHTML = '<option value="">-- Select Tour --</option>';
+      uniqueTours.forEach(tour => {
+        tourSelect.innerHTML += `<option value="${tour}">${tour}</option>`;
+      });
+      tourSelect.innerHTML += '<option value="__ADD_NEW__">➕ Add new Tour...</option>';
+
+      // 2. Contributors Pop-up
+      const donorSelect = document.getElementById('CONTRIBUTOR_TEXT');
+      const uniqueDonors = [...new Set(fullCsvData.map(r => r.CONTRIBUTOR_TEXT || r.ZDROJ_POSKYTNUL).filter(isValid))].sort();
+
+      donorSelect.innerHTML = '<option value="">-- Select Contributor --</option>';
+      uniqueDonors.forEach(donor => {
+        donorSelect.innerHTML += `<option value="${donor}">${donor}</option>`;
+      });
+      donorSelect.innerHTML += '<option value="__ADD_NEW__">➕ Add new Contributor...</option>';
+    }
+
+    function handleDropdownCustom(fieldId) {
+      const selectEl = document.getElementById(fieldId);
+      if (selectEl.value === '__ADD_NEW__') {
+        const newValue = prompt(`Enter name for new ${fieldId === 'TURNE' ? 'Tour' : 'Contributor'}:`);
+        if (newValue && newValue.trim()) {
+          const cleanVal = newValue.trim();
+          const newOpt = document.createElement('option');
+          newOpt.value = cleanVal;
+          newOpt.textContent = cleanVal;
+          
+          // Insert before the last option (Add new...)
+          selectEl.insertBefore(newOpt, selectEl.lastElementChild);
+          selectEl.value = cleanVal;
+        } else {
+          selectEl.value = '';
+        }
+      }
+    }
+
     function saveCurrentChangesToMemory() {
       if (currentRecordIndex >= 0 && currentRecordIndex < fullCsvData.length) {
         fullCsvData[currentRecordIndex] = getFormData();
@@ -502,7 +549,10 @@
         const el = document.getElementById(field);
         if (el) {
           if (field === 'CONTRIBUTOR_TEXT') {
-            el.value = data.CONTRIBUTOR_TEXT || data.ZDROJ_POSKYTNUL || '';
+            const val = data.CONTRIBUTOR_TEXT || data.ZDROJ_POSKYTNUL || '';
+            setDropdownValue(el, val);
+          } else if (field === 'TURNE') {
+            setDropdownValue(el, data.TURNE || '');
           } else {
             el.value = data[field] || '';
           }
@@ -511,10 +561,26 @@
 
       renderImagePreview(data.SOUBOR_SKEN);
       updateYtPreview();
+      recalculateSongCount();
       updateNavUI();
 
       const newUrl = `${window.location.pathname}?id=${encodeURIComponent(data.ID_LISTKU || '')}`;
       window.history.replaceState({ path: newUrl }, '', newUrl);
+    }
+
+    function setDropdownValue(selectEl, value) {
+      if (!value) {
+        selectEl.value = '';
+        return;
+      }
+      let exists = Array.from(selectEl.options).some(opt => opt.value === value);
+      if (!exists) {
+        const newOpt = document.createElement('option');
+        newOpt.value = value;
+        newOpt.textContent = value;
+        selectEl.insertBefore(newOpt, selectEl.lastElementChild);
+      }
+      selectEl.value = value;
     }
 
     function renderImagePreview(skenStr) {
@@ -568,6 +634,17 @@
       renderImagePreview(val);
     }
 
+    function recalculateSongCount() {
+      const text = document.getElementById('SETLIST').value;
+      const countEl = document.getElementById('POCET_SKLADEB');
+      if (text) {
+        const songs = text.split(',').map(s => s.trim()).filter(Boolean);
+        countEl.value = songs.length;
+      } else {
+        countEl.value = 0;
+      }
+    }
+
     function navigateRecord(direction) {
       saveCurrentChangesToMemory();
       const newIndex = currentRecordIndex + direction;
@@ -608,13 +685,6 @@
 
       if (updated.CONTRIBUTOR_TEXT) {
         updated.ZDROJ_POSKYTNUL = updated.CONTRIBUTOR_TEXT;
-      }
-
-      if (updated.SETLIST) {
-        const songs = updated.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
-        updated.POCET_SKLADEB = songs.length;
-      } else {
-        updated.POCET_SKLADEB = 0;
       }
 
       return updated;
