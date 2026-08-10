@@ -634,3 +634,99 @@ header {
 }
 
 .media-link-btn:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
+/* ==========================================
+   RESPONSIVE & iOS MOBILE OPTIMIZATIONS
+   ========================================== */
+
+@media (max-width: 768px) {
+  /* 1. Zrušení fixace hlavičky na mobilu (aby nezabírala místo a dalo se plynule scrollovat) */
+  .top-header-container {
+    position: relative; /* Zrušeno sticky */
+    top: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+
+  body {
+    padding: 0 12px 20px 12px; /* Zmenšení obrovských okrajů na telefonu */
+  }
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .title-area h1 {
+    font-size: 1.1rem;
+    flex-wrap: wrap;
+  }
+
+  /* 2. Oprava banneru "On This Day in History" na úzkém displeji */
+  .on-this-day-banner.active {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .otd-left {
+    align-items: flex-start;
+  }
+
+  .otd-text p {
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
+  .otd-btn {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  /* 3. Přehledné seřazení vyhledávání a filtrů pod sebe */
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .search-input-wrapper input,
+  .controls select {
+    font-size: 16px !important; /* DŮLEŽITÉ PRO iOS: Zabraňuje nežádoucímu auto-zoomu Safari při kliknutí do pole */
+  }
+
+  .surprise-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .layout-toggles {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .toggle-btn {
+    flex-grow: 1;
+    height: 38px;
+  }
+
+  /* 4. Úprava mřížky karet pro mobil */
+  .tickets-container.grid-view {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .tickets-container.list-view .ticket-card {
+    flex-direction: column;
+  }
+
+  .tickets-container.list-view .card-img-wrapper {
+    width: 100%;
+    height: 200px;
+  }
+}
