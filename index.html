@@ -248,20 +248,23 @@
 
     .ticket-card:hover { border-color: #38bdf8; transform: translateY(-2px); }
 
-    .card-header-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 6px; }
-
     .edit-icon-btn {
       color: var(--text-muted);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       text-decoration: none;
-      padding: 2px 6px;
-      border-radius: 4px;
+      padding: 8px 10px;
+      border-radius: 6px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
       transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      white-space: nowrap;
     }
 
-    .edit-icon-btn:hover { color: var(--accent-yellow); border-color: var(--accent-yellow); }
+    .edit-icon-btn:hover { color: var(--accent-yellow); border-color: var(--accent-yellow); background: rgba(250, 204, 21, 0.1); }
 
     .card-img-wrapper {
       position: relative;
@@ -279,17 +282,6 @@
 
     .card-date { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
     .info-text { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px; flex-grow: 1; }
-
-    /* Supporting Act Tag on Card */
-    .card-support-tag {
-      font-size: 0.75rem;
-      color: var(--accent-blue);
-      font-weight: 600;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
 
     /* Related Item Badge Buttons */
     .related-items-bar {
@@ -326,6 +318,7 @@
       gap: 6px;
       margin-top: 10px;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .setlist-toggle-btn, .lineup-toggle-btn {
@@ -475,6 +468,23 @@
 
     .modal-nav-btn:hover:not(:disabled) { border-color: var(--accent-blue); color: var(--accent-blue); }
     .modal-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .modal-edit-btn {
+      background: rgba(250, 204, 21, 0.12);
+      border: 1px solid rgba(250, 204, 21, 0.5);
+      color: var(--accent-yellow);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .modal-edit-btn:hover { background: rgba(250, 204, 21, 0.25); border-color: var(--accent-yellow); }
 
     .modal-close {
       background: rgba(255, 255, 255, 0.1);
@@ -657,6 +667,7 @@
         <button class="modal-nav-btn" id="modalPrevBtn" onclick="navigateModal(-1)">◄ Previous</button>
         <div class="modal-counter" id="modalCounter">0 / 0</div>
         <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#" id="modalEditLink" target="_blank" class="modal-edit-btn" title="Edit this record">✏️ Edit Record</a>
           <button class="modal-nav-btn" id="modalNextBtn" onclick="navigateModal(1)">Next ►</button>
           <button class="modal-close" onclick="closeModal()">✕</button>
         </div>
@@ -1030,11 +1041,7 @@
           relatedHTML += '</div>';
         }
 
-        let supportActHTML = '';
-        if (isValidValue(t.SUPPORTING_ACT)) {
-          supportActHTML = `<div class="card-support-tag">🎸 Support: ${t.SUPPORTING_ACT.trim()}</div>`;
-        }
-
+        // Setlist, Lineup & Edit controls
         let collapsibleGroupHTML = '';
         const setlistStr = t.SETLIST || '';
         const songCount = parseInt(t.POCET_SKLADEB) || 0;
@@ -1043,56 +1050,57 @@
 
         const hasSetlist = setlistStr && isValidValue(setlistStr) && songCount > 0;
         const hasLineup = lineupStr && isValidValue(lineupStr);
+        const editUrl = `edit_ticket.html?id=${encodeURIComponent(t.ID_LISTKU || '')}`;
 
-        if (hasSetlist || hasLineup || setlistUrl) {
-          collapsibleGroupHTML += '<div class="collapsible-group">';
-          
-          if (hasSetlist) {
-            collapsibleGroupHTML += `
-              <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleCollapsible('setlist-${globalIndex}')">🎵 View Setlist.fm (${songCount})</button>
-            `;
-          }
-
-          if (setlistUrl && isValidValue(setlistUrl)) {
-            collapsibleGroupHTML += `
-              <a href="${setlistUrl}" target="_blank" class="external-link-icon-btn" title="Open directly on Setlist.fm ↗" onclick="event.stopPropagation();">🔗</a>
-            `;
-          }
-
-          if (hasLineup) {
-            collapsibleGroupHTML += `
-              <button class="lineup-toggle-btn has-lineup" onclick="event.stopPropagation(); toggleCollapsible('lineup-${globalIndex}')">👥 Line-up</button>
-            `;
-          }
-
-          collapsibleGroupHTML += '</div>';
-
-          if (hasSetlist) {
-            const songs = setlistStr.split(',').map(s => s.trim());
-            const listItems = songs.map(s => `<li>${s}</li>`).join('');
-            collapsibleGroupHTML += `<div class="collapsible-content" id="setlist-${globalIndex}"><ol>${listItems}</ol></div>`;
-          }
-
-          if (hasLineup) {
-            const members = lineupStr.split(';').map(m => m.trim());
-            const memberItems = members.map(m => `<li>${m}</li>`).join('');
-            collapsibleGroupHTML += `<div class="collapsible-content" id="lineup-${globalIndex}"><ul>${memberItems}</ul></div>`;
-          }
+        collapsibleGroupHTML += '<div class="collapsible-group">';
+        
+        // 1. Tlačítko na setlist.fm vlevo od tlačítka "View setlist"
+        if (setlistUrl && isValidValue(setlistUrl)) {
+          collapsibleGroupHTML += `
+            <a href="${setlistUrl}" target="_blank" class="external-link-icon-btn" title="Open directly on Setlist.fm ↗" onclick="event.stopPropagation();">🔗</a>
+          `;
         }
 
-        const editUrl = `edit_ticket.html?id=${encodeURIComponent(t.ID_LISTKU || '')}`;
+        // 2. Tlačítko "View Setlist"
+        if (hasSetlist) {
+          collapsibleGroupHTML += `
+            <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleCollapsible('setlist-${globalIndex}')">🎵 View Setlist.fm (${songCount})</button>
+          `;
+        }
+
+        // 3. Tlačítko "Line-up"
+        if (hasLineup) {
+          collapsibleGroupHTML += `
+            <button class="lineup-toggle-btn has-lineup" onclick="event.stopPropagation(); toggleCollapsible('lineup-${globalIndex}')">👥 Line-up</button>
+          `;
+        }
+
+        // 4. Tlačítko Edit vpravo od tlačítka Lineup
+        collapsibleGroupHTML += `
+          <a href="${editUrl}" target="_blank" class="edit-icon-btn" onclick="event.stopPropagation();" title="Edit this record">✏️ Edit</a>
+        `;
+
+        collapsibleGroupHTML += '</div>';
+
+        if (hasSetlist) {
+          const songs = setlistStr.split(',').map(s => s.trim());
+          const listItems = songs.map(s => `<li>${s}</li>`).join('');
+          collapsibleGroupHTML += `<div class="collapsible-content" id="setlist-${globalIndex}"><ol>${listItems}</ol></div>`;
+        }
+
+        if (hasLineup) {
+          const members = lineupStr.split(';').map(m => m.trim());
+          const memberItems = members.map(m => `<li>${m}</li>`).join('');
+          collapsibleGroupHTML += `<div class="collapsible-content" id="lineup-${globalIndex}"><ul>${memberItems}</ul></div>`;
+        }
 
         card.innerHTML = `
           <div class="card-img-wrapper">
             ${imgSrc ? `<img src="${imgSrc}" alt="Ticket Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzMzMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4='">` : ''}
           </div>
           <div class="card-content">
-            <div class="card-header-row">
-              <a href="${editUrl}" target="_blank" class="edit-icon-btn" onclick="event.stopPropagation();" title="Edit this record">✏️ Edit</a>
-            </div>
             ${parsed.date ? `<div class="card-date">${parsed.date}</div>` : ''}
             <div class="info-text">${parsed.text}</div>
-            ${supportActHTML}
             ${relatedHTML}
             ${collapsibleGroupHTML}
           </div>
@@ -1177,6 +1185,12 @@
       const parsed = parseInfoText(t);
       document.getElementById('modalDate').textContent = parsed.date || '';
       document.getElementById('modalInfo').textContent = parsed.text || '';
+
+      // Nastavení odkazu na editaci ve Flash Card
+      const editLink = document.getElementById('modalEditLink');
+      if (editLink) {
+        editLink.href = `edit_ticket.html?id=${encodeURIComponent(t.ID_LISTKU || '')}`;
+      }
 
       const supportGroup = document.getElementById('modalSupportGroup');
       if (isValidValue(t.SUPPORTING_ACT)) {
