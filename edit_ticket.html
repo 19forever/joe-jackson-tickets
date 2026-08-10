@@ -461,9 +461,15 @@
         </div>
       </div>
 
-      <!-- Setlist & Media -->
+      <!-- Setlist, Line-up & Media -->
       <div class="form-panel">
-        <h3>Setlist & Media Links</h3>
+        <h3>Band Line-up, Setlist & Media Links</h3>
+        
+        <div class="form-group full-width">
+          <label for="LINEUP">Band Line-up (LINEUP - Semicolon separated, e.g. Joe Jackson - vocals, piano; Graham Maby - bass)</label>
+          <textarea id="LINEUP" placeholder="Joe Jackson - vocals, keyboards; Graham Maby - bass; Dave Houghton - drums..."></textarea>
+        </div>
+
         <div class="grid-2">
           <div class="form-group">
             <label for="YOUTUBE_URL">🎬 YouTube Video URL (YOUTUBE_URL)</label>
@@ -519,7 +525,7 @@
     const fields = [
       'ID_LISTKU', 'TURNE', 'KATEGORIE', 'DATUM', 'MESTO', 'INFO_TEXT',
       'SOUBOR_SKEN', 'CONTRIBUTOR_TEXT', 'CENA', 'MENA',
-      'SEKTOR_RADA_SEDADLO', 'SUPPORTING_ACT', 'YOUTUBE_URL', 'REVIEW_URL',
+      'SEKTOR_RADA_SEDADLO', 'SUPPORTING_ACT', 'LINEUP', 'YOUTUBE_URL', 'REVIEW_URL',
       'SETLIST_URL', 'SETLIST', 'POCET_SKLADEB'
     ];
 
@@ -619,6 +625,7 @@
         MENA: '',
         SEKTOR_RADA_SEDADLO: '',
         SUPPORTING_ACT: '',
+        LINEUP: '',
         YOUTUBE_URL: '',
         REVIEW_URL: '',
         SETLIST_URL: '',
