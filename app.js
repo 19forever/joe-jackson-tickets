@@ -15,6 +15,30 @@ function isValidValue(val) {
   return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'undefined' && clean !== 'null';
 }
 
+function formatDisplayDate(dateStr) {
+  if (!dateStr || typeof dateStr !== 'string') return '';
+  const parts = dateStr.trim().split('-');
+  if (parts.length !== 3) return dateStr;
+
+  const year = parts[0];
+  const monthIdx = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  if (isNaN(day) || monthIdx < 0 || monthIdx > 11) return dateStr;
+
+  let suffix = "th";
+  if (day % 10 === 1 && day !== 11) suffix = "st";
+  else if (day % 10 === 2 && day !== 12) suffix = "nd";
+  else if (day % 10 === 3 && day !== 13) suffix = "rd";
+
+  return `${day}${suffix} ${months[monthIdx]} ${year}`;
+}
+
 function getTicketCategory(t) {
   if (t.KATEGORIE && t.KATEGORIE.trim()) {
     const cat = t.KATEGORIE.trim().toLowerCase();
@@ -64,7 +88,6 @@ function openSurpriseTicket() {
   openModal(randomIndex);
 }
 
-// Relace přes nově vygenerovaný SHOW_ID
 function getRelatedItems(currentRecord) {
   if (!isValidValue(currentRecord.SHOW_ID)) return [];
 
@@ -81,21 +104,24 @@ function checkOnThisDayAnniversary() {
 
   const anniversaries = allTickets.filter(t => {
     if (!isValidValue(t.DATUM)) return false;
-    const d = new Date(t.DATUM);
-    return !isNaN(d.getTime()) && d.getDate() === currentDay && d.getMonth() === currentMonth;
+    const parts = t.DATUM.split('-');
+    if (parts.length !== 3) return false;
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    return d === currentDay && m === currentMonth;
   });
 
   if (anniversaries.length > 0) {
     const selected = anniversaries[0];
-    const concertDate = new Date(selected.DATUM);
-    const yearsAgo = today.getFullYear() - concertDate.getFullYear();
+    const concertYear = parseInt(selected.DATUM.split('-')[0], 10);
+    const yearsAgo = today.getFullYear() - concertYear;
 
     const banner = document.getElementById('otdBanner');
     const titleEl = document.getElementById('otdTitle');
     const btn = document.getElementById('otdBtn');
 
     let locationText = formatLocationText(selected);
-    let text = `<strong>${yearsAgo} years ago</strong> (${concertDate.getFullYear()}): Joe Jackson played in ${locationText}`;
+    let text = `<strong>${yearsAgo} years ago</strong> (${formatDisplayDate(selected.DATUM)}): Joe Jackson played in ${locationText}`;
     if (anniversaries.length > 1) {
       text += ` <em>(+${anniversaries.length - 1} more show today)</em>`;
     }
@@ -128,18 +154,25 @@ window.addEventListener('DOMContentLoaded', () => {
     header: true,
     skipEmptyLines: true,
     complete: function(results) {
+      if (!results.data || results.data.length === 0) {
+        console.error("CSV file is empty or could not be loaded.");
+        return;
+      }
       allTickets = results.data;
       updateYearBadge();
       populateFilters();
       filterData();
       checkOnThisDayAnniversary();
+    },
+    error: function(err) {
+      console.error("Error loading CSV file:", err);
     }
   });
 });
 
 function updateYearBadge() {
   const years = allTickets
-    .map(t => t.DATUM ? new Date(t.DATUM).getFullYear() : 0)
+    .map(t => (t.DATUM && t.DATUM.length >= 4) ? parseInt(t.DATUM.substring(0, 4), 10) : 0)
     .filter(y => y > 1900);
   if (years.length > 0) {
     const minYear = Math.min(...years);
@@ -153,8 +186,8 @@ function populateFilters() {
   const yearsSet = new Set();
 
   allTickets.forEach(t => {
-    if (t.DATUM) {
-      const y = new Date(t.DATUM).getFullYear();
+    if (t.DATUM && t.DATUM.length >= 4) {
+      const y = parseInt(t.DATUM.substring(0, 4), 10);
       if (y > 1900) yearsSet.add(y);
     }
   });
@@ -220,7 +253,7 @@ function setLayout(layout) {
 
 function changePageSize() {
   const val = document.getElementById('pageSizeFilter').value;
-  pageSize = val === 'ALL' ? 'ALL' : parseInt(val);
+  pageSize = val === 'ALL' ? 'ALL' : parseInt(val, 10);
   currentPage = 1;
   renderPaginated();
 }
@@ -233,11 +266,14 @@ function filterData() {
 
   const matchesBase = allTickets.filter(t => {
     const locationText = formatLocationText(t).toLowerCase();
-    const itemYear = t.DATUM ? new Date(t.DATUM).getFullYear() : '';
+    const itemYear = (t.DATUM && t.DATUM.length >= 4) ? t.DATUM.substring(0, 4) : '';
+    const rawDate = (t.DATUM || '').toLowerCase();
+    const formattedDate = formatDisplayDate(t.DATUM).toLowerCase();
 
     const qMatch = !query || 
       locationText.includes(query) ||
-      (t.DATUM || '').toLowerCase().includes(query) ||
+      rawDate.includes(query) ||
+      formattedDate.includes(query) ||
       (t.SUPPORTING_ACT || '').toLowerCase().includes(query) ||
       (t.LINEUP || '').toLowerCase().includes(query) ||
       (t.SETLIST || '').toLowerCase().includes(query);
@@ -255,8 +291,9 @@ function filterData() {
   });
 
   filteredTickets.sort((a, b) => {
-    const dateA = t => t.DATUM ? new Date(t.DATUM).getTime() : 0;
-    return sort === 'newest' ? dateA(b) - dateA(a) : dateA(a) - dateA(b);
+    const dateStrA = a.DATUM || '';
+    const dateStrB = b.DATUM || '';
+    return sort === 'newest' ? dateStrB.localeCompare(dateStrA) : dateStrA.localeCompare(dateStrB);
   });
 
   currentPage = 1;
@@ -341,7 +378,7 @@ function renderTickets(tickets) {
 
     let collapsibleGroupHTML = '';
     const setlistStr = t.SETLIST || '';
-    const songCount = parseInt(t.POCET_SKLADEB) || 0;
+    const songCount = parseInt(t.POCET_SKLADEB, 10) || 0;
     const setlistUrl = t.SETLIST_URL || '';
     const lineupStr = t.LINEUP || '';
 
@@ -386,10 +423,10 @@ function renderTickets(tickets) {
 
     card.innerHTML = `
       <div class="card-img-wrapper">
-        ${imgSrc ? `<img src="${imgSrc}" alt="Ticket Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzMzMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4='">` : ''}
+        ${imgSrc ? `<img src="${imgSrc}" alt="Ticket Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IxMDAlIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMzMzMiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+='">` : ''}
       </div>
       <div class="card-content">
-        ${t.DATUM ? `<div class="card-date">${t.DATUM}</div>` : ''}
+        ${t.DATUM ? `<div class="card-date">${formatDisplayDate(t.DATUM)}</div>` : ''}
         <div class="info-text">${locationText}</div>
         ${relatedHTML}
         ${collapsibleGroupHTML}
@@ -472,7 +509,7 @@ function openModal(index) {
     imageViewerInstance = new Viewer(modalImg, { toolbar: true, navbar: false, title: false });
   }, 100);
 
-  document.getElementById('modalDate').textContent = t.DATUM || '';
+  document.getElementById('modalDate').textContent = formatDisplayDate(t.DATUM) || '';
   document.getElementById('modalInfo').textContent = formatLocationText(t);
 
   const editLink = document.getElementById('modalEditLink');
@@ -501,7 +538,7 @@ function openModal(index) {
 
   const lineupStr = t.LINEUP || '';
   const setlistStr = t.SETLIST || '';
-  const songCount = parseInt(t.POCET_SKLADEB) || 0;
+  const songCount = parseInt(t.POCET_SKLADEB, 10) || 0;
 
   const hasLineup = isValidValue(lineupStr);
   const hasSetlist = setlistStr && isValidValue(setlistStr) && songCount > 0;
