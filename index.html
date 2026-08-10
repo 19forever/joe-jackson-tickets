@@ -836,9 +836,22 @@
         tourSelect.appendChild(opt);
       });
 
-      // Venues / Cities Filter
+      // Venues / Cities Filter (Kombinuje MESTO i čištěný text z INFO_TEXT)
       const venueSelect = document.getElementById('venueFilter');
-      const venues = [...new Set(allTickets.map(t => t.MESTO).filter(isValidValue))].sort();
+      const venueSet = new Set();
+
+      allTickets.forEach(t => {
+        if (isValidValue(t.MESTO)) {
+          venueSet.add(t.MESTO.trim());
+        } else {
+          const parsed = parseInfoText(t);
+          if (parsed.text && parsed.text.trim()) {
+            venueSet.add(parsed.text.trim());
+          }
+        }
+      });
+
+      const venues = [...venueSet].sort();
       venues.forEach(venue => {
         const opt = document.createElement('option');
         opt.value = venue; opt.textContent = venue;
@@ -905,6 +918,9 @@
 
       const matchesBase = allTickets.filter(t => {
         const donorVal = t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL || '';
+        const parsed = parseInfoText(t);
+        const venueVal = (t.MESTO || parsed.text || '').trim();
+
         const qMatch = !query || 
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
           donorVal.toLowerCase().includes(query) ||
@@ -913,7 +929,7 @@
           (t.SETLIST || '').toLowerCase().includes(query);
           
         const tMatch = !tour || t.TURNE === tour;
-        const vMatch = !venue || t.MESTO === venue;
+        const vMatch = !venue || venueVal === venue || (t.INFO_TEXT || '').includes(venue);
         const dMatch = !donor || donorVal === donor;
         return qMatch && tMatch && vMatch && dMatch;
       });
