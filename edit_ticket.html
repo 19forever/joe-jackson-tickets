@@ -270,6 +270,16 @@
       background-color: #334155;
     }
 
+    /* Status & Validation Badges */
+    .validation-hint {
+      font-size: 0.75rem;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+    .validation-hint.error { color: #f87171; }
+    .validation-hint.warning { color: #facc15; }
+    .validation-hint.success { color: #4ade80; }
+
     .action-bar {
       display: flex;
       gap: 12px;
@@ -378,15 +388,16 @@
         <div class="grid-2">
           <div class="form-group">
             <label for="DATUM">Concert Date (DATUM)</label>
-            <input type="text" id="DATUM" placeholder="e.g. 24th March 2003">
+            <input type="text" id="DATUM" placeholder="e.g. 24th March 2003" oninput="checkDataQuality()">
           </div>
           <div class="form-group">
             <label for="MESTO">City & Venue (MESTO)</label>
-            <input type="text" id="MESTO" placeholder="e.g. San Francisco, CA, U.S.A. - The Fillmore">
+            <input type="text" id="MESTO" placeholder="e.g. San Francisco, CA, U.S.A. - The Fillmore" oninput="checkDataQuality()">
           </div>
         </div>
+        <div id="duplicateWarning" class="validation-hint warning"></div>
 
-        <div class="form-group full-width">
+        <div class="form-group full-width" style="margin-top: 8px;">
           <label for="INFO_TEXT">Info & Description (INFO_TEXT)</label>
           <textarea id="INFO_TEXT"></textarea>
         </div>
@@ -398,7 +409,8 @@
         <div class="grid-2">
           <div class="form-group">
             <label for="SOUBOR_SKEN">Scan Image Filename(s) (SOUBOR_SKEN)</label>
-            <input type="text" id="SOUBOR_SKEN" placeholder="file1.jpg, file2.webp" oninput="updateImageFromInput()">
+            <input type="text" id="SOUBOR_SKEN" placeholder="file1.jpg, file2.webp" oninput="updateImageFromInput(); checkScanFileExistence();">
+            <div id="fileValidationHint" class="validation-hint"></div>
           </div>
           <div class="form-group">
             <label for="CONTRIBUTOR_TEXT">Donor / Contributor (CONTRIBUTOR_TEXT)</label>
@@ -603,6 +615,62 @@
       showStatus(`Created new record with ID: ${newId}. Fill details and click Save to GitHub.`, 'blue');
     }
 
+    /* CHYTRÁ KONTROLA DATA A DUPLICIT */
+    function checkDataQuality() {
+      const currentId = document.getElementById('ID_LISTKU').value;
+      const dateVal = document.getElementById('DATUM').value.trim().toLowerCase();
+      const cityVal = document.getElementById('MESTO').value.trim().toLowerCase();
+      const warningEl = document.getElementById('duplicateWarning');
+
+      if (!dateVal || !cityVal) {
+        warningEl.textContent = '';
+        return;
+      }
+
+      // Hledání duplicity v databázi
+      const duplicate = fullCsvData.find(r => {
+        if (r.ID_LISTKU === currentId) return false;
+        const rDate = (r.DATUM || '').trim().toLowerCase();
+        const rCity = (r.MESTO || '').trim().toLowerCase();
+        return rDate === dateVal && rCity === cityVal && rDate !== '';
+      });
+
+      if (duplicate) {
+        warningEl.textContent = `⚠️ Possible Duplicate: Same concert date & city already exists in record ${duplicate.ID_LISTKU}!`;
+      } else {
+        warningEl.textContent = '';
+      }
+    }
+
+    /* KONTROLA EXISTENCE SOUBORU VE SLOŽCE /scans/ */
+    async function checkScanFileExistence() {
+      const hintEl = document.getElementById('fileValidationHint');
+      const skenStr = document.getElementById('SOUBOR_SKEN').value.trim();
+
+      if (!skenStr) {
+        hintEl.textContent = '';
+        return;
+      }
+
+      const firstFile = skenStr.split(',')[0].trim();
+      const imgUrl = `./scans/${firstFile}`;
+
+      try {
+        const res = await fetch(imgUrl, { method: 'HEAD' });
+        if (res.ok) {
+          hintEl.className = 'validation-hint success';
+          hintEl.textContent = `✅ Image file '${firstFile}' verified in /scans/`;
+        } else {
+          hintEl.className = 'validation-hint error';
+          hintEl.textContent = `❌ Warning: File '${firstFile}' not found in /scans/ folder!`;
+        }
+      } catch (e) {
+        // Fallback pokud HEAD selže
+        hintEl.className = 'validation-hint warning';
+        hintEl.textContent = `ℹ️ Checking file '${firstFile}'...`;
+      }
+    }
+
     function populateDropdowns() {
       const tourSelect = document.getElementById('TURNE');
       const uniqueTours = [...new Set(fullCsvData.map(r => r.TURNE).filter(isValid))].sort();
@@ -672,6 +740,8 @@
       updateYtPreview();
       recalculateSongCount();
       updateNavUI();
+      checkDataQuality();
+      checkScanFileExistence();
 
       const newUrl = `${window.location.pathname}?id=${encodeURIComponent(data.ID_LISTKU || '')}`;
       window.history.replaceState({ path: newUrl }, '', newUrl);
