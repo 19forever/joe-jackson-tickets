@@ -85,6 +85,8 @@
       border-radius: 8px;
       padding: 8px 15px;
       margin-bottom: 20px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .nav-btn {
@@ -98,12 +100,22 @@
       cursor: pointer;
     }
 
-    .nav-btn:hover:not(:disabled) {
-      border-color: var(--accent-blue);
-      color: var(--accent-blue);
+    .nav-btn:hover:not(:disabled) { border-color: var(--accent-blue); color: var(--accent-blue); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .btn-add-new {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .btn-add-new:hover { background-color: #fde047; }
 
     .record-counter { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
@@ -173,10 +185,7 @@
       opacity: 0.6;
     }
 
-    .thumb-item:hover, .thumb-item.active {
-      opacity: 1;
-      border-color: var(--accent-yellow);
-    }
+    .thumb-item:hover, .thumb-item.active { opacity: 1; border-color: var(--accent-yellow); }
 
     /* Right Column: Form Panels */
     .form-panel {
@@ -210,11 +219,7 @@
 
     .form-group.full-width { grid-column: 1 / -1; }
 
-    label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
+    label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
 
     input, select, textarea {
       background-color: var(--bg-main);
@@ -262,10 +267,11 @@
 
     #statusMessage {
       margin-top: 15px;
-      padding: 10px;
+      padding: 12px;
       border-radius: 5px;
       display: none;
       font-size: 0.85rem;
+      word-break: break-word;
     }
 
     .yt-preview { margin-top: 4px; font-size: 0.8rem; }
@@ -282,11 +288,16 @@
     </div>
   </header>
 
-  <!-- Navigation Bar -->
+  <!-- Navigation & Action Bar -->
   <div class="record-nav-bar">
-    <button class="nav-btn" id="prevBtn" onclick="navigateRecord(-1)">◄ Previous Record</button>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button class="nav-btn" id="prevBtn" onclick="navigateRecord(-1)">◄ Previous</button>
+      <button class="nav-btn" id="nextBtn" onclick="navigateRecord(1)">Next ►</button>
+    </div>
+    
     <div class="record-counter" id="recordCounter">Record 0 of 0</div>
-    <button class="nav-btn" id="nextBtn" onclick="navigateRecord(1)">Next Record ►</button>
+
+    <button class="btn-add-new" onclick="addNewRecord()">➕ Add New Record</button>
   </div>
 
   <div class="main-editor-layout">
@@ -490,8 +501,52 @@
       return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'null';
     }
 
+    function generateNextId() {
+      let maxNum = 0;
+      fullCsvData.forEach(r => {
+        if (r.ID_LISTKU) {
+          const match = r.ID_LISTKU.match(/\d+/);
+          if (match) {
+            const num = parseInt(match[0], 10);
+            if (num > maxNum) maxNum = num;
+          }
+        }
+      });
+      const nextNum = maxNum + 1;
+      return `TICKET_${String(nextNum).padStart(4, '0')}`;
+    }
+
+    function addNewRecord() {
+      saveCurrentChangesToMemory();
+
+      const newId = generateNextId();
+      const newRecord = {
+        ID_LISTKU: newId,
+        KATEGORIE: 'tickets',
+        TURNE: '',
+        DATUM: '',
+        MESTO: '',
+        INFO_TEXT: '',
+        SOUBOR_SKEN: '',
+        CONTRIBUTOR_TEXT: '',
+        CENA: '',
+        MENA: '',
+        SEKTOR_RADA_SEDADLO: '',
+        SUPPORTING_ACT: '',
+        YOUTUBE_URL: '',
+        REVIEW_URL: '',
+        SETLIST_URL: '',
+        SETLIST: '',
+        POCET_SKLADEB: '0'
+      };
+
+      fullCsvData.push(newRecord);
+      currentRecordIndex = fullCsvData.length - 1;
+      loadRecord(currentRecordIndex);
+      showStatus(`Created new record with ID: ${newId}. Fill details and click Save to GitHub.`, 'blue');
+    }
+
     function populateDropdowns() {
-      // 1. Tours Pop-up
       const tourSelect = document.getElementById('TURNE');
       const uniqueTours = [...new Set(fullCsvData.map(r => r.TURNE).filter(isValid))].sort();
       
@@ -501,7 +556,6 @@
       });
       tourSelect.innerHTML += '<option value="__ADD_NEW__">➕ Add new Tour...</option>';
 
-      // 2. Contributors Pop-up
       const donorSelect = document.getElementById('CONTRIBUTOR_TEXT');
       const uniqueDonors = [...new Set(fullCsvData.map(r => r.CONTRIBUTOR_TEXT || r.ZDROJ_POSKYTNUL).filter(isValid))].sort();
 
@@ -521,8 +575,6 @@
           const newOpt = document.createElement('option');
           newOpt.value = cleanVal;
           newOpt.textContent = cleanVal;
-          
-          // Insert before the last option (Add new...)
           selectEl.insertBefore(newOpt, selectEl.lastElementChild);
           selectEl.value = cleanVal;
         } else {
@@ -731,7 +783,7 @@
       let token = getStoredToken();
 
       if (!token) {
-        token = prompt('Enter your GitHub Personal Access Token (PAT):');
+        token = prompt('Enter your GitHub Personal Access Token (PAT with repo scope):');
         if (!token) return;
         token = token.trim();
 
@@ -749,19 +801,25 @@
       const repoName = 'joe-jackson-tickets';
       const filePath = CSV_FILENAME;
 
-      showStatus('Committing changes to GitHub...', 'blue');
+      showStatus('Connecting to GitHub API...', 'blue');
 
       try {
         const getFileRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
-          headers: { 'Authorization': `token ${token}` }
+          headers: { 
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
         });
 
         if (!getFileRes.ok) {
+          const errData = await getFileRes.json().catch(() => ({}));
           if (getFileRes.status === 401) {
             localStorage.removeItem('jj_github_pat');
-            throw new Error('Invalid or expired PAT token. Please try again.');
+            throw new Error('Invalid PAT token or expired credentials (401).');
+          } else if (getFileRes.status === 404) {
+            throw new Error(`File '${filePath}' not found in repo ${repoOwner}/${repoName}. Check repository name or permissions.`);
           }
-          throw new Error('Failed to fetch existing file details from GitHub.');
+          throw new Error(errData.message || `GitHub API error: ${getFileRes.status}`);
         }
 
         const fileData = await getFileRes.json();
@@ -773,23 +831,24 @@
           method: 'PUT',
           headers: {
             'Authorization': `token ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
           },
           body: JSON.stringify({
-            message: `Update record ${fullCsvData[currentRecordIndex].ID_LISTKU} via Web Editor`,
+            message: `Update / Add record ${fullCsvData[currentRecordIndex].ID_LISTKU} via Web Editor`,
             content: contentEncoded,
             sha: sha
           })
         });
 
         if (updateRes.ok) {
-          showStatus('Successfully committed to GitHub! Changes will be live in ~30s.', 'green');
+          showStatus('✅ Successfully saved directly to GitHub! Changes will be live in ~30s.', 'green');
         } else {
-          const errJson = await updateRes.json();
-          throw new Error(errJson.message || 'Failed to update file on GitHub.');
+          const errJson = await updateRes.json().catch(() => ({}));
+          throw new Error(`GitHub Save Failed (${updateRes.status}): ${errJson.message || 'Check PAT scope permissions (needs repo scope)'}`);
         }
       } catch (err) {
-        showStatus(`Error: ${err.message}`, 'red');
+        showStatus(`❌ ${err.message}`, 'red');
       }
     }
 
