@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Record | JJ Memorabilia Museum</title>
+  
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <style>
+    .edit-container {
+      max-width: 900px;
+      margin: 40px auto;
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 30px;
+    }
+
+    .edit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 15px;
+    }
+
+    .edit-header h2 {
+      font-size: 1.4rem;
+      color: var(--accent-yellow);
+    }
+
+    .back-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .back-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width { grid-column: 1 / -1; }
+
+    .form-group label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--accent-yellow);
+    }
+
+    .action-bar {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .save-btn {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .save-btn:hover { background-color: #fde047; }
+
+    .download-btn {
+      background-color: var(--bg-card);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .download-btn:hover { background-color: rgba(56, 189, 248, 0.15); }
+  </style>
+</head>
+<body>
+
+  <div class="edit-container">
+    <div class="edit-header">
+      <h2>✏️ Edit Memorabilia Record</h2>
+      <a href="index.html" class="back-btn">◄ Back to Museum</a>
+    </div>
+
+    <form id="editForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>ID Memorabilia</label>
+          <input type="text" id="ID_MEMORABILIA" readonly style="opacity: 0.6;">
+        </div>
+
+        <div class="form-group">
+          <label>Show ID (Event Key)</label>
+          <input type="text" id="SHOW_ID" placeholder="e.g. SHOW_2010-10-01_GRONINGEN">
+        </div>
+
+        <div class="form-group">
+          <label>Category</label>
+          <select id="KATEGORIE">
+            <option value="tickets">Tickets</option>
+            <option value="passes">Passes</option>
+            <option value="programs">Programs</option>
+            <option value="posters">Posters</option>
+            <option value="t-shirts">T-shirts</option>
+            <option value="memorabilia">Memorabilia</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Date (YYYY-MM-DD)</label>
+          <input type="date" id="DATUM">
+        </div>
+
+        <div class="form-group">
+          <label>City (Město)</label>
+          <input type="text" id="MESTO" placeholder="e.g. Groningen">
+        </div>
+
+        <div class="form-group">
+          <label>Country (Stát)</label>
+          <input type="text" id="STAT" placeholder="e.g. Netherlands">
+        </div>
+
+        <div class="form-group full-width">
+          <label>Venue (Hala / Klub)</label>
+          <input type="text" id="VENUE" placeholder="e.g. De Oosterpoort, Grote Zaal">
+        </div>
+
+        <div class="form-group">
+          <label>Scan File Name(s)</label>
+          <input type="text" id="SOUBOR_SKEN" placeholder="kk-joe-jackson-2010-10-01.jpg">
+        </div>
+
+        <div class="form-group">
+          <label>Contributor / Source</label>
+          <input type="text" id="CONTRIBUTOR" placeholder="e.g. Bert Bos, Netherlands">
+        </div>
+
+        <div class="form-group">
+          <label>Supporting Act</label>
+          <input type="text" id="SUPPORTING_ACT">
+        </div>
+
+        <div class="form-group">
+          <label>Setlist URL (Setlist.fm)</label>
+          <input type="url" id="SETLIST_URL">
+        </div>
+
+        <div class="form-group full-width">
+          <label>Band Line-up (Semicolon separated ; )</label>
+          <input type="text" id="LINEUP" placeholder="Joe Jackson - Piano, Vocals; Graham Maby - Bass">
+        </div>
+
+        <div class="form-group full-width">
+          <label>Setlist (Comma separated songs)</label>
+          <textarea id="SETLIST" rows="3" placeholder="Steppin' Out, Real Men, Is She Really Going Out With Him?"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Song Count</label>
+          <input type="number" id="POCET_SKLADEB">
+        </div>
+
+        <div class="form-group">
+          <label>YouTube Bootleg URL</label>
+          <input type="url" id="YOUTUBE_URL">
+        </div>
+
+        <div class="form-group">
+          <label>Press Review URL</label>
+          <input type="url" id="REVIEW_URL">
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button type="button" class="save-btn" onclick="copyCsvRow()">📋 Copy Cleaned CSV Row</button>
+        <button type="button" class="download-btn" onclick="downloadFullCsv()">💾 Download Updated CSV</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    let allRecords = [];
+    let recordId = new URLSearchParams(window.location.search).get('id');
+
+    window.addEventListener('DOMContentLoaded', () => {
+      Papa.parse('joe_jackson_tickets_cleaned.csv', {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          allRecords = results.data;
+          if (recordId) {
+            loadRecord(recordId);
+          }
+        }
+      });
+    });
+
+    function loadRecord(id) {
+      const rec = allRecords.find(r => r.ID_MEMORABILIA === id || r.ID_LISTKU === id);
+      if (!rec) {
+        alert("Record not found!");
+        return;
+      }
+
+      const fields = [
+        'ID_MEMORABILIA', 'SHOW_ID', 'KATEGORIE', 'DATUM', 'MESTO', 'STAT', 
+        'VENUE', 'SOUBOR_SKEN', 'CONTRIBUTOR', 'SUPPORTING_ACT', 'SETLIST_URL', 
+        'LINEUP', 'SETLIST', 'POCET_SKLADEB', 'YOUTUBE_URL', 'REVIEW_URL'
+      ];
+
+      fields.forEach(field => {
+        const input = document.getElementById(field);
+        if (input && rec[field] !== undefined) {
+          input.value = rec[field] === 'null' || rec[field] === 'undefined' ? '' : rec[field];
+        }
+      });
+
+      if (!document.getElementById('ID_MEMORABILIA').value) {
+        document.getElementById('ID_MEMORABILIA').value = id;
+      }
+    }
+
+    function getFormData() {
+      const data = {};
+      const fields = [
+        'ID_MEMORABILIA', 'SHOW_ID', 'DATUM', 'MESTO', 'STAT', 'VENUE', 
+        'KATEGORIE', 'SOUBOR_SKEN', 'CONTRIBUTOR', 'LINEUP', 'SUPPORTING_ACT', 
+        'SETLIST', 'POCET_SKLADEB', 'SETLIST_URL', 'YOUTUBE_URL', 'REVIEW_URL'
+      ];
+
+      fields.forEach(field => {
+        const input = document.getElementById(field);
+        data[field] = input ? input.value.trim() : '';
+      });
+
+      return data;
+    }
+
+    function copyCsvRow() {
+      const data = getFormData();
+      const csvRow = Papa.unparse([data], { header: false });
+      navigator.clipboard.writeText(csvRow).then(() => {
+        alert("✅ Updated CSV row copied to clipboard!");
+      });
+    }
+
+    function downloadFullCsv() {
+      const data = getFormData();
+      const index = allRecords.findIndex(r => r.ID_MEMORABILIA === data.ID_MEMORABILIA || r.ID_LISTKU === data.ID_MEMORABILIA);
+      
+      if (index !== -1) {
+        allRecords[index] = data;
+      } else {
+        allRecords.push(data);
+      }
+
+      const csvString = Papa.unparse(allRecords);
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'joe_jackson_tickets_cleaned.csv';
+      link.click();
+    }
+  </script>
+</body>
+</html>
