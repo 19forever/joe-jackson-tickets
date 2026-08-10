@@ -22,7 +22,7 @@ Archiv koncertních lístků, plakátů, programů a memorabilií Joe Jacksona.
   - Zvést nový sloupec (např. `SHOW_ID` nebo `EVENT_ID`), který jednoznačně propojí lístek, plakát, program i tričko k jedné konkrétní koncertní události.
 
 ### 🎲 4. Interaktivita a UX
-- [ ] **Tlačítko "Surprise Me!" (Náhodný záznam)**
+- [ ] **Tlačítko "Surprise Me!" (Náhodný záznam)** HOTOVO
   - Přidat do horní lišty tlačítko, které náhodně vybere a otevře detail jednoho koncertu/memorabilie z celé databáze.
   - Skvělý prvek pro objevování méně známých koncertů a bootlegů.
 
