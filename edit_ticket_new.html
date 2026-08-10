@@ -1,17 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Record | JJ Memorabilia Museum</title>
+  <title>Editace záznamu | Joe Jackson Memorabilia Museum</title>
   
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
+    body {
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
     .edit-container {
-      max-width: 900px;
-      margin: 40px auto;
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
       border-radius: 12px;
@@ -44,6 +48,47 @@
     }
 
     .back-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+    .token-box {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+
+    .token-box label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 6px;
+    }
+
+    .token-input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .token-input-group input {
+      flex-grow: 1;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .token-input-group button {
+      background: var(--accent-blue);
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
 
     .form-grid {
       display: grid;
@@ -81,6 +126,51 @@
       border-color: var(--accent-yellow);
     }
 
+    .upload-box {
+      border: 2px dashed var(--border-color);
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .upload-box input[type="file"] {
+      display: none;
+    }
+
+    .upload-label-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-yellow);
+      color: var(--accent-yellow);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    .upload-label-btn:hover {
+      background: var(--accent-yellow);
+      color: #000;
+    }
+
+    .preview-thumbs {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .preview-thumb-img {
+      width: 70px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
     .action-bar {
       margin-top: 30px;
       padding-top: 20px;
@@ -88,146 +178,232 @@
       display: flex;
       gap: 15px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
-    .save-btn {
-      background-color: var(--accent-yellow);
+    .btn-github-save {
+      background-color: #22c55e;
       color: #000;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.9rem;
+      font-weight: 800;
+      font-size: 0.95rem;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .save-btn:hover { background-color: #fde047; }
+    .btn-github-save:hover { background-color: #4ade80; }
 
-    .download-btn {
+    .btn-secondary {
       background-color: var(--bg-card);
-      border: 1px solid var(--accent-blue);
-      color: var(--accent-blue);
-      padding: 10px 20px;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 18px;
       border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.9rem;
+      font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
     }
 
-    .download-btn:hover { background-color: rgba(56, 189, 248, 0.15); }
+    .btn-secondary:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
+
+    .status-message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .status-message.success {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid #22c55e;
+      color: #4ade80;
+      display: block;
+    }
+
+    .status-message.error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid #ef4444;
+      color: #f87171;
+      display: block;
+    }
+
+    .status-message.info {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      display: block;
+    }
   </style>
 </head>
 <body>
 
   <div class="edit-container">
     <div class="edit-header">
-      <h2>✏️ Edit Memorabilia Record</h2>
-      <a href="index.html" class="back-btn">◄ Back to Museum</a>
+      <h2>✏️ Editory & Správa Záznamu</h2>
+      <a href="index_new.html" class="back-btn">◄ Zpět do Muzea</a>
+    </div>
+
+    <!-- GitHub Token Authentication -->
+    <div class="token-box">
+      <label for="githubToken">🔑 GitHub Personal Access Token (vyžadováno pro přímý zápis/commit)</label>
+      <div class="token-input-group">
+        <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+        <button type="button" onclick="saveToken()">Uložit Token</button>
+      </div>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">
+        Token se bezpečně uloží do vašeho prohlížeče (LocalStorage). Vyžaduje oprávnění <code>repo</code> nebo <code>contents:write</code>.
+      </p>
     </div>
 
     <form id="editForm">
       <div class="form-grid">
         <div class="form-group">
-          <label>ID Memorabilia</label>
+          <label>ID Memorabilia (Unikátní kód)</label>
           <input type="text" id="ID_MEMORABILIA" readonly style="opacity: 0.6;">
         </div>
 
         <div class="form-group">
-          <label>Show ID (Event Key)</label>
-          <input type="text" id="SHOW_ID" placeholder="e.g. SHOW_2010-10-01_GRONINGEN">
+          <label>Show ID (Klíč koncertu)</label>
+          <input type="text" id="SHOW_ID" placeholder="např. SHOW_2010-10-01_GRONINGEN" oninput="updateShowIdAuto()">
         </div>
 
         <div class="form-group">
-          <label>Category</label>
+          <label>Kategorie</label>
           <select id="KATEGORIE">
-            <option value="tickets">Tickets</option>
-            <option value="passes">Passes</option>
-            <option value="programs">Programs</option>
-            <option value="posters">Posters</option>
-            <option value="t-shirts">T-shirts</option>
-            <option value="memorabilia">Memorabilia</option>
+            <option value="tickets">Tickets (Lístky)</option>
+            <option value="passes">Passes (Passy)</option>
+            <option value="programs">Programs (Programy)</option>
+            <option value="posters">Posters (Plakáty)</option>
+            <option value="t-shirts">T-shirts (Trička)</option>
+            <option value="memorabilia">Memorabilia (Ostatní)</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Date (YYYY-MM-DD)</label>
-          <input type="date" id="DATUM">
+          <label>Datum (RRRR-MM-DD)</label>
+          <input type="date" id="DATUM" onchange="updateShowIdAuto()">
         </div>
 
         <div class="form-group">
-          <label>City (Město)</label>
-          <input type="text" id="MESTO" placeholder="e.g. Groningen">
+          <label>Město (City)</label>
+          <input type="text" id="MESTO" placeholder="např. Groningen" oninput="updateShowIdAuto()">
         </div>
 
         <div class="form-group">
-          <label>Country (Stát)</label>
-          <input type="text" id="STAT" placeholder="e.g. Netherlands">
+          <label>Stát / Země (Country)</label>
+          <input type="text" id="STAT" placeholder="např. Netherlands">
         </div>
 
         <div class="form-group full-width">
           <label>Venue (Hala / Klub)</label>
-          <input type="text" id="VENUE" placeholder="e.g. De Oosterpoort, Grote Zaal">
+          <input type="text" id="VENUE" placeholder="např. De Oosterpoort, Grote Zaal">
+        </div>
+
+        <!-- Skeny a Upload Obrázků -->
+        <div class="form-group full-width">
+          <label>Soubory skenů (odpovídá složce ./scans/)</label>
+          <input type="text" id="SOUBOR_SKEN" placeholder="např. kk-joe-jackson-2010-10-01.jpg">
+          
+          <div class="upload-box" style="margin-top: 8px;">
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Nahrajte nový sken/obrázek do repozitáře (složka <code>scans/</code>)</p>
+            <label for="imageFileInput" class="upload-label-btn">📁 Vybrat obrázek k nahrání</label>
+            <input type="file" id="imageFileInput" accept="image/*" onchange="handleImageSelected(event)">
+            <div id="imageUploadName" style="font-size: 0.8rem; margin-top: 6px; color: var(--accent-blue);"></div>
+          </div>
+          <div class="preview-thumbs" id="scansPreview"></div>
         </div>
 
         <div class="form-group">
-          <label>Scan File Name(s)</label>
-          <input type="text" id="SOUBOR_SKEN" placeholder="kk-joe-jackson-2010-10-01.jpg">
+          <label>Přispěvatel / Zdroj (Contributor)</label>
+          <input type="text" id="CONTRIBUTOR" placeholder="např. Bert Bos, Netherlands">
         </div>
 
         <div class="form-group">
-          <label>Contributor / Source</label>
-          <input type="text" id="CONTRIBUTOR" placeholder="e.g. Bert Bos, Netherlands">
-        </div>
-
-        <div class="form-group">
-          <label>Supporting Act</label>
+          <label>Předkapela (Supporting Act)</label>
           <input type="text" id="SUPPORTING_ACT">
         </div>
 
         <div class="form-group">
-          <label>Setlist URL (Setlist.fm)</label>
-          <input type="url" id="SETLIST_URL">
+          <label>Odkaz na Setlist.fm</label>
+          <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
         </div>
 
         <div class="form-group full-width">
-          <label>Band Line-up (Semicolon separated ; )</label>
+          <label>Obsazení kapely (Line-up - oddělené středníkem ; )</label>
           <input type="text" id="LINEUP" placeholder="Joe Jackson - Piano, Vocals; Graham Maby - Bass">
         </div>
 
         <div class="form-group full-width">
-          <label>Setlist (Comma separated songs)</label>
-          <textarea id="SETLIST" rows="3" placeholder="Steppin' Out, Real Men, Is She Really Going Out With Him?"></textarea>
+          <label>Setlist (Skladby oddělené čárkou , )</label>
+          <textarea id="SETLIST" rows="3" placeholder="Steppin' Out, Real Men, Is She Really Going Out With Him?" oninput="calcSongCount()"></textarea>
         </div>
 
         <div class="form-group">
-          <label>Song Count</label>
+          <label>Počet skladeb (Počítá se automaticky)</label>
           <input type="number" id="POCET_SKLADEB">
         </div>
 
         <div class="form-group">
           <label>YouTube Bootleg URL</label>
-          <input type="url" id="YOUTUBE_URL">
+          <input type="url" id="YOUTUBE_URL" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
         <div class="form-group">
-          <label>Press Review URL</label>
+          <label>Recenze / Archiv URL</label>
           <input type="url" id="REVIEW_URL">
         </div>
       </div>
 
+      <div id="statusMsg" class="status-message"></div>
+
       <div class="action-bar">
-        <button type="button" class="save-btn" onclick="copyCsvRow()">📋 Copy Cleaned CSV Row</button>
-        <button type="button" class="download-btn" onclick="downloadFullCsv()">💾 Download Updated CSV</button>
+        <button type="button" class="btn-github-save" onclick="saveToGitHub()">🚀 Uložit změny přímo na GitHub</button>
+        <button type="button" class="btn-secondary" onclick="copyCsvRow()">📋 Zkopírovat řádek CSV</button>
+        <button type="button" class="btn-secondary" onclick="downloadFullCsv()">💾 Stáhnout celé CSV</button>
       </div>
     </form>
   </div>
 
   <script>
+    const GITHUB_REPO = "19forever/joe-jackson-tickets";
+    const CSV_FILE_PATH = "joe_jackson_tickets_cleaned.csv";
+    
     let allRecords = [];
+    let currentSha = "";
+    let selectedImageFile = null;
     let recordId = new URLSearchParams(window.location.search).get('id');
 
     window.addEventListener('DOMContentLoaded', () => {
-      Papa.parse('joe_jackson_tickets_cleaned.csv', {
+      // Načtení uloženého tokenu z localStorage
+      const savedToken = localStorage.getItem('jj_github_token');
+      if (savedToken) {
+        document.getElementById('githubToken').value = savedToken;
+      }
+
+      loadCsvFromGitHubOrLocal();
+    });
+
+    function saveToken() {
+      const token = document.getElementById('githubToken').value.trim();
+      localStorage.setItem('jj_github_token', token);
+      showStatus("Token byl úspěšně uložen do prohlížeče.", "info");
+    }
+
+    function showStatus(text, type) {
+      const msg = document.getElementById('statusMsg');
+      msg.textContent = text;
+      msg.className = `status-message ${type}`;
+    }
+
+    function loadCsvFromGitHubOrLocal() {
+      showStatus("Načítám aktuální CSV data...", "info");
+      
+      Papa.parse(CSV_FILE_PATH, {
         download: true,
         header: true,
         skipEmptyLines: true,
@@ -235,15 +411,24 @@
           allRecords = results.data;
           if (recordId) {
             loadRecord(recordId);
+          } else {
+            // Nový záznam
+            const nextNum = allRecords.length + 1;
+            document.getElementById('ID_MEMORABILIA').value = `TICKET_${String(nextNum).padStart(4, '0')}`;
           }
+          showStatus("Data připravena k editaci.", "info");
+          setTimeout(() => { document.getElementById('statusMsg').style.display = 'none'; }, 2000);
+        },
+        error: function(err) {
+          showStatus("Chyba při načítání CSV souboru: " + err, "error");
         }
       });
-    });
+    }
 
     function loadRecord(id) {
       const rec = allRecords.find(r => r.ID_MEMORABILIA === id || r.ID_LISTKU === id);
       if (!rec) {
-        alert("Record not found!");
+        showStatus("Záznam s ID " + id + " nebyl nalezen!", "error");
         return;
       }
 
@@ -256,12 +441,67 @@
       fields.forEach(field => {
         const input = document.getElementById(field);
         if (input && rec[field] !== undefined) {
-          input.value = rec[field] === 'null' || rec[field] === 'undefined' ? '' : rec[field];
+          const val = String(rec[field]).trim();
+          input.value = (val === 'null' || val === 'undefined') ? '' : val;
         }
       });
 
       if (!document.getElementById('ID_MEMORABILIA').value) {
         document.getElementById('ID_MEMORABILIA').value = id;
+      }
+
+      renderPreviewThumbs();
+    }
+
+    function updateShowIdAuto() {
+      const datum = document.getElementById('DATUM').value;
+      const mesto = document.getElementById('MESTO').value.trim();
+      const showIdInput = document.getElementById('SHOW_ID');
+
+      if (datum && mesto && !showIdInput.dataset.manualOverride) {
+        const cleanCity = mesto.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+        showIdInput.value = `SHOW_${datum}_${cleanCity}`;
+      }
+    }
+
+    function calcSongCount() {
+      const setlistText = document.getElementById('SETLIST').value.trim();
+      if (!setlistText) {
+        document.getElementById('POCET_SKLADEB').value = 0;
+        return;
+      }
+      const count = setlistText.split(',').filter(s => s.trim().length > 0).length;
+      document.getElementById('POCET_SKLADEB').value = count;
+    }
+
+    function renderPreviewThumbs() {
+      const skenVal = document.getElementById('SOUBOR_SKEN').value;
+      const container = document.getElementById('scansPreview');
+      container.innerHTML = '';
+
+      if (!skenVal) return;
+
+      const files = skenVal.split(',').map(s => s.trim()).filter(Boolean);
+      files.forEach(f => {
+        const img = document.createElement('img');
+        img.className = 'preview-thumb-img';
+        img.src = `./scans/${f}`;
+        img.onerror = () => { img.style.display = 'none'; };
+        container.appendChild(img);
+      });
+    }
+
+    function handleImageSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      selectedImageFile = file;
+      document.getElementById('imageUploadName').textContent = `Vybráno k nahrání: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+      
+      const currentSkens = document.getElementById('SOUBOR_SKEN').value.trim();
+      if (!currentSkens.includes(file.name)) {
+        document.getElementById('SOUBOR_SKEN').value = currentSkens ? `${currentSkens}, ${file.name}` : file.name;
+        renderPreviewThumbs();
       }
     }
 
@@ -281,11 +521,122 @@
       return data;
     }
 
+    // GitHub API Upload Logika (Commit)
+    async function saveToGitHub() {
+      const token = document.getElementById('githubToken').value.trim();
+      if (!token) {
+        showStatus("Chybí GitHub Token! Vložte jej do pole nahoře.", "error");
+        return;
+      }
+
+      showStatus("Ukládám záznam a připravuji commit na GitHub...", "info");
+
+      try {
+        const formData = getFormData();
+
+        // 1. Pokud byl vybrán nový obrázek, nahrajeme jej do složky scans/
+        if (selectedImageFile) {
+          showStatus(`Nahrávám obrázek ${selectedImageFile.name} na GitHub...`, "info");
+          await uploadImageToGitHub(token, selectedImageFile);
+        }
+
+        // 2. Aktualizace záznamu v poli allRecords
+        const index = allRecords.findIndex(r => r.ID_MEMORABILIA === formData.ID_MEMORABILIA || r.ID_LISTKU === formData.ID_MEMORABILIA);
+        if (index !== -1) {
+          allRecords[index] = formData;
+        } else {
+          allRecords.push(formData);
+        }
+
+        // 3. Získání aktuálního SHA souboru CSV na GitHubu
+        const getFileResp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${CSV_FILE_PATH}`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+
+        if (!getFileResp.ok) throw new Error("Nepodařilo se načíst SHA CSV souboru z GitHubu.");
+        const fileData = await getFileResp.json();
+        const currentSha = fileData.sha;
+
+        // 4. Převod databáze do CSV stringu
+        const updatedCsvString = Papa.unparse(allRecords);
+        const encodedContent = btoa(unescape(encodeURIComponent(updatedCsvString)));
+
+        // 5. Commit aktualizovaného CSV
+        const updateResp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${CSV_FILE_PATH}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `edit: update record ${formData.ID_MEMORABILIA} (${formData.DATUM} ${formData.MESTO})`,
+            content: encodedContent,
+            sha: currentSha
+          })
+        });
+
+        if (!updateResp.ok) {
+          const errJson = await updateResp.json();
+          throw new Error(errJson.message || "Chyba při ukládání na GitHub.");
+        }
+
+        showStatus("✅ Úspěšně uloženo na GitHub! Změny se za okamžik projeví na webu.", "success");
+        selectedImageFile = null;
+        document.getElementById('imageUploadName').textContent = "";
+
+      } catch (err) {
+        showStatus("Chyba při ukládání: " + err.message, "error");
+      }
+    }
+
+    async function uploadImageToGitHub(token, file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          try {
+            const base64Content = e.target.result.split(',')[1];
+            const imagePath = `scans/${file.name}`;
+
+            // Zjištění zda obrázek již existuje (získáme sha pro přepsání)
+            let existingSha = null;
+            const checkResp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${imagePath}`, {
+              headers: { 'Authorization': `token ${token}` }
+            });
+            if (checkResp.ok) {
+              const checkData = await checkResp.json();
+              existingSha = checkData.sha;
+            }
+
+            const putBody = {
+              message: `upload: scan image ${file.name}`,
+              content: base64Content
+            };
+            if (existingSha) putBody.sha = existingSha;
+
+            const uploadResp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${imagePath}`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(putBody)
+            });
+
+            if (!uploadResp.ok) throw new Error(`Selhal upload obrázku ${file.name}`);
+            resolve(true);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
     function copyCsvRow() {
       const data = getFormData();
       const csvRow = Papa.unparse([data], { header: false });
       navigator.clipboard.writeText(csvRow).then(() => {
-        alert("✅ Updated CSV row copied to clipboard!");
+        showStatus("📋 Zkopírováno do schránky!", "info");
       });
     }
 
