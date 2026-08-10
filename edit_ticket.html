@@ -236,6 +236,32 @@
 
     textarea { resize: vertical; min-height: 60px; }
 
+    .input-with-btn {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-with-btn input {
+      flex-grow: 1;
+    }
+
+    .btn-fetch-setlist {
+      background-color: #0284c7;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.2s;
+    }
+
+    .btn-fetch-setlist:hover {
+      background-color: #0369a1;
+    }
+
     .action-bar {
       display: flex;
       gap: 12px;
@@ -416,7 +442,10 @@
         <div class="grid-2">
           <div class="form-group">
             <label for="SETLIST_URL">Setlist.fm Link (SETLIST_URL)</label>
-            <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
+            <div class="input-with-btn">
+              <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
+              <button type="button" class="btn-fetch-setlist" onclick="fetchSetlistFromApi()">🔍 Retrieve from Setlist.fm</button>
+            </div>
           </div>
           <div class="form-group">
             <label for="POCET_SKLADEB">Song Count (POCET_SKLADEB)</label>
@@ -442,6 +471,8 @@
 
   <script>
     const CSV_FILENAME = 'joe_jackson_tickets_master_with_setlists.csv';
+    const SETLIST_API_KEY_DEFAULT = '3pc6VtmOHzQbQVh9xedw_LLpNRCCfDhEvop7';
+
     let fullCsvData = [];
     let currentRecordIndex = -1;
     let viewerInstance = null;
@@ -694,6 +725,71 @@
         countEl.value = songs.length;
       } else {
         countEl.value = 0;
+      }
+    }
+
+    /* Setlist.fm API Retrieval Logic */
+    async function fetchSetlistFromApi() {
+      const urlInput = document.getElementById('SETLIST_URL').value.trim();
+      if (!urlInput) {
+        showStatus('Please enter a valid Setlist.fm URL first.', 'red');
+        return;
+      }
+
+      // Extract setlist ID from URL (e.g. -63dd6a2f.html -> 63dd6a2f)
+      const match = urlInput.match(/-([a-z0-9]+)\.html/i) || urlInput.match(/\/setlist\/[^\/]+\/[^\/]+\/([a-z0-9]+)/i);
+      if (!match) {
+        showStatus('Could not extract Setlist ID from URL. Ensure it ends with e.g. -63dd6a2f.html', 'red');
+        return;
+      }
+
+      const setlistId = match[1];
+      const apiKey = SETLIST_API_KEY_DEFAULT;
+
+      showStatus(`Fetching setlist ID '${setlistId}' from Setlist.fm...`, 'blue');
+
+      const targetApiUrl = `https://api.setlist.fm/rest/1.0/setlist/${setlistId}`;
+      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetApiUrl)}`;
+
+      try {
+        const res = await fetch(proxyUrl, {
+          headers: {
+            'x-api-key': apiKey,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (!res.ok) {
+          if (res.status === 404) throw new Error('Setlist ID not found on Setlist.fm.');
+          if (res.status === 401 || res.status === 403) throw new Error('Invalid Setlist.fm API key or unauthorized request.');
+          throw new Error(`API error HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        
+        let songNames = [];
+        if (data.sets && data.sets.set && Array.isArray(data.sets.set)) {
+          data.sets.set.forEach(setObj => {
+            if (setObj.song && Array.isArray(setObj.song)) {
+              setObj.song.forEach(song => {
+                if (song.name) songNames.push(song.name.trim());
+              });
+            }
+          });
+        }
+
+        if (songNames.length === 0) {
+          showStatus('Setlist found on Setlist.fm, but no songs are listed for this concert.', 'blue');
+          return;
+        }
+
+        const formattedSetlist = songNames.join(', ');
+        document.getElementById('SETLIST').value = formattedSetlist;
+        recalculateSongCount();
+
+        showStatus(`✅ Successfully retrieved ${songNames.length} songs from Setlist.fm!`, 'green');
+      } catch (err) {
+        showStatus(`❌ Setlist.fm fetch error: ${err.message}`, 'red');
       }
     }
 
