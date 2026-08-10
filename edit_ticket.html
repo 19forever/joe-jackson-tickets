@@ -754,34 +754,54 @@
       }
     }
 
-    /* Bezpečné volání Setlist.fm API s přenosem hlaviček přes CORS Proxy */
+    /* Bezpečné a rychlé volání Setlist.fm API */
     async function fetchSetlistApiSecure(targetApiUrl) {
       const apiKey = SETLIST_API_KEY_DEFAULT;
       
-      // Použijeme proxy s explicitní předávkou hlaviček
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetApiUrl)}`;
-      
-      // Primární přímý pokus přes corsproxy.io s custom headers
+      const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetApiUrl)}`;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
       try {
-        const directProxy = `https://corsproxy.io/?${encodeURIComponent(targetApiUrl)}`;
-        const res = await fetch(directProxy, {
+        const res = await fetch(proxyUrl, {
+          method: 'GET',
           headers: {
             'x-api-key': apiKey,
             'Accept': 'application/json'
-          }
+          },
+          signal: controller.signal
         });
-        if (res.ok) return await res.json();
-      } catch (e) {
-        console.warn('Direct proxy failed, fallback to secondary proxy...');
-      }
 
-      // Záložní pokus
-      const response = await fetch(proxyUrl);
-      if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
-      const wrapper = await response.json();
-      if (!wrapper.contents) throw new Error("No response body from proxy");
-      
-      return JSON.parse(wrapper.contents);
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          if (res.status === 404) throw new Error('Concert or Setlist not found on Setlist.fm.');
+          if (res.status === 401 || res.status === 403) throw new Error('API key rejected by Setlist.fm.');
+          throw new Error(`HTTP Error ${res.status}`);
+        }
+
+        return await res.json();
+      } catch (err) {
+        clearTimeout(timeoutId);
+
+        if (err.name === 'AbortError' || err.message.includes('Failed to fetch')) {
+          console.warn("Primary proxy timed out, trying backup proxy...");
+          
+          const backupProxy = `https://thingproxy.freeboard.io/fetch/${targetApiUrl}`;
+          const resBackup = await fetch(backupProxy, {
+            headers: {
+              'x-api-key': apiKey,
+              'Accept': 'application/json'
+            }
+          });
+
+          if (!resBackup.ok) throw new Error(`Backup proxy HTTP Error ${resBackup.status}`);
+          return await resBackup.json();
+        }
+
+        throw err;
+      }
     }
 
     /* 1. Auto-Find Setlist by Date on Setlist.fm */
