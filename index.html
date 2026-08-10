@@ -268,18 +268,13 @@
 
     .meta-details-row {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       font-size: 0.75rem;
       color: var(--text-muted);
       border-top: 1px solid var(--border-color);
       padding-top: 8px;
       margin-top: 6px;
-    }
-
-    .price-tag {
-      color: var(--accent-yellow);
-      font-weight: 700;
     }
 
     .source-val { color: var(--text-main); font-weight: 600; text-align: right; }
@@ -873,13 +868,10 @@
         }
 
         const donorVal = t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL || '';
-        const hasPrice = isValidValue(t.CENA) && t.CENA !== '0.00';
-        const priceHTML = hasPrice ? `<span class="price-tag">${t.CENA} ${t.MENA || ''}</span>` : '<span></span>';
         const donorHTML = isValidValue(donorVal) ? `<span class="source-val">${donorVal}</span>` : '';
 
-        const metaRowHTML = (hasPrice || donorHTML) ? `
+        const metaRowHTML = donorHTML ? `
           <div class="meta-details-row">
-            ${priceHTML}
             ${donorHTML}
           </div>` : '';
 
