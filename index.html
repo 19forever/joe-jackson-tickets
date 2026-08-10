@@ -451,6 +451,23 @@
     .modal-nav-btn:hover:not(:disabled) { border-color: var(--accent-blue); color: var(--accent-blue); }
     .modal-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
+    .modal-edit-btn {
+      background: rgba(250, 204, 21, 0.12);
+      border: 1px solid rgba(250, 204, 21, 0.5);
+      color: var(--accent-yellow);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .modal-edit-btn:hover { background: rgba(250, 204, 21, 0.25); border-color: var(--accent-yellow); }
+
     .modal-close {
       background: rgba(255, 255, 255, 0.1);
       border: none; color: #fff;
@@ -476,19 +493,11 @@
       cursor: zoom-in;
     }
 
-    .modal-sub-image-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 12px;
-      padding: 0 10px;
-    }
-
     .modal-thumbnails {
       display: flex;
       gap: 10px;
       justify-content: center;
-      flex-grow: 1;
+      margin-top: 10px;
     }
 
     .modal-thumb {
@@ -502,24 +511,6 @@
     }
 
     .modal-thumb:hover, .modal-thumb.active { opacity: 1; border-color: var(--accent-yellow); }
-
-    .modal-edit-btn {
-      background: rgba(250, 204, 21, 0.12);
-      border: 1px solid rgba(250, 204, 21, 0.5);
-      color: var(--accent-yellow);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-      margin-left: auto;
-    }
-
-    .modal-edit-btn:hover { background: rgba(250, 204, 21, 0.25); border-color: var(--accent-yellow); }
 
     .modal-body { padding: 25px; }
     .modal-date { font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
@@ -658,6 +649,7 @@
         <button class="modal-nav-btn" id="modalPrevBtn" onclick="navigateModal(-1)">◄ Previous</button>
         <div class="modal-counter" id="modalCounter">0 / 0</div>
         <div style="display: flex; gap: 10px; align-items: center;">
+          <a href="#" id="modalEditLink" target="_blank" class="modal-edit-btn" title="Edit this record">✏️ Edit</a>
           <button class="modal-nav-btn" id="modalNextBtn" onclick="navigateModal(1)">Next ►</button>
           <button class="modal-close" onclick="closeModal()">✕</button>
         </div>
@@ -667,10 +659,7 @@
         <div id="modalViewerWrapper">
           <img id="modalImg" src="" alt="Ticket Full View">
         </div>
-        <div class="modal-sub-image-bar">
-          <div class="modal-thumbnails" id="modalThumbnails"></div>
-          <a href="#" id="modalEditLink" target="_blank" class="modal-edit-btn" title="Edit this record">✏️ Edit Record</a>
-        </div>
+        <div class="modal-thumbnails" id="modalThumbnails"></div>
       </div>
 
       <div class="modal-body">
@@ -1175,7 +1164,7 @@
       document.getElementById('modalDate').textContent = parsed.date || '';
       document.getElementById('modalInfo').textContent = parsed.text || '';
 
-      // Nastavení odkazu na editaci ve Flash Card (pod obrázkem)
+      // Nastavení odkazu na editaci ve Flash Card (v horní liště vpravo)
       const editLink = document.getElementById('modalEditLink');
       if (editLink) {
         editLink.href = `edit_ticket.html?id=${encodeURIComponent(t.ID_LISTKU || '')}`;
