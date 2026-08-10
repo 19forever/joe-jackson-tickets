@@ -894,7 +894,7 @@
       const uniqueTours = new Set(allTickets.map(t => t.TURNE).filter(isValidValue));
       document.getElementById('stat-tours').textContent = uniqueTours.size;
 
-      const uniqueDonors = new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(isValidValue));
+      const uniqueDonors = new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT).filter(isValidValue));
       document.getElementById('stat-donors').textContent = uniqueDonors.size;
 
       const years = [];
@@ -927,7 +927,7 @@
       });
 
       const donorSelect = document.getElementById('donorFilter');
-      const donors = [...new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(isValidValue))].sort();
+      const donors = [...new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT).filter(isValidValue))].sort();
       donors.forEach(donor => {
         const opt = document.createElement('option');
         opt.value = donor;
@@ -1027,12 +1027,12 @@
       const matchesBase = allTickets.filter(t => {
         const qMatch = !query || 
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
-          (t.ZDROJ_POSKYTNUL || '').toLowerCase().includes(query) ||
+          (t.CONTRIBUTOR_TEXT || '').toLowerCase().includes(query) ||
           (t.MESTO || '').toLowerCase().includes(query) ||
           (t.SETLIST || '').toLowerCase().includes(query);
           
         const tMatch = !tour || t.TURNE === tour;
-        const dMatch = !donor || t.ZDROJ_POSKYTNUL === donor;
+        const dMatch = !donor || t.CONTRIBUTOR_TEXT === donor;
 
         return qMatch && tMatch && dMatch;
       });
@@ -1113,10 +1113,10 @@
         const extraDetailsBlock = extraRowsHTML ? `<div class="card-extra-details">${extraRowsHTML}</div>` : '';
 
         // Contributor / Donor
-        const sourceHTML = isValidValue(t.ZDROJ_POSKYTNUL) ? `
+        const sourceHTML = isValidValue(t.CONTRIBUTOR_TEXT) ? `
           <div class="source-row">
             <span>Source:</span>
-            <span class="source-val">${t.ZDROJ_POSKYTNUL}</span>
+            <span class="source-val">${t.CONTRIBUTOR_TEXT}</span>
           </div>` : '';
 
         // Setlist Section
@@ -1292,8 +1292,8 @@
 
       // Grid Fields
       const srcGroup = document.getElementById('modalSourceGroup');
-      if (isValidValue(t.ZDROJ_POSKYTNUL)) {
-        document.getElementById('modalSource').textContent = t.ZDROJ_POSKYTNUL;
+      if (isValidValue(t.CONTRIBUTOR_TEXT)) {
+        document.getElementById('modalSource').textContent = t.CONTRIBUTOR_TEXT;
         srcGroup.style.display = 'block';
       } else {
         srcGroup.style.display = 'none';
