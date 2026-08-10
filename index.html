@@ -106,6 +106,59 @@
     .stat-val-yellow { color: var(--accent-yellow); }
     .stat-val-white { color: #fff; }
 
+    /* Banner "On This Day in History" */
+    .on-this-day-banner {
+      background: linear-gradient(135deg, rgba(250, 204, 21, 0.15), rgba(56, 189, 248, 0.1));
+      border: 1px solid rgba(250, 204, 21, 0.4);
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 15px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .on-this-day-banner.active { display: flex; }
+
+    .otd-left { display: flex; align-items: center; gap: 12px; }
+
+    .otd-icon {
+      font-size: 1.3rem;
+      background: rgba(250, 204, 21, 0.2);
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+
+    .otd-text h4 {
+      font-size: 0.85rem;
+      color: var(--accent-yellow);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .otd-text p {
+      font-size: 0.85rem;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .otd-btn {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .otd-btn:hover { background-color: #fde047; }
+
     .category-tabs {
       display: flex;
       gap: 8px;
@@ -517,6 +570,18 @@
       <div>CONTRIBUTORS / DONORS: <strong class="stat-val-white" id="stat-donors">0</strong></div>
     </div>
 
+    <!-- On This Day in History Banner -->
+    <div class="on-this-day-banner" id="otdBanner">
+      <div class="otd-left">
+        <div class="otd-icon">📅</div>
+        <div class="otd-text">
+          <h4>On This Day In History</h4>
+          <p id="otdTitle">...</p>
+        </div>
+      </div>
+      <button class="otd-btn" id="otdBtn">🎫 View Anniversary Show</button>
+    </div>
+
     <div class="category-tabs" id="categoryTabs"></div>
 
     <div class="controls">
@@ -665,6 +730,54 @@
       });
     }
 
+    /* Funkce pro dohledání dnešního výročí ("On This Day in History") */
+    function checkOnThisDayAnniversary() {
+      const today = new Date();
+      const currentDay = today.getDate();
+      const currentMonth = today.getMonth();
+
+      const anniversaries = allTickets.filter(t => {
+        const d = parseToDate(t);
+        return d.getTime() > 0 && d.getDate() === currentDay && d.getMonth() === currentMonth;
+      });
+
+      if (anniversaries.length > 0) {
+        const selected = anniversaries[0];
+        const parsed = parseInfoText(selected);
+        const concertDate = parseToDate(selected);
+        const yearsAgo = today.getFullYear() - concertDate.getFullYear();
+
+        const banner = document.getElementById('otdBanner');
+        const titleEl = document.getElementById('otdTitle');
+        const btn = document.getElementById('otdBtn');
+
+        let text = `<strong>${yearsAgo} years ago</strong> (${concertDate.getFullYear()}): Joe Jackson played in ${parsed.text}`;
+        if (anniversaries.length > 1) {
+          text += ` <em>(+${anniversaries.length - 1} more show today)</em>`;
+        }
+
+        titleEl.innerHTML = text;
+        banner.classList.add('active');
+
+        btn.onclick = () => {
+          const targetIndex = filteredTickets.indexOf(selected);
+          if (targetIndex !== -1) {
+            openModal(targetIndex);
+          } else {
+            // Pokud koncert není v aktuálním filtru, zrušíme filtry a otevřeme
+            document.getElementById('searchInput').value = '';
+            document.getElementById('tourFilter').value = '';
+            document.getElementById('donorFilter').value = '';
+            currentCategory = 'ALL';
+            filterData();
+            setTimeout(() => {
+              openModal(filteredTickets.indexOf(selected));
+            }, 100);
+          }
+        };
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
         download: true,
@@ -675,6 +788,7 @@
           updateStats();
           populateFilters();
           filterData();
+          checkOnThisDayAnniversary();
         }
       });
     });
