@@ -354,15 +354,17 @@
       font-size: 0.75rem;
       color: var(--text-muted);
       border-top: 1px solid var(--border-color);
-      padding-top: 12px;
+      padding-top: 10px;
+      margin-top: 8px;
     }
 
     .source-val {
       color: var(--text-main);
       text-align: right;
+      font-weight: 600;
     }
 
-    /* Tlačítko setlistu - výchozí styl */
+    /* Setlist toggle buttons */
     .setlist-toggle-btn {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
@@ -377,7 +379,6 @@
       transition: all 0.2s;
     }
 
-    /* Zvýrazněné tlačítko, pokud setlist existuje */
     .setlist-toggle-btn.has-setlist {
       background: rgba(250, 204, 21, 0.12);
       border-color: rgba(250, 204, 21, 0.5);
@@ -390,7 +391,6 @@
       color: #fff;
     }
 
-    /* Tlačítko pro přidání chybějícího setlistu */
     .setlist-toggle-btn.add-setlist {
       border: 1px dashed var(--border-color);
       color: var(--text-muted);
@@ -687,7 +687,7 @@
 </head>
 <body>
 
-  <!-- Fixed / Relative Top Bar Wrapper -->
+  <!-- Fixed Top Header Bar -->
   <div class="top-header-container">
     <header>
       <div class="header-left">
@@ -769,10 +769,6 @@
           <div class="modal-grid-item" id="modalSourceGroup">
             <span>Source / Contributor</span>
             <strong id="modalSource"></strong>
-          </div>
-          <div class="modal-grid-item" id="modalPriceGroup">
-            <span>Price</span>
-            <strong id="modalPrice"></strong>
           </div>
           <div class="modal-grid-item" id="modalSupportGroup">
             <span>Supporting Act</span>
@@ -895,10 +891,10 @@
     function updateStats() {
       document.getElementById('stat-tickets').textContent = allTickets.length;
       
-      const uniqueTours = new Set(allTickets.map(t => t.TURNE).filter(Boolean));
+      const uniqueTours = new Set(allTickets.map(t => t.TURNE).filter(isValidValue));
       document.getElementById('stat-tours').textContent = uniqueTours.size;
 
-      const uniqueDonors = new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(Boolean));
+      const uniqueDonors = new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(isValidValue));
       document.getElementById('stat-donors').textContent = uniqueDonors.size;
 
       const years = [];
@@ -922,7 +918,7 @@
 
     function populateFilters() {
       const tourSelect = document.getElementById('tourFilter');
-      const tours = [...new Set(allTickets.map(t => t.TURNE).filter(Boolean))].sort();
+      const tours = [...new Set(allTickets.map(t => t.TURNE).filter(isValidValue))].sort();
       tours.forEach(tour => {
         const opt = document.createElement('option');
         opt.value = tour;
@@ -931,7 +927,7 @@
       });
 
       const donorSelect = document.getElementById('donorFilter');
-      const donors = [...new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(Boolean))].sort();
+      const donors = [...new Set(allTickets.map(t => t.ZDROJ_POSKYTNUL).filter(isValidValue))].sort();
       donors.forEach(donor => {
         const opt = document.createElement('option');
         opt.value = donor;
@@ -1073,7 +1069,6 @@
       renderPaginationControls();
     }
 
-    // Pomocná funkce pro přesměrování s potvrzením na Setlist.fm
     function promptAddSetlist(infoText, dateStr) {
       const searchQuery = `Joe Jackson ${dateStr || ''} ${infoText || ''}`.trim();
       const confirmed = confirm(`Setlist for this concert is missing.\n\nDo you want to search Setlist.fm to find or add the setlist?\n\nSearch term: "${searchQuery}"`);
@@ -1109,17 +1104,20 @@
 
         const parsed = parseInfoText(t);
 
-        // Extra details block (Without Seat/Row)
+        // Extra details block (Support act)
         let extraRowsHTML = '';
-        if (isValidValue(t.CENA)) {
-          const formattedPrice = `${t.CENA} ${isValidValue(t.MENA) ? t.MENA : ''}`.trim();
-          extraRowsHTML += `<div class="card-extra-row"><span>Price:</span><span>${formattedPrice}</span></div>`;
-        }
         if (isValidValue(t.SUPPORTING_ACT)) {
           extraRowsHTML += `<div class="card-extra-row"><span>Support:</span><span>${t.SUPPORTING_ACT}</span></div>`;
         }
 
         const extraDetailsBlock = extraRowsHTML ? `<div class="card-extra-details">${extraRowsHTML}</div>` : '';
+
+        // Contributor / Donor
+        const sourceHTML = isValidValue(t.ZDROJ_POSKYTNUL) ? `
+          <div class="source-row">
+            <span>Source:</span>
+            <span class="source-val">${t.ZDROJ_POSKYTNUL}</span>
+          </div>` : '';
 
         // Setlist Section
         let setlistSection = '';
@@ -1131,7 +1129,6 @@
           const listItems = songs.map(s => `<li>${s}</li>`).join('');
           const setlistUrl = (t.SETLIST_URL && isValidValue(t.SETLIST_URL)) ? `<a href="${t.SETLIST_URL}" target="_blank" class="setlist-link">View on Setlist.fm ↗</a>` : '';
 
-          // Zvýrazněné tlačítko
           setlistSection = `
             <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleSetlist('${globalIndex}')">🎵 View Setlist (${songCount})</button>
             <div class="setlist-content" id="setlist-${globalIndex}">
@@ -1140,7 +1137,6 @@
             </div>
           `;
         } else {
-          // Tlačítko pro přidání setlistu s potvrzovacím dialogem
           const safeText = (parsed.text || '').replace(/'/g, "\\'");
           const safeDate = (parsed.date || '').replace(/'/g, "\\'");
           setlistSection = `
@@ -1149,13 +1145,6 @@
         }
 
         const editUrl = `edit_ticket.html?id=${encodeURIComponent(t.ID_LISTKU || '')}`;
-
-        // Source display
-        const sourceHTML = isValidValue(t.ZDROJ_POSKYTNUL) ? `
-          <div class="source-row">
-            <span>Source:</span>
-            <span class="source-val">${t.ZDROJ_POSKYTNUL}</span>
-          </div>` : '';
 
         card.innerHTML = `
           <div class="card-img-wrapper">
@@ -1251,7 +1240,6 @@
       currentModalIndex = index;
       const t = filteredTickets[currentModalIndex];
 
-      // Reset viewer if exists
       if (imageViewerInstance) {
         imageViewerInstance.destroy();
         imageViewerInstance = null;
@@ -1288,7 +1276,6 @@
         modalImg.src = '';
       }
 
-      // Initialize Zoom Viewer
       setTimeout(() => {
         imageViewerInstance = new Viewer(modalImg, { 
           toolbar: true, 
@@ -1303,21 +1290,13 @@
       document.getElementById('modalDate').textContent = parsed.date || '';
       document.getElementById('modalInfo').textContent = parsed.text || '';
 
-      // Grid Fields (Without Seat/Row)
+      // Grid Fields
       const srcGroup = document.getElementById('modalSourceGroup');
       if (isValidValue(t.ZDROJ_POSKYTNUL)) {
         document.getElementById('modalSource').textContent = t.ZDROJ_POSKYTNUL;
         srcGroup.style.display = 'block';
       } else {
         srcGroup.style.display = 'none';
-      }
-
-      const priceGroup = document.getElementById('modalPriceGroup');
-      if (isValidValue(t.CENA)) {
-        document.getElementById('modalPrice').textContent = `${t.CENA} ${isValidValue(t.MENA) ? t.MENA : ''}`.trim();
-        priceGroup.style.display = 'block';
-      } else {
-        priceGroup.style.display = 'none';
       }
 
       const supportGroup = document.getElementById('modalSupportGroup');
