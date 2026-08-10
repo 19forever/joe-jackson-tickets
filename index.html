@@ -176,7 +176,7 @@
 
     .controls {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 110px auto;
+      grid-template-columns: 2fr auto 1fr 1fr 110px auto;
       gap: 10px;
       background-color: var(--bg-panel);
       padding: 12px 15px;
@@ -230,6 +230,28 @@
     .search-clear-btn:hover {
       color: var(--accent-yellow);
       background: rgba(255, 255, 255, 0.1);
+    }
+
+    .surprise-btn {
+      background-color: var(--bg-main);
+      border: 1px solid var(--accent-yellow);
+      color: var(--accent-yellow);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .surprise-btn:hover {
+      background-color: var(--accent-yellow);
+      color: #000;
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
     }
 
     .controls select {
@@ -668,6 +690,8 @@
         <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearchInput()" title="Clear search">✕</button>
       </div>
 
+      <button class="surprise-btn" onclick="openSurpriseTicket()" title="Open a random memorabilia record">🎲 Surprise Me!</button>
+
       <select id="yearFilter" onchange="filterData()"><option value="">All Years</option></select>
       <select id="cityFilter" onchange="filterData()"><option value="">All Cities</option></select>
       <select id="sortFilter" onchange="filterData()">
@@ -818,6 +842,15 @@
       input.value = '';
       clearBtn.style.display = 'none';
       filterData();
+    }
+
+    function openSurpriseTicket() {
+      if (!filteredTickets || filteredTickets.length === 0) {
+        alert("No tickets available to pick from!");
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * filteredTickets.length);
+      openModal(randomIndex);
     }
 
     function getRelatedItems(currentRecord) {
