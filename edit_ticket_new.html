@@ -1,459 +1,593 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editace záznamu | Joe Jackson Memorabilia Museum</title>
-  
-  <link rel="stylesheet" href="styles.css">
+  <title>Edit Record - Joe Jackson Museum</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
+  <!-- Viewer.js (Image Inspection & Zoom) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
+
   <style>
+    :root {
+      --bg-main: #0a0f1c;
+      --bg-panel: #111827;
+      --bg-card: #151c2b;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-yellow: #facc15;
+      --accent-blue: #38bdf8;
+      --border-color: #1f2937;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
+      font-family: var(--font-family);
+      background-color: var(--bg-main);
+      color: var(--text-main);
       padding: 20px;
-      max-width: 1000px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
-    .edit-container {
-      background-color: var(--bg-panel);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 30px;
-    }
-
-    .edit-header {
+    header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 25px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
-      padding-bottom: 15px;
     }
 
-    .edit-header h2 {
-      font-size: 1.4rem;
-      color: var(--accent-yellow);
-    }
+    h1 { font-size: 1.3rem; color: #fff; }
 
-    .back-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px 16px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .back-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
-
-    .token-box {
-      background: rgba(56, 189, 248, 0.08);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 25px;
-    }
-
-    .token-box label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--accent-blue);
-      margin-bottom: 6px;
-    }
-
-    .token-input-group {
+    .header-actions {
       display: flex;
       gap: 10px;
+      align-items: center;
     }
 
-    .token-input-group input {
-      flex-grow: 1;
-      background: var(--bg-main);
+    .btn-token {
+      background-color: var(--bg-card);
       border: 1px solid var(--border-color);
-      color: #fff;
-      padding: 8px 12px;
+      color: var(--text-muted);
+      padding: 6px 12px;
       border-radius: 6px;
-      font-size: 0.85rem;
-    }
-
-    .token-input-group button {
-      background: var(--accent-blue);
-      color: #000;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 700;
+      font-size: 0.8rem;
       cursor: pointer;
     }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 15px;
+    .btn-token:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
+
+    .btn-back {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
     }
 
-    .form-group {
+    .btn-back:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+    /* Navigation Bar */
+    .record-nav-bar {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 15px;
+      margin-bottom: 20px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .form-group.full-width { grid-column: 1 / -1; }
+    .nav-btn {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
-    .form-group label {
+    .nav-btn:hover:not(:disabled) { border-color: var(--accent-blue); color: var(--accent-blue); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .btn-add-new {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
       font-size: 0.8rem;
       font-weight: 700;
-      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-add-new:hover { background-color: #fde047; }
+
+    .btn-dup {
+      background-color: var(--accent-blue);
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-dup:hover { background-color: #7dd3fc; }
+
+    .record-counter { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+
+    /* Main 2-Column Layout */
+    .main-editor-layout {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .main-editor-layout { grid-template-columns: 1fr; }
+    }
+
+    /* Left Column: Image Preview Sticky Box */
+    .scan-preview-sticky {
+      position: sticky;
+      top: 20px;
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .scan-preview-sticky h3 {
+      font-size: 0.8rem;
+      color: var(--accent-yellow);
+      margin-bottom: 8px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .form-group input, .form-group select, .form-group textarea {
-      background-color: var(--bg-main);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 10px 12px;
+    .img-box {
+      background-color: #000;
       border-radius: 6px;
-      font-size: 0.9rem;
-      outline: none;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 250px;
+      max-height: 520px;
+      overflow: hidden;
     }
 
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-      border-color: var(--accent-yellow);
+    .img-box img {
+      max-width: 100%;
+      max-height: 500px;
+      object-fit: contain;
+      cursor: zoom-in;
     }
 
+    .thumb-list {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .thumb-item {
+      width: 50px;
+      height: 38px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      opacity: 0.6;
+    }
+
+    .thumb-item:hover, .thumb-item.active { opacity: 1; border-color: var(--accent-yellow); }
+
+    /* Upload Box in Left Column */
     .upload-box {
-      border: 2px dashed var(--border-color);
-      padding: 15px;
-      border-radius: 8px;
+      border: 1px dashed var(--border-color);
+      padding: 10px;
+      border-radius: 6px;
       text-align: center;
       background: rgba(0,0,0,0.2);
+      margin-top: 12px;
     }
 
-    .upload-box input[type="file"] {
-      display: none;
-    }
+    .upload-box input[type="file"] { display: none; }
 
     .upload-label-btn {
       background: var(--bg-card);
       border: 1px solid var(--accent-yellow);
       color: var(--accent-yellow);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.85rem;
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-block;
-      margin-top: 8px;
+      margin-top: 4px;
     }
 
-    .upload-label-btn:hover {
-      background: var(--accent-yellow);
-      color: #000;
-    }
+    .upload-label-btn:hover { background: var(--accent-yellow); color: #000; }
 
-    .preview-thumbs {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .preview-thumb-img {
-      width: 70px;
-      height: 50px;
-      object-fit: cover;
-      border-radius: 4px;
+    /* Right Column: Form Panels */
+    .form-panel {
+      background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
     }
 
-    .action-bar {
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border-color);
+    .form-panel h3 {
+      font-size: 0.85rem;
+      color: var(--accent-yellow);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+    .form-group {
       display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      align-items: center;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 8px;
     }
 
-    .btn-github-save {
-      background-color: #22c55e;
-      color: #000;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 0.95rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .form-group.full-width { grid-column: 1 / -1; }
 
-    .btn-github-save:hover { background-color: #4ade80; }
+    label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
 
-    .btn-secondary {
-      background-color: var(--bg-card);
+    input, select, textarea {
+      background-color: var(--bg-main);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 10px 18px;
-      border-radius: 6px;
-      font-weight: 600;
+      padding: 8px 10px;
+      border-radius: 5px;
       font-size: 0.85rem;
-      cursor: pointer;
+      outline: none;
+      font-family: inherit;
     }
 
-    .btn-secondary:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); }
 
-    .status-message {
+    textarea { resize: vertical; min-height: 60px; }
+
+    .input-with-btn {
+      display: flex;
+      gap: 6px;
+    }
+
+    .input-with-btn input {
+      flex-grow: 1;
+    }
+
+    .btn-fetch-setlist {
+      background-color: #0284c7;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.2s;
+    }
+
+    .btn-fetch-setlist:hover { background-color: #0369a1; }
+    .btn-fetch-secondary { background-color: #475569; }
+    .btn-fetch-secondary:hover { background-color: #334155; }
+
+    /* Status & Validation Badges */
+    .validation-hint {
+      font-size: 0.75rem;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+    .validation-hint.error { color: #f87171; }
+    .validation-hint.warning { color: #facc15; }
+    .validation-hint.success { color: #4ade80; }
+
+    .action-bar {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 15px;
+    }
+
+    .btn-submit {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .btn-github {
+      background-color: #238636;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    #statusMessage {
       margin-top: 15px;
       padding: 12px;
-      border-radius: 6px;
-      font-size: 0.9rem;
+      border-radius: 5px;
       display: none;
+      font-size: 0.85rem;
+      word-break: break-word;
     }
 
-    .status-message.success {
-      background: rgba(34, 197, 94, 0.15);
-      border: 1px solid #22c55e;
-      color: #4ade80;
-      display: block;
-    }
-
-    .status-message.error {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid #ef4444;
-      color: #f87171;
-      display: block;
-    }
-
-    .status-message.info {
-      background: rgba(56, 189, 248, 0.15);
-      border: 1px solid #38bdf8;
-      color: #38bdf8;
-      display: block;
-    }
+    .yt-preview { margin-top: 4px; font-size: 0.8rem; }
+    .yt-preview a { color: var(--accent-blue); text-decoration: none; }
   </style>
 </head>
 <body>
 
-  <div class="edit-container">
-    <div class="edit-header">
-      <h2>✏️ Editory & Správa Záznamu</h2>
-      <a href="index_new.html" class="back-btn">◄ Zpět do Muzea</a>
+  <header>
+    <h1>✏️ Edit Record: <span id="recordIdTitle">...</span></h1>
+    <div class="header-actions">
+      <button class="btn-token" onclick="manageToken()">🔑 PAT Settings</button>
+      <a href="index_new.html" class="btn-back">◄ Back to Museum</a>
     </div>
+  </header>
 
-    <!-- GitHub Token Authentication -->
-    <div class="token-box">
-      <label for="githubToken">🔑 GitHub Personal Access Token (vyžadováno pro přímý zápis/commit)</label>
-      <div class="token-input-group">
-        <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
-        <button type="button" onclick="saveToken()">Uložit Token</button>
+  <!-- Navigation & Action Bar -->
+  <div class="record-nav-bar">
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button class="nav-btn" id="prevBtn" onclick="navigateRecord(-1)">◄ Previous</button>
+      <button class="nav-btn" id="nextBtn" onclick="navigateRecord(1)">Next ►</button>
+    </div>
+    
+    <div class="record-counter" id="recordCounter">Record 0 of 0</div>
+
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button class="btn-add-new" onclick="addNewRecord()" title="Add empty new record">➕ Add</button>
+      <button class="btn-dup" onclick="duplicateCurrentRecord()" title="Duplicate current record with prefilled details">📋 Dup</button>
+    </div>
+  </div>
+
+  <div class="main-editor-layout">
+    
+    <!-- Left Sticky Column: Image Inspection & Upload -->
+    <div class="scan-preview-sticky">
+      <h3>🔍 Scan Inspection (Click to Zoom)</h3>
+      <div class="img-box">
+        <img id="previewImg" src="" alt="Ticket Scan" title="Click to open full zoom viewer">
       </div>
-      <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">
-        Token se bezpečně uloží do vašeho prohlížeče (LocalStorage). Vyžaduje oprávnění <code>repo</code> nebo <code>contents:write</code>.
-      </p>
+      <div class="thumb-list" id="thumbList"></div>
+
+      <div class="upload-box">
+        <p style="font-size: 0.75rem; color: var(--text-muted);">Upload new scan to repository (<code>scans/</code> folder)</p>
+        <label for="imageFileInput" class="upload-label-btn">📁 Select Image File</label>
+        <input type="file" id="imageFileInput" accept="image/*" onchange="handleImageSelected(event)">
+        <div id="imageUploadName" style="font-size: 0.75rem; margin-top: 4px; color: var(--accent-blue);"></div>
+      </div>
     </div>
 
-    <form id="editForm">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>ID Memorabilia (Unikátní kód)</label>
-          <input type="text" id="ID_MEMORABILIA" readonly style="opacity: 0.6;">
-        </div>
-
-        <div class="form-group">
-          <label>Show ID (Klíč koncertu)</label>
-          <input type="text" id="SHOW_ID" placeholder="např. SHOW_2010-10-01_GRONINGEN" oninput="updateShowIdAuto()">
-        </div>
-
-        <div class="form-group">
-          <label>Kategorie</label>
-          <select id="KATEGORIE">
-            <option value="tickets">Tickets (Lístky)</option>
-            <option value="passes">Passes (Passy)</option>
-            <option value="programs">Programs (Programy)</option>
-            <option value="posters">Posters (Plakáty)</option>
-            <option value="t-shirts">T-shirts (Trička)</option>
-            <option value="memorabilia">Memorabilia (Ostatní)</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Datum (RRRR-MM-DD)</label>
-          <input type="date" id="DATUM" onchange="updateShowIdAuto()">
-        </div>
-
-        <div class="form-group">
-          <label>Město (City)</label>
-          <input type="text" id="MESTO" placeholder="např. Groningen" oninput="updateShowIdAuto()">
-        </div>
-
-        <div class="form-group">
-          <label>Stát / Země (Country)</label>
-          <input type="text" id="STAT" placeholder="např. Netherlands">
-        </div>
-
-        <div class="form-group full-width">
-          <label>Venue (Hala / Klub)</label>
-          <input type="text" id="VENUE" placeholder="např. De Oosterpoort, Grote Zaal">
-        </div>
-
-        <!-- Skeny a Upload Obrázků -->
-        <div class="form-group full-width">
-          <label>Soubory skenů (odpovídá složce ./scans/)</label>
-          <input type="text" id="SOUBOR_SKEN" placeholder="např. kk-joe-jackson-2010-10-01.jpg">
-          
-          <div class="upload-box" style="margin-top: 8px;">
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Nahrajte nový sken/obrázek do repozitáře (složka <code>scans/</code>)</p>
-            <label for="imageFileInput" class="upload-label-btn">📁 Vybrat obrázek k nahrání</label>
-            <input type="file" id="imageFileInput" accept="image/*" onchange="handleImageSelected(event)">
-            <div id="imageUploadName" style="font-size: 0.8rem; margin-top: 6px; color: var(--accent-blue);"></div>
+    <!-- Right Column: Cleaned Form Panels -->
+    <form id="editForm" onsubmit="event.preventDefault();">
+      
+      <!-- Primary Classification & Location -->
+      <div class="form-panel">
+        <h3>Primary Metadata & Location</h3>
+        <div class="grid-3">
+          <div class="form-group">
+            <label for="ID_MEMORABILIA">ID Memorabilia</label>
+            <input type="text" id="ID_MEMORABILIA" readonly style="opacity: 0.6; cursor: not-allowed;">
           </div>
-          <div class="preview-thumbs" id="scansPreview"></div>
+          <div class="form-group">
+            <label for="SHOW_ID">Show ID (Event Key)</label>
+            <input type="text" id="SHOW_ID" placeholder="e.g. SHOW_2010-10-01_GRONINGEN" oninput="autoGenerateShowId()">
+          </div>
+          <div class="form-group">
+            <label for="KATEGORIE">Category (KATEGORIE)</label>
+            <select id="KATEGORIE">
+              <option value="tickets">Tickets</option>
+              <option value="passes">Passes</option>
+              <option value="programs">Programs</option>
+              <option value="posters">Posters</option>
+              <option value="t-shirts">T-shirts</option>
+              <option value="memorabilia">Memorabilia</option>
+            </select>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>Přispěvatel / Zdroj (Contributor)</label>
-          <input type="text" id="CONTRIBUTOR" placeholder="např. Bert Bos, Netherlands">
-        </div>
-
-        <div class="form-group">
-          <label>Předkapela (Supporting Act)</label>
-          <input type="text" id="SUPPORTING_ACT">
-        </div>
-
-        <div class="form-group">
-          <label>Odkaz na Setlist.fm</label>
-          <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
+        <div class="grid-3">
+          <div class="form-group">
+            <label for="DATUM">Concert Date (YYYY-MM-DD)</label>
+            <input type="date" id="DATUM" onchange="autoGenerateShowId(); checkDataQuality();">
+          </div>
+          <div class="form-group">
+            <label for="MESTO">City (MESTO)</label>
+            <input type="text" id="MESTO" placeholder="e.g. Groningen" oninput="autoGenerateShowId(); checkDataQuality();">
+          </div>
+          <div class="form-group">
+            <label for="STAT">Country (STAT)</label>
+            <input type="text" id="STAT" placeholder="e.g. Netherlands">
+          </div>
         </div>
 
         <div class="form-group full-width">
-          <label>Obsazení kapely (Line-up - oddělené středníkem ; )</label>
-          <input type="text" id="LINEUP" placeholder="Joe Jackson - Piano, Vocals; Graham Maby - Bass">
+          <label for="VENUE">Venue (Hall / Club / Stadium)</label>
+          <input type="text" id="VENUE" placeholder="e.g. De Oosterpoort, Grote Zaal">
         </div>
 
-        <div class="form-group full-width">
-          <label>Setlist (Skladby oddělené čárkou , )</label>
-          <textarea id="SETLIST" rows="3" placeholder="Steppin' Out, Real Men, Is She Really Going Out With Him?" oninput="calcSongCount()"></textarea>
-        </div>
+        <div id="duplicateWarning" class="validation-hint warning"></div>
+      </div>
 
-        <div class="form-group">
-          <label>Počet skladeb (Počítá se automaticky)</label>
-          <input type="number" id="POCET_SKLADEB">
-        </div>
-
-        <div class="form-group">
-          <label>YouTube Bootleg URL</label>
-          <input type="url" id="YOUTUBE_URL" placeholder="https://www.youtube.com/watch?v=...">
-        </div>
-
-        <div class="form-group">
-          <label>Recenze / Archiv URL</label>
-          <input type="url" id="REVIEW_URL">
+      <!-- Scans & Contributor -->
+      <div class="form-panel">
+        <h3>Files & Contributor</h3>
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="SOUBOR_SKEN">Scan Image Filename(s) (SOUBOR_SKEN)</label>
+            <input type="text" id="SOUBOR_SKEN" placeholder="file1.jpg, file2.jpg" oninput="updateImageFromInput(); checkScanFileExistence();">
+            <div id="fileValidationHint" class="validation-hint"></div>
+          </div>
+          <div class="form-group">
+            <label for="CONTRIBUTOR">Donor / Contributor (CONTRIBUTOR)</label>
+            <select id="CONTRIBUTOR" onchange="handleDropdownCustom('CONTRIBUTOR')">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
         </div>
       </div>
 
-      <div id="statusMsg" class="status-message"></div>
+      <!-- Setlist & Songs Panel (Grouped together) -->
+      <div class="form-panel">
+        <h3>Setlist & Songs</h3>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="SETLIST_URL">Setlist.fm Link (SETLIST_URL)</label>
+            <div class="input-with-btn">
+              <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
+              <button type="button" class="btn-fetch-setlist" onclick="autoFindSetlist()" title="Search Setlist.fm automatically using concert date">🤖 Auto-Find by Date</button>
+              <button type="button" class="btn-fetch-setlist btn-fetch-secondary" onclick="fetchSetlistFromApi()" title="Fetch using direct URL from field">🔗 From URL</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="POCET_SKLADEB">Song Count (POCET_SKLADEB)</label>
+            <input type="number" id="POCET_SKLADEB" readonly style="opacity: 0.6; cursor: not-allowed;">
+          </div>
+        </div>
+
+        <div class="form-group full-width" style="margin-top: 6px;">
+          <label for="SETLIST">Setlist Songs (Comma separated)</label>
+          <textarea id="SETLIST" placeholder="Song 1, Song 2, Song 3..." oninput="recalculateSongCount()"></textarea>
+        </div>
+      </div>
+
+      <!-- Band Line-up & Media Links -->
+      <div class="form-panel">
+        <h3>Band Line-up & Media Links</h3>
+        
+        <div class="form-group full-width">
+          <label for="LINEUP">Band Line-up (LINEUP - Semicolon separated, e.g. Joe Jackson - piano, vocals; Graham Maby - bass)</label>
+          <textarea id="LINEUP" placeholder="Joe Jackson - vocals, keyboards; Graham Maby - bass; Dave Houghton - drums..."></textarea>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="YOUTUBE_URL">🎬 YouTube Video URL (YOUTUBE_URL)</label>
+            <input type="url" id="YOUTUBE_URL" placeholder="https://www.youtube.com/watch?v=..." oninput="updateYtPreview()">
+            <div class="yt-preview" id="ytPreview"></div>
+          </div>
+          <div class="form-group">
+            <label for="REVIEW_URL">📰 Press / Archive Embed URL (REVIEW_URL)</label>
+            <input type="url" id="REVIEW_URL" placeholder="https://archive.org/embed/...">
+          </div>
+        </div>
+      </div>
 
       <div class="action-bar">
-        <button type="button" class="btn-github-save" onclick="saveToGitHub()">🚀 Uložit změny přímo na GitHub</button>
-        <button type="button" class="btn-secondary" onclick="copyCsvRow()">📋 Zkopírovat řádek CSV</button>
-        <button type="button" class="btn-secondary" onclick="downloadFullCsv()">💾 Stáhnout celé CSV</button>
+        <button type="button" class="btn-submit" onclick="downloadUpdatedCSV()">💾 Download Updated CSV</button>
+        <button type="button" class="btn-github" onclick="commitToGitHub()">🚀 Save Directly to GitHub</button>
       </div>
+
+      <div id="statusMessage"></div>
     </form>
+
   </div>
 
   <script>
-    const GITHUB_REPO = "19forever/joe-jackson-tickets";
-    const CSV_FILE_PATH = "joe_jackson_tickets_cleaned.csv";
-    
-    let allRecords = [];
-    let currentSha = "";
+    const CSV_FILENAME = 'joe_jackson_tickets_cleaned.csv';
+    const SETLIST_API_KEY_DEFAULT = '3pc6VtmOHzQbQVh9xedw_LLpNRCCfDhEvop7';
+    const JOE_JACKSON_MBID = '81561021-d707-427d-94d7-0624a0d9f48f';
+
+    let fullCsvData = [];
+    let currentRecordIndex = -1;
+    let viewerInstance = null;
     let selectedImageFile = null;
-    let recordId = new URLSearchParams(window.location.search).get('id');
+
+    const fields = [
+      'ID_MEMORABILIA', 'SHOW_ID', 'DATUM', 'MESTO', 'STAT', 'VENUE',
+      'KATEGORIE', 'SOUBOR_SKEN', 'CONTRIBUTOR', 'LINEUP',
+      'SETLIST', 'POCET_SKLADEB', 'SETLIST_URL', 'YOUTUBE_URL', 'REVIEW_URL'
+    ];
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Načtení uloženého tokenu z localStorage
-      const savedToken = localStorage.getItem('jj_github_token');
-      if (savedToken) {
-        document.getElementById('githubToken').value = savedToken;
-      }
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetId = urlParams.get('id');
 
-      loadCsvFromGitHubOrLocal();
-    });
-
-    function saveToken() {
-      const token = document.getElementById('githubToken').value.trim();
-      localStorage.setItem('jj_github_token', token);
-      showStatus("Token byl úspěšně uložen do prohlížeče.", "info");
-    }
-
-    function showStatus(text, type) {
-      const msg = document.getElementById('statusMsg');
-      msg.textContent = text;
-      msg.className = `status-message ${type}`;
-    }
-
-    function loadCsvFromGitHubOrLocal() {
-      showStatus("Načítám aktuální CSV data...", "info");
-      
-      Papa.parse(CSV_FILE_PATH, {
+      Papa.parse(CSV_FILENAME, {
         download: true,
         header: true,
         skipEmptyLines: true,
         complete: function(results) {
-          allRecords = results.data;
-          if (recordId) {
-            loadRecord(recordId);
-          } else {
-            // Nový záznam
-            const nextNum = allRecords.length + 1;
-            document.getElementById('ID_MEMORABILIA').value = `TICKET_${String(nextNum).padStart(4, '0')}`;
+          fullCsvData = results.data;
+          
+          populateDropdowns();
+
+          if (targetId) {
+            currentRecordIndex = fullCsvData.findIndex(r => r.ID_MEMORABILIA === targetId || r.ID_LISTKU === targetId);
           }
-          showStatus("Data připravena k editaci.", "info");
-          setTimeout(() => { document.getElementById('statusMsg').style.display = 'none'; }, 2000);
+
+          if (currentRecordIndex === -1) {
+            currentRecordIndex = 0;
+          }
+
+          loadRecord(currentRecordIndex);
         },
         error: function(err) {
-          showStatus("Chyba při načítání CSV souboru: " + err, "error");
+          showStatus('Failed to load master CSV file.', 'red');
         }
       });
-    }
+    });
 
-    function loadRecord(id) {
-      const rec = allRecords.find(r => r.ID_MEMORABILIA === id || r.ID_LISTKU === id);
-      if (!rec) {
-        showStatus("Záznam s ID " + id + " nebyl nalezen!", "error");
+    window.addEventListener('keydown', (e) => {
+      const activeTag = document.activeElement.tagName.toLowerCase();
+      if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
         return;
       }
 
-      const fields = [
-        'ID_MEMORABILIA', 'SHOW_ID', 'KATEGORIE', 'DATUM', 'MESTO', 'STAT', 
-        'VENUE', 'SOUBOR_SKEN', 'CONTRIBUTOR', 'SUPPORTING_ACT', 'SETLIST_URL', 
-        'LINEUP', 'SETLIST', 'POCET_SKLADEB', 'YOUTUBE_URL', 'REVIEW_URL'
-      ];
-
-      fields.forEach(field => {
-        const input = document.getElementById(field);
-        if (input && rec[field] !== undefined) {
-          const val = String(rec[field]).trim();
-          input.value = (val === 'null' || val === 'undefined') ? '' : val;
-        }
-      });
-
-      if (!document.getElementById('ID_MEMORABILIA').value) {
-        document.getElementById('ID_MEMORABILIA').value = id;
+      if (e.key === 'ArrowLeft') {
+        navigateRecord(-1);
+      } else if (e.key === 'ArrowRight') {
+        navigateRecord(1);
       }
+    });
 
-      renderPreviewThumbs();
+    function isValid(val) {
+      if (!val) return false;
+      const clean = String(val).trim().toLowerCase();
+      return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'null';
     }
 
-    function updateShowIdAuto() {
+    function autoGenerateShowId() {
       const datum = document.getElementById('DATUM').value;
       const mesto = document.getElementById('MESTO').value.trim();
       const showIdInput = document.getElementById('SHOW_ID');
@@ -464,31 +598,257 @@
       }
     }
 
-    function calcSongCount() {
-      const setlistText = document.getElementById('SETLIST').value.trim();
-      if (!setlistText) {
-        document.getElementById('POCET_SKLADEB').value = 0;
-        return;
-      }
-      const count = setlistText.split(',').filter(s => s.trim().length > 0).length;
-      document.getElementById('POCET_SKLADEB').value = count;
+    function generateNextId() {
+      let maxNum = 0;
+      fullCsvData.forEach(r => {
+        const idStr = r.ID_MEMORABILIA || r.ID_LISTKU;
+        if (idStr) {
+          const match = idStr.match(/\d+/);
+          if (match) {
+            const num = parseInt(match[0], 10);
+            if (num > maxNum) maxNum = num;
+          }
+        }
+      });
+      const nextNum = maxNum + 1;
+      return `TICKET_${String(nextNum).padStart(4, '0')}`;
     }
 
-    function renderPreviewThumbs() {
-      const skenVal = document.getElementById('SOUBOR_SKEN').value;
-      const container = document.getElementById('scansPreview');
-      container.innerHTML = '';
+    function addNewRecord() {
+      saveCurrentChangesToMemory();
 
-      if (!skenVal) return;
+      const newId = generateNextId();
+      const newRecord = {
+        ID_MEMORABILIA: newId,
+        SHOW_ID: '',
+        DATUM: '',
+        MESTO: '',
+        STAT: '',
+        VENUE: '',
+        KATEGORIE: 'tickets',
+        SOUBOR_SKEN: '',
+        CONTRIBUTOR: '',
+        LINEUP: '',
+        SETLIST: '',
+        POCET_SKLADEB: '0',
+        SETLIST_URL: '',
+        YOUTUBE_URL: '',
+        REVIEW_URL: ''
+      };
 
-      const files = skenVal.split(',').map(s => s.trim()).filter(Boolean);
-      files.forEach(f => {
-        const img = document.createElement('img');
-        img.className = 'preview-thumb-img';
-        img.src = `./scans/${f}`;
-        img.onerror = () => { img.style.display = 'none'; };
-        container.appendChild(img);
+      fullCsvData.push(newRecord);
+      currentRecordIndex = fullCsvData.length - 1;
+      loadRecord(currentRecordIndex);
+      showStatus(`Created new record with ID: ${newId}. Fill details and click Save to GitHub.`, 'blue');
+    }
+
+    function duplicateCurrentRecord() {
+      if (currentRecordIndex < 0 || currentRecordIndex >= fullCsvData.length) return;
+
+      saveCurrentChangesToMemory();
+
+      const currentRecord = fullCsvData[currentRecordIndex];
+      const newId = generateNextId();
+
+      const duplicatedRecord = { ...currentRecord };
+      duplicatedRecord.ID_MEMORABILIA = newId;
+      duplicatedRecord.SOUBOR_SKEN = '';
+      duplicatedRecord.DATUM = '';
+      duplicatedRecord.SHOW_ID = '';
+
+      fullCsvData.push(duplicatedRecord);
+      currentRecordIndex = fullCsvData.length - 1;
+      loadRecord(currentRecordIndex);
+      showStatus(`📋 Duplicated record from ${currentRecord.ID_MEMORABILIA || currentRecord.ID_LISTKU} to new ID: ${newId}.`, 'blue');
+    }
+
+    function checkDataQuality() {
+      const currentId = document.getElementById('ID_MEMORABILIA').value;
+      const dateVal = document.getElementById('DATUM').value.trim().toLowerCase();
+      const cityVal = document.getElementById('MESTO').value.trim().toLowerCase();
+      const warningEl = document.getElementById('duplicateWarning');
+
+      if (!dateVal || !cityVal) {
+        warningEl.textContent = '';
+        return;
+      }
+
+      const duplicate = fullCsvData.find(r => {
+        const rId = r.ID_MEMORABILIA || r.ID_LISTKU;
+        if (rId === currentId) return false;
+        const rDate = (r.DATUM || '').trim().toLowerCase();
+        const rCity = (r.MESTO || '').trim().toLowerCase();
+        return rDate === dateVal && rCity === cityVal && rDate !== '';
       });
+
+      if (duplicate) {
+        warningEl.textContent = `⚠️ Possible Duplicate: Same concert date & city already exists in record ${duplicate.ID_MEMORABILIA || duplicate.ID_LISTKU}!`;
+      } else {
+        warningEl.textContent = '';
+      }
+    }
+
+    async function checkScanFileExistence() {
+      const hintEl = document.getElementById('fileValidationHint');
+      const skenStr = document.getElementById('SOUBOR_SKEN').value.trim();
+
+      if (!skenStr) {
+        hintEl.textContent = '';
+        return;
+      }
+
+      const firstFile = skenStr.split(',')[0].trim();
+      const imgUrl = `./scans/${firstFile}`;
+
+      try {
+        const res = await fetch(imgUrl, { method: 'HEAD' });
+        if (res.ok) {
+          hintEl.className = 'validation-hint success';
+          hintEl.textContent = `✅ Image file '${firstFile}' verified in /scans/`;
+        } else {
+          hintEl.className = 'validation-hint error';
+          hintEl.textContent = `❌ Warning: File '${firstFile}' not found in /scans/ folder!`;
+        }
+      } catch (e) {
+        hintEl.className = 'validation-hint warning';
+        hintEl.textContent = `ℹ️ Checking file '${firstFile}'...`;
+      }
+    }
+
+    function populateDropdowns() {
+      const contributorSelect = document.getElementById('CONTRIBUTOR');
+      const uniqueContributors = [...new Set(fullCsvData.map(r => r.CONTRIBUTOR || r.CONTRIBUTOR_TEXT || r.ZDROJ_POSKYTNUL).filter(isValid))].sort();
+
+      contributorSelect.innerHTML = '<option value="">-- Select Contributor --</option>';
+      uniqueContributors.forEach(item => {
+        contributorSelect.innerHTML += `<option value="${item}">${item}</option>`;
+      });
+      contributorSelect.innerHTML += '<option value="__ADD_NEW__">➕ Add new Contributor...</option>';
+    }
+
+    function handleDropdownCustom(fieldId) {
+      const selectEl = document.getElementById(fieldId);
+      if (selectEl.value === '__ADD_NEW__') {
+        const newValue = prompt(`Enter name for new ${fieldId}:`);
+        if (newValue && newValue.trim()) {
+          const cleanVal = newValue.trim();
+          const newOpt = document.createElement('option');
+          newOpt.value = cleanVal;
+          newOpt.textContent = cleanVal;
+          selectEl.insertBefore(newOpt, selectEl.lastElementChild);
+          selectEl.value = cleanVal;
+        } else {
+          selectEl.value = '';
+        }
+      }
+    }
+
+    function saveCurrentChangesToMemory() {
+      if (currentRecordIndex >= 0 && currentRecordIndex < fullCsvData.length) {
+        fullCsvData[currentRecordIndex] = getFormData();
+      }
+    }
+
+    function loadRecord(index) {
+      if (index < 0 || index >= fullCsvData.length) return;
+      
+      currentRecordIndex = index;
+      const data = fullCsvData[currentRecordIndex];
+
+      const recordIdVal = data.ID_MEMORABILIA || data.ID_LISTKU || 'N/A';
+      document.getElementById('recordIdTitle').textContent = recordIdVal;
+
+      fields.forEach(field => {
+        const el = document.getElementById(field);
+        if (el) {
+          if (field === 'CONTRIBUTOR') {
+            const val = data.CONTRIBUTOR || data.CONTRIBUTOR_TEXT || data.ZDROJ_POSKYTNUL || '';
+            setDropdownValue(el, val);
+          } else {
+            el.value = data[field] || '';
+          }
+        }
+      });
+
+      if (!document.getElementById('ID_MEMORABILIA').value) {
+        document.getElementById('ID_MEMORABILIA').value = recordIdVal;
+      }
+
+      renderImagePreview(data.SOUBOR_SKEN);
+      updateYtPreview();
+      recalculateSongCount();
+      updateNavUI();
+      checkDataQuality();
+      checkScanFileExistence();
+
+      const newUrl = `${window.location.pathname}?id=${encodeURIComponent(recordIdVal)}`;
+      window.history.replaceState({ path: newUrl }, '', newUrl);
+    }
+
+    function setDropdownValue(selectEl, value) {
+      if (!value) {
+        selectEl.value = '';
+        return;
+      }
+      let exists = Array.from(selectEl.options).some(opt => opt.value === value);
+      if (!exists) {
+        const newOpt = document.createElement('option');
+        newOpt.value = value;
+        newOpt.textContent = value;
+        selectEl.insertBefore(newOpt, selectEl.lastElementChild);
+      }
+      selectEl.value = value;
+    }
+
+    function renderImagePreview(skenStr) {
+      if (viewerInstance) {
+        viewerInstance.destroy();
+        viewerInstance = null;
+      }
+
+      const imgEl = document.getElementById('previewImg');
+      const thumbListEl = document.getElementById('thumbList');
+      thumbListEl.innerHTML = '';
+
+      const files = (skenStr || '').split(',').map(s => s.trim()).filter(Boolean);
+
+      if (files.length > 0) {
+        imgEl.src = `./scans/${files[0]}`;
+        imgEl.onerror = () => {
+          imgEl.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IxMDAlIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMzMzMiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+';
+        };
+
+        if (files.length > 1) {
+          files.forEach((f, idx) => {
+            const thumb = document.createElement('img');
+            thumb.className = `thumb-item ${idx === 0 ? 'active' : ''}`;
+            thumb.src = `./scans/${f}`;
+            thumb.onclick = () => {
+              imgEl.src = `./scans/${f}`;
+              document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+              thumb.classList.add('active');
+
+              if (viewerInstance) {
+                viewerInstance.destroy();
+                viewerInstance = new Viewer(imgEl, { toolbar: true, navbar: false, title: false });
+              }
+            };
+            thumbListEl.appendChild(thumb);
+          });
+        }
+
+        setTimeout(() => {
+          viewerInstance = new Viewer(imgEl, { toolbar: true, navbar: false, title: false });
+        }, 100);
+
+      } else {
+        imgEl.src = '';
+      }
+    }
+
+    function updateImageFromInput() {
+      const val = document.getElementById('SOUBOR_SKEN').value;
+      renderImagePreview(val);
     }
 
     function handleImageSelected(event) {
@@ -496,100 +856,333 @@
       if (!file) return;
 
       selectedImageFile = file;
-      document.getElementById('imageUploadName').textContent = `Vybráno k nahrání: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+      document.getElementById('imageUploadName').textContent = `Selected: ${file.name} (${Math.round(file.size / 1024)} KB)`;
       
       const currentSkens = document.getElementById('SOUBOR_SKEN').value.trim();
       if (!currentSkens.includes(file.name)) {
         document.getElementById('SOUBOR_SKEN').value = currentSkens ? `${currentSkens}, ${file.name}` : file.name;
-        renderPreviewThumbs();
+        renderImagePreview(document.getElementById('SOUBOR_SKEN').value);
+      }
+    }
+
+    function recalculateSongCount() {
+      const text = document.getElementById('SETLIST').value;
+      const countEl = document.getElementById('POCET_SKLADEB');
+      if (text) {
+        const songs = text.split(',').map(s => s.trim()).filter(Boolean);
+        countEl.value = songs.length;
+      } else {
+        countEl.value = 0;
+      }
+    }
+
+    async function fetchSetlistApiSecure(targetApiUrl) {
+      const apiKey = SETLIST_API_KEY_DEFAULT;
+      const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetApiUrl)}`;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+      try {
+        const res = await fetch(proxyUrl, {
+          method: 'GET',
+          headers: {
+            'x-api-key': apiKey,
+            'Accept': 'application/json'
+          },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          if (res.status === 404) throw new Error('Concert or Setlist not found on Setlist.fm.');
+          if (res.status === 401 || res.status === 403) throw new Error('API key rejected by Setlist.fm.');
+          throw new Error(`HTTP Error ${res.status}`);
+        }
+
+        return await res.json();
+      } catch (err) {
+        clearTimeout(timeoutId);
+
+        if (err.name === 'AbortError' || err.message.includes('Failed to fetch')) {
+          const backupProxy = `https://thingproxy.freeboard.io/fetch/${targetApiUrl}`;
+          const resBackup = await fetch(backupProxy, {
+            headers: {
+              'x-api-key': apiKey,
+              'Accept': 'application/json'
+            }
+          });
+
+          if (!resBackup.ok) throw new Error(`Backup proxy HTTP Error ${resBackup.status}`);
+          return await resBackup.json();
+        }
+
+        throw err;
+      }
+    }
+
+    async function autoFindSetlist() {
+      const datumVal = document.getElementById('DATUM').value.trim();
+      if (!datumVal) {
+        showStatus('Please enter a valid Date in YYYY-MM-DD format first.', 'red');
+        return;
+      }
+
+      let d = new Date(datumVal);
+      if (isNaN(d.getTime())) {
+        showStatus(`Could not parse date '${datumVal}' into a valid Date object.`, 'red');
+        return;
+      }
+
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      const apiFormattedDate = `${day}-${month}-${year}`;
+
+      showStatus(`Searching Setlist.fm for Joe Jackson show on ${apiFormattedDate}...`, 'blue');
+
+      const targetApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?date=${apiFormattedDate}`;
+
+      try {
+        const data = await fetchSetlistApiSecure(targetApiUrl);
+        
+        if (!data.setlist || data.setlist.length === 0) {
+          showStatus(`No show recorded on Setlist.fm for date ${apiFormattedDate}.`, 'red');
+          return;
+        }
+
+        const foundShow = data.setlist[0];
+
+        if (foundShow.url) {
+          document.getElementById('SETLIST_URL').value = foundShow.url;
+        }
+
+        let songNames = [];
+        if (foundShow.sets && foundShow.sets.set && Array.isArray(foundShow.sets.set)) {
+          foundShow.sets.set.forEach(setObj => {
+            if (setObj.song && Array.isArray(setObj.song)) {
+              setObj.song.forEach(song => {
+                if (song.name) songNames.push(song.name.trim());
+              });
+            }
+          });
+        }
+
+        if (songNames.length === 0) {
+          showStatus(`Found concert on Setlist.fm (${foundShow.url}), but no song list is logged. Direct URL saved!`, 'blue');
+          return;
+        }
+
+        document.getElementById('SETLIST').value = songNames.join(', ');
+        recalculateSongCount();
+
+        showStatus(`✅ Successfully loaded ${songNames.length} songs and updated URL from Setlist.fm!`, 'green');
+
+      } catch (err) {
+        showStatus(`❌ ${err.message}`, 'red');
+      }
+    }
+
+    async function fetchSetlistFromApi() {
+      const urlInput = document.getElementById('SETLIST_URL').value.trim();
+      if (!urlInput) {
+        showStatus('Please enter a valid Setlist.fm URL first.', 'red');
+        return;
+      }
+
+      const match = urlInput.match(/-([a-z0-9]+)\.html/i) || urlInput.match(/\/setlist\/[^\/]+\/[^\/]+\/([a-z0-9]+)/i);
+      if (!match) {
+        showStatus('Could not extract Setlist ID from URL.', 'red');
+        return;
+      }
+
+      const setlistId = match[1];
+      showStatus(`Fetching setlist ID '${setlistId}' from Setlist.fm...`, 'blue');
+
+      const targetApiUrl = `https://api.setlist.fm/rest/1.0/setlist/${setlistId}`;
+
+      try {
+        const data = await fetchSetlistApiSecure(targetApiUrl);
+        
+        let songNames = [];
+        if (data.sets && data.sets.set && Array.isArray(data.sets.set)) {
+          data.sets.set.forEach(setObj => {
+            if (setObj.song && Array.isArray(setObj.song)) {
+              setObj.song.forEach(song => {
+                if (song.name) songNames.push(song.name.trim());
+              });
+            }
+          });
+        }
+
+        if (songNames.length === 0) {
+          showStatus('Setlist found on Setlist.fm, but no songs are listed.', 'blue');
+          return;
+        }
+
+        document.getElementById('SETLIST').value = songNames.join(', ');
+        recalculateSongCount();
+
+        showStatus(`✅ Successfully retrieved ${songNames.length} songs from Setlist.fm!`, 'green');
+      } catch (err) {
+        showStatus(`❌ Setlist.fm fetch error: ${err.message}`, 'red');
+      }
+    }
+
+    function navigateRecord(direction) {
+      saveCurrentChangesToMemory();
+      const newIndex = currentRecordIndex + direction;
+      if (newIndex >= 0 && newIndex < fullCsvData.length) {
+        loadRecord(newIndex);
+      }
+    }
+
+    function updateNavUI() {
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const counter = document.getElementById('recordCounter');
+
+      prevBtn.disabled = currentRecordIndex === 0;
+      nextBtn.disabled = currentRecordIndex === fullCsvData.length - 1;
+      counter.textContent = `Record ${currentRecordIndex + 1} of ${fullCsvData.length}`;
+    }
+
+    function updateYtPreview() {
+      const val = document.getElementById('YOUTUBE_URL').value.trim();
+      const prevEl = document.getElementById('ytPreview');
+      if (val && val.startsWith('http')) {
+        prevEl.innerHTML = `🔗 Test Link: <a href="${val}" target="_blank">${val} ↗</a>`;
+      } else {
+        prevEl.innerHTML = '';
       }
     }
 
     function getFormData() {
-      const data = {};
-      const fields = [
-        'ID_MEMORABILIA', 'SHOW_ID', 'DATUM', 'MESTO', 'STAT', 'VENUE', 
-        'KATEGORIE', 'SOUBOR_SKEN', 'CONTRIBUTOR', 'LINEUP', 'SUPPORTING_ACT', 
-        'SETLIST', 'POCET_SKLADEB', 'SETLIST_URL', 'YOUTUBE_URL', 'REVIEW_URL'
-      ];
+      const updated = { ...fullCsvData[currentRecordIndex] };
 
       fields.forEach(field => {
-        const input = document.getElementById(field);
-        data[field] = input ? input.value.trim() : '';
+        const el = document.getElementById(field);
+        if (el) {
+          updated[field] = el.value.trim();
+        }
       });
 
-      return data;
+      return updated;
     }
 
-    // GitHub API Upload Logika (Commit)
-    async function saveToGitHub() {
-      const token = document.getElementById('githubToken').value.trim();
+    function downloadUpdatedCSV() {
+      if (currentRecordIndex === -1) return;
+
+      saveCurrentChangesToMemory();
+      const csvString = Papa.unparse(fullCsvData);
+
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = CSV_FILENAME;
+      link.click();
+
+      showStatus('Updated CSV file downloaded! Replace it in your repository.', 'green');
+    }
+
+    function getStoredToken() {
+      return localStorage.getItem('jj_github_pat') || '';
+    }
+
+    function manageToken() {
+      const currentToken = getStoredToken();
+      let msg = currentToken 
+        ? 'A GitHub PAT is currently saved in your browser.\n\nEnter new token to replace it, or leave empty to clear it:'
+        : 'Enter your GitHub Personal Access Token (PAT):';
+
+      const newToken = prompt(msg, currentToken);
+      if (newToken === null) return;
+
+      if (newToken.trim() === '') {
+        localStorage.removeItem('jj_github_pat');
+        alert('Token removed from browser storage.');
+      } else {
+        localStorage.setItem('jj_github_pat', newToken.trim());
+        alert('Token saved successfully in browser!');
+      }
+    }
+
+    async function commitToGitHub() {
+      let token = getStoredToken();
+
       if (!token) {
-        showStatus("Chybí GitHub Token! Vložte jej do pole nahoře.", "error");
-        return;
+        token = prompt('Enter your GitHub Personal Access Token (PAT with repo scope):');
+        if (!token) return;
+        token = token.trim();
+
+        if (confirm('Do you want to save this PAT in your browser for future edits?')) {
+          localStorage.setItem('jj_github_pat', token);
+        }
       }
 
-      showStatus("Ukládám záznam a připravuji commit na GitHub...", "info");
+      if (currentRecordIndex === -1) return;
+
+      saveCurrentChangesToMemory();
+
+      const repoOwner = '19forever';
+      const repoName = 'joe-jackson-tickets';
+      const filePath = CSV_FILENAME;
+
+      showStatus('Connecting to GitHub API...', 'blue');
 
       try {
-        const formData = getFormData();
-
-        // 1. Pokud byl vybrán nový obrázek, nahrajeme jej do složky scans/
         if (selectedImageFile) {
-          showStatus(`Nahrávám obrázek ${selectedImageFile.name} na GitHub...`, "info");
-          await uploadImageToGitHub(token, selectedImageFile);
+          showStatus(`Uploading image ${selectedImageFile.name} to scans/ folder on GitHub...`, 'blue');
+          await uploadImageToGitHub(token, repoOwner, repoName, selectedImageFile);
         }
 
-        // 2. Aktualizace záznamu v poli allRecords
-        const index = allRecords.findIndex(r => r.ID_MEMORABILIA === formData.ID_MEMORABILIA || r.ID_LISTKU === formData.ID_MEMORABILIA);
-        if (index !== -1) {
-          allRecords[index] = formData;
-        } else {
-          allRecords.push(formData);
-        }
+        const csvString = Papa.unparse(fullCsvData);
 
-        // 3. Získání aktuálního SHA souboru CSV na GitHubu
-        const getFileResp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${CSV_FILE_PATH}`, {
-          headers: { 'Authorization': `token ${token}` }
+        const getFileRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+          headers: { 
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
         });
 
-        if (!getFileResp.ok) throw new Error("Nepodařilo se načíst SHA CSV souboru z GitHubu.");
-        const fileData = await getFileResp.json();
-        const currentSha = fileData.sha;
+        if (!getFileRes.ok) {
+          throw new Error(`GitHub API error: ${getFileRes.status}`);
+        }
 
-        // 4. Převod databáze do CSV stringu
-        const updatedCsvString = Papa.unparse(allRecords);
-        const encodedContent = btoa(unescape(encodeURIComponent(updatedCsvString)));
+        const fileData = await getFileRes.json();
+        const sha = fileData.sha;
 
-        // 5. Commit aktualizovaného CSV
-        const updateResp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${CSV_FILE_PATH}`, {
+        const contentEncoded = btoa(unescape(encodeURIComponent(csvString)));
+
+        const updateRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
           method: 'PUT',
           headers: {
             'Authorization': `token ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
           },
           body: JSON.stringify({
-            message: `edit: update record ${formData.ID_MEMORABILIA} (${formData.DATUM} ${formData.MESTO})`,
-            content: encodedContent,
-            sha: currentSha
+            message: `Update record ${fullCsvData[currentRecordIndex].ID_MEMORABILIA} via Web Editor`,
+            content: contentEncoded,
+            sha: sha
           })
         });
 
-        if (!updateResp.ok) {
-          const errJson = await updateResp.json();
-          throw new Error(errJson.message || "Chyba při ukládání na GitHub.");
+        if (updateRes.ok) {
+          showStatus('✅ Successfully saved directly to GitHub! Changes will be live in ~30s.', 'green');
+          selectedImageFile = null;
+          document.getElementById('imageUploadName').textContent = '';
+        } else {
+          const errJson = await updateRes.json().catch(() => ({}));
+          throw new Error(`GitHub Save Failed (${updateRes.status}): ${errJson.message || 'Check PAT scope permissions'}`);
         }
-
-        showStatus("✅ Úspěšně uloženo na GitHub! Změny se za okamžik projeví na webu.", "success");
-        selectedImageFile = null;
-        document.getElementById('imageUploadName').textContent = "";
-
       } catch (err) {
-        showStatus("Chyba při ukládání: " + err.message, "error");
+        showStatus(`❌ ${err.message}`, 'red');
       }
     }
 
-    async function uploadImageToGitHub(token, file) {
+    async function uploadImageToGitHub(token, repoOwner, repoName, file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = async function(e) {
@@ -597,9 +1190,8 @@
             const base64Content = e.target.result.split(',')[1];
             const imagePath = `scans/${file.name}`;
 
-            // Zjištění zda obrázek již existuje (získáme sha pro přepsání)
             let existingSha = null;
-            const checkResp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${imagePath}`, {
+            const checkResp = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${imagePath}`, {
               headers: { 'Authorization': `token ${token}` }
             });
             if (checkResp.ok) {
@@ -608,12 +1200,12 @@
             }
 
             const putBody = {
-              message: `upload: scan image ${file.name}`,
+              message: `upload scan ${file.name}`,
               content: base64Content
             };
             if (existingSha) putBody.sha = existingSha;
 
-            const uploadResp = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${imagePath}`, {
+            const uploadResp = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${imagePath}`, {
               method: 'PUT',
               headers: {
                 'Authorization': `token ${token}`,
@@ -622,7 +1214,7 @@
               body: JSON.stringify(putBody)
             });
 
-            if (!uploadResp.ok) throw new Error(`Selhal upload obrázku ${file.name}`);
+            if (!uploadResp.ok) throw new Error(`Image upload failed: ${file.name}`);
             resolve(true);
           } catch (err) {
             reject(err);
@@ -632,30 +1224,24 @@
       });
     }
 
-    function copyCsvRow() {
-      const data = getFormData();
-      const csvRow = Papa.unparse([data], { header: false });
-      navigator.clipboard.writeText(csvRow).then(() => {
-        showStatus("📋 Zkopírováno do schránky!", "info");
-      });
-    }
+    function showStatus(msg, color) {
+      const el = document.getElementById('statusMessage');
+      el.style.display = 'block';
+      el.textContent = msg;
 
-    function downloadFullCsv() {
-      const data = getFormData();
-      const index = allRecords.findIndex(r => r.ID_MEMORABILIA === data.ID_MEMORABILIA || r.ID_LISTKU === data.ID_MEMORABILIA);
-      
-      if (index !== -1) {
-        allRecords[index] = data;
+      if (color === 'green') {
+        el.style.background = 'rgba(34, 197, 94, 0.15)';
+        el.style.border = '1px solid #22c55e';
+        el.style.color = '#4ade80';
+      } else if (color === 'red') {
+        el.style.background = 'rgba(239, 68, 68, 0.15)';
+        el.style.border = '1px solid #ef4444';
+        el.style.color = '#f87171';
       } else {
-        allRecords.push(data);
+        el.style.background = 'rgba(56, 189, 248, 0.15)';
+        el.style.border = '1px solid #38bdf8';
+        el.style.color = '#38bdf8';
       }
-
-      const csvString = Papa.unparse(allRecords);
-      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'joe_jackson_tickets_cleaned.csv';
-      link.click();
     }
   </script>
 </body>
