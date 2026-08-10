@@ -477,7 +477,7 @@ function openModal(index) {
 
   const editLink = document.getElementById('modalEditLink');
   if (editLink) {
-    editLink.href = `edit_ticket.html?id=${encodeURIComponent(t.ID_MEMORABILIA || '')}`;
+    editLink.href = `edit_ticket_new.html?id=${encodeURIComponent(t.ID_MEMORABILIA || '')}`;
   }
 
   const modalGrid = document.getElementById('modalGrid');
