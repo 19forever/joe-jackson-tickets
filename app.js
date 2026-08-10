@@ -39,6 +39,36 @@ function formatDisplayDate(dateStr) {
   return `${day}${suffix} ${months[monthIdx]} ${year}`;
 }
 
+function getYouTubeEmbedUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}?autoplay=1` : null;
+}
+
+function openVideoModal(youtubeUrl) {
+  const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
+  if (!embedUrl) {
+    window.open(youtubeUrl, '_blank');
+    return;
+  }
+
+  const iframe = document.getElementById('youtubeIframe');
+  iframe.src = embedUrl;
+  document.getElementById('videoModal').classList.add('active');
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('youtubeIframe');
+  iframe.src = ''; // Zastaví přehrávání zvuku po zavření
+  modal.classList.remove('active');
+}
+
+function closeVideoModalOnOverlay(e) {
+  if (e.target.id === 'videoModal') closeVideoModal();
+}
+
 function getTicketCategory(t) {
   if (t.KATEGORIE && t.KATEGORIE.trim()) {
     const cat = t.KATEGORIE.trim().toLowerCase();
@@ -380,17 +410,25 @@ function renderTickets(tickets) {
     const setlistStr = t.SETLIST || '';
     const songCount = parseInt(t.POCET_SKLADEB, 10) || 0;
     const setlistUrl = t.SETLIST_URL || '';
+    const youtubeUrl = t.YOUTUBE_URL || '';
     const lineupStr = t.LINEUP || '';
 
     const hasSetlist = setlistStr && isValidValue(setlistStr) && songCount > 0;
     const hasLineup = lineupStr && isValidValue(lineupStr);
+    const hasYoutube = youtubeUrl && isValidValue(youtubeUrl);
 
-    if (hasSetlist || hasLineup || setlistUrl) {
+    if (hasSetlist || hasLineup || setlistUrl || hasYoutube) {
       collapsibleGroupHTML += '<div class="collapsible-group">';
       
       if (setlistUrl && isValidValue(setlistUrl)) {
         collapsibleGroupHTML += `
           <a href="${setlistUrl}" target="_blank" class="external-link-icon-btn" title="Open directly on Setlist.fm ↗" onclick="event.stopPropagation();">🔗</a>
+        `;
+      }
+
+      if (hasYoutube) {
+        collapsibleGroupHTML += `
+          <button class="external-link-icon-btn" title="Watch Video" onclick="event.stopPropagation(); openVideoModal('${youtubeUrl}');">🎬 Video</button>
         `;
       }
 
@@ -573,7 +611,7 @@ function openModal(index) {
       <div class="media-embed-box">
         <h4>🎬 Concert Video / Bootleg</h4>
         <div style="margin-bottom: 8px;">
-          <a href="${t.YOUTUBE_URL}" target="_blank" class="media-link-btn">▶ Watch Video on YouTube ↗</a>
+          <button class="media-link-btn" onclick="openVideoModal('${t.YOUTUBE_URL}')">▶ Play Video</button>
         </div>
       </div>`;
   }
