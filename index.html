@@ -826,7 +826,7 @@
       }
     }
 
-    function populateFilters() {
+function populateFilters() {
       // Tours Filter
       const tourSelect = document.getElementById('tourFilter');
       const tours = [...new Set(allTickets.map(t => t.TURNE).filter(isValidValue))].sort();
@@ -836,20 +836,45 @@
         tourSelect.appendChild(opt);
       });
 
-      // Venues / Cities Filter (Kombinuje MESTO i čištěný text z INFO_TEXT)
+      // Venues / Cities Filter - Vytvoření UNIKÁTNÍHO seznamu
       const venueSelect = document.getElementById('venueFilter');
       const venueSet = new Set();
 
       allTickets.forEach(t => {
+        // 1. Pokud je přímo vyplněné pole MESTO
         if (isValidValue(t.MESTO)) {
           venueSet.add(t.MESTO.trim());
-        } else {
+        } 
+        // 2. Pokud MESTO chybí, vytáhne město/venue z INFO_TEXT
+        else {
           const parsed = parseInfoText(t);
           if (parsed.text && parsed.text.trim()) {
             venueSet.add(parsed.text.trim());
           }
         }
       });
+
+      // Seřazení unikátních hodnot a naplnění do pop-up nabídky
+      const uniqueVenues = [...venueSet].sort((a, b) => a.localeCompare(b));
+      
+      uniqueVenues.forEach(venue => {
+        if (venue) {
+          const opt = document.createElement('option');
+          opt.value = venue; 
+          opt.textContent = venue;
+          venueSelect.appendChild(opt);
+        }
+      });
+
+      // Donors Filter
+      const donorSelect = document.getElementById('donorFilter');
+      const donors = [...new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL).filter(isValidValue))].sort();
+      donors.forEach(donor => {
+        const opt = document.createElement('option');
+        opt.value = donor; opt.textContent = donor;
+        donorSelect.appendChild(opt);
+      });
+    }
 
       const venues = [...venueSet].sort();
       venues.forEach(venue => {
