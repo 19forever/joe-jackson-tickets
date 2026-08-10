@@ -176,7 +176,7 @@
 
     .controls {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 110px auto;
+      grid-template-columns: 2fr 1fr 1fr 110px auto;
       gap: 10px;
       background-color: var(--bg-panel);
       padding: 12px 15px;
@@ -188,7 +188,51 @@
       .controls { grid-template-columns: 1fr 1fr 1fr; }
     }
 
-    .controls input, .controls select {
+    /* Container pro vyhledávací pole s Clear tlačítkem */
+    .search-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .search-input-wrapper input {
+      background-color: var(--bg-main);
+      border: 1px solid var(--accent-yellow) !important;
+      color: var(--text-main);
+      padding: 8px 36px 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      width: 100%;
+      outline: none;
+      box-shadow: 0 0 4px rgba(250, 204, 21, 0.15);
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .search-input-wrapper input:focus, .search-input-wrapper input:hover {
+      box-shadow: 0 0 8px rgba(250, 204, 21, 0.35);
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: none;
+      padding: 2px 4px;
+      border-radius: 50%;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .search-clear-btn:hover {
+      color: var(--accent-yellow);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .controls select {
       background-color: var(--bg-main);
       border: 1px solid var(--border-color);
       color: var(--text-main);
@@ -199,7 +243,7 @@
       outline: none;
     }
 
-    .controls input:focus, .controls select:focus { border-color: var(--accent-blue); }
+    .controls select:focus { border-color: var(--accent-blue); }
 
     .layout-toggles { display: flex; gap: 5px; }
 
@@ -619,8 +663,12 @@
     <div class="category-tabs" id="categoryTabs"></div>
 
     <div class="controls">
-      <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, date, tour..." onkeyup="filterData()">
-      <select id="tourFilter" onchange="filterData()"><option value="">All Tours & Eras</option></select>
+      <div class="search-input-wrapper">
+        <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, date..." onkeyup="handleSearchInput()">
+        <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearchInput()" title="Clear search">✕</button>
+      </div>
+
+      <select id="yearFilter" onchange="filterData()"><option value="">All Years</option></select>
       <select id="cityFilter" onchange="filterData()"><option value="">All Cities</option></select>
       <select id="sortFilter" onchange="filterData()">
         <option value="oldest">Date (Oldest First)</option>
@@ -757,6 +805,21 @@
       return isNaN(timestamp) ? new Date(0) : new Date(timestamp);
     }
 
+    function handleSearchInput() {
+      const input = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('searchClearBtn');
+      clearBtn.style.display = input.value.trim().length > 0 ? 'block' : 'none';
+      filterData();
+    }
+
+    function clearSearchInput() {
+      const input = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('searchClearBtn');
+      input.value = '';
+      clearBtn.style.display = 'none';
+      filterData();
+    }
+
     function getRelatedItems(currentRecord) {
       const currentInfo = (currentRecord.INFO_TEXT || '').trim().toLowerCase();
       if (!currentInfo) return [];
@@ -802,7 +865,8 @@
             openModal(targetIndex);
           } else {
             document.getElementById('searchInput').value = '';
-            document.getElementById('tourFilter').value = '';
+            document.getElementById('searchClearBtn').style.display = 'none';
+            document.getElementById('yearFilter').value = '';
             document.getElementById('cityFilter').value = '';
             currentCategory = 'ALL';
             filterData();
@@ -841,14 +905,24 @@
     }
 
     function populateFilters() {
-      const tourSelect = document.getElementById('tourFilter');
-      const tours = [...new Set(allTickets.map(t => t.TURNE).filter(isValidValue))].sort();
-      tours.forEach(tour => {
-        const opt = document.createElement('option');
-        opt.value = tour; opt.textContent = tour;
-        tourSelect.appendChild(opt);
+      // Populating Year Filter
+      const yearSelect = document.getElementById('yearFilter');
+      const yearsSet = new Set();
+
+      allTickets.forEach(t => {
+        const y = parseToDate(t).getFullYear();
+        if (y > 1900) yearsSet.add(y);
       });
 
+      const sortedYears = [...yearsSet].sort((a, b) => b - a);
+      sortedYears.forEach(year => {
+        const opt = document.createElement('option');
+        opt.value = year;
+        opt.textContent = year;
+        yearSelect.appendChild(opt);
+      });
+
+      // Populating City Filter
       const citySelect = document.getElementById('cityFilter');
       const citySet = new Set();
 
@@ -910,13 +984,14 @@
 
     function filterData() {
       const query = document.getElementById('searchInput').value.toLowerCase();
-      const tour = document.getElementById('tourFilter').value;
+      const selectedYear = document.getElementById('yearFilter').value;
       const selectedCity = document.getElementById('cityFilter').value;
       const sort = document.getElementById('sortFilter').value;
 
       const matchesBase = allTickets.filter(t => {
         const parsed = parseInfoText(t);
         const cityVal = extractCityOnly(t);
+        const itemYear = parseToDate(t).getFullYear();
 
         const qMatch = !query || 
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
@@ -925,9 +1000,9 @@
           (t.LINEUP || '').toLowerCase().includes(query) ||
           (t.SETLIST || '').toLowerCase().includes(query);
           
-        const tMatch = !tour || t.TURNE === tour;
+        const yMatch = !selectedYear || String(itemYear) === String(selectedYear);
         const cMatch = !selectedCity || cityVal.toLowerCase() === selectedCity.toLowerCase() || (t.INFO_TEXT || '').toLowerCase().includes(selectedCity.toLowerCase());
-        return qMatch && tMatch && cMatch;
+        return qMatch && yMatch && cMatch;
       });
 
       renderCategoryTabs(matchesBase);
