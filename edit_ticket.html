@@ -25,7 +25,7 @@
       background-color: var(--bg-main);
       color: var(--text-main);
       padding: 30px;
-      max-width: 900px;
+      max-width: 950px;
       margin: 0 auto;
     }
 
@@ -33,9 +33,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       padding-bottom: 15px;
       border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     h1 { font-size: 1.5rem; color: #fff; }
@@ -44,6 +46,47 @@
       display: flex;
       gap: 10px;
       align-items: center;
+    }
+
+    /* Record Navigation Bar */
+    .record-nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 25px;
+    }
+
+    .nav-btn {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      background-color: #1f2937;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .record-counter {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
     }
 
     .btn-token {
@@ -88,7 +131,7 @@
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 15px;
     }
 
@@ -186,13 +229,20 @@
     <h1>✏️ Edit Record: <span id="recordIdTitle">...</span></h1>
     <div class="header-actions">
       <button class="btn-token" onclick="manageToken()">🔑 PAT Settings</button>
-      <a href="index.html" class="btn-back">◄ Cancel & Back</a>
+      <a href="index.html" class="btn-back">◄ Back to Museum</a>
     </div>
   </header>
 
+  <!-- Navigation Bar between Records -->
+  <div class="record-nav-bar">
+    <button class="nav-btn" id="prevBtn" onclick="navigateRecord(-1)">◄ Previous Record</button>
+    <div class="record-counter" id="recordCounter">Record 0 of 0</div>
+    <button class="nav-btn" id="nextBtn" onclick="navigateRecord(1)">Next Record ►</button>
+  </div>
+
   <form id="editForm" onsubmit="event.preventDefault();">
     
-    <!-- Primary Details -->
+    <!-- Basic Metadata -->
     <div class="form-section">
       <h3>Basic Metadata</h3>
       <div class="form-grid">
@@ -207,17 +257,25 @@
         <div class="form-group">
           <label for="KATEGORIE">Category (KATEGORIE)</label>
           <select id="KATEGORIE">
-            <option value="Tickets">Tickets</option>
-            <option value="Passes">Passes</option>
-            <option value="Programs">Programs</option>
-            <option value="Posters">Posters</option>
-            <option value="T-shirts">T-shirts</option>
-            <option value="Memorabilia">Memorabilia</option>
+            <option value="tickets">Tickets</option>
+            <option value="passes">Passes</option>
+            <option value="programs">Programs</option>
+            <option value="posters">Posters</option>
+            <option value="t-shirts">T-shirts</option>
+            <option value="memorabilia">Memorabilia</option>
           </select>
         </div>
         <div class="form-group">
           <label for="DATUM">Date (DATUM)</label>
           <input type="text" id="DATUM" placeholder="e.g. 1st October 2010 or 2010-10-01">
+        </div>
+        <div class="form-group">
+          <label for="MESTO">City / Venue (MESTO)</label>
+          <input type="text" id="MESTO">
+        </div>
+        <div class="form-group">
+          <label for="ZDROJOVY_SOUBOR">Source File / HTML (ZDROJOVY_SOUBOR)</label>
+          <input type="text" id="ZDROJOVY_SOUBOR">
         </div>
         <div class="form-group full-width">
           <label for="INFO_TEXT">Info / Description (INFO_TEXT)</label>
@@ -226,24 +284,39 @@
       </div>
     </div>
 
-    <!-- Scans & Details -->
+    <!-- Scans, Source & Contributor -->
     <div class="form-section">
-      <h3>Files, Source & Details</h3>
+      <h3>Files & Contributor</h3>
       <div class="form-grid">
         <div class="form-group full-width">
           <label for="SOUBOR_SKEN">Scan File(s) (SOUBOR_SKEN)</label>
           <input type="text" id="SOUBOR_SKEN" placeholder="kk-file1.jpg, kk-file2.webp">
         </div>
-        <div class="form-group">
+        <div class="form-group full-width">
           <label for="CONTRIBUTOR_TEXT">Source / Contributor (CONTRIBUTOR_TEXT)</label>
           <input type="text" id="CONTRIBUTOR_TEXT">
         </div>
+      </div>
+    </div>
+
+    <!-- Ticket Seat & Price Details -->
+    <div class="form-section">
+      <h3>Ticket Details & Support Act</h3>
+      <div class="form-grid">
         <div class="form-group">
-          <label for="MESTO">City / Venue (MESTO)</label>
-          <input type="text" id="MESTO">
+          <label for="CENA">Price (CENA)</label>
+          <input type="text" id="CENA">
         </div>
         <div class="form-group">
-          <label for="SUPPORTING_ACT">Supporting Act</label>
+          <label for="MENA">Currency (MENA)</label>
+          <input type="text" id="MENA" placeholder="EUR, USD, GBP, CHF...">
+        </div>
+        <div class="form-group">
+          <label for="SEKTOR_RADA_SEDADLO">Seat / Row / Section (SEKTOR_RADA_SEDADLO)</label>
+          <input type="text" id="SEKTOR_RADA_SEDADLO">
+        </div>
+        <div class="form-group">
+          <label for="SUPPORTING_ACT">Supporting Act (SUPPORTING_ACT)</label>
           <input type="text" id="SUPPORTING_ACT">
         </div>
       </div>
@@ -251,12 +324,16 @@
 
     <!-- Media, Videos & Setlist -->
     <div class="form-section">
-      <h3>Setlist & Media Links</h3>
+      <h3>Setlist, Media Links & Reviews</h3>
       <div class="form-grid">
         <div class="form-group full-width">
           <label for="YOUTUBE_URL">🎬 YouTube Concert Video URL (YOUTUBE_URL)</label>
           <input type="url" id="YOUTUBE_URL" placeholder="https://www.youtube.com/watch?v=..." oninput="updateYtPreview()">
           <div class="yt-preview" id="ytPreview"></div>
+        </div>
+        <div class="form-group full-width">
+          <label for="REVIEW_URL">📰 Press / Archive.org Review Embed URL (REVIEW_URL)</label>
+          <input type="url" id="REVIEW_URL" placeholder="https://archive.org/embed/...">
         </div>
         <div class="form-group full-width">
           <label for="SETLIST_URL">Setlist.fm Link (SETLIST_URL)</label>
@@ -282,14 +359,16 @@
     let fullCsvData = [];
     let currentRecordIndex = -1;
 
+    const fields = [
+      'ID_LISTKU', 'ZDROJOVY_SOUBOR', 'TURNE', 'KATEGORIE', 'DATUM', 'MESTO', 'INFO_TEXT',
+      'SOUBOR_SKEN', 'CONTRIBUTOR_TEXT', 'CENA', 'MENA',
+      'SEKTOR_RADA_SEDADLO', 'SUPPORTING_ACT', 'YOUTUBE_URL', 'REVIEW_URL',
+      'SETLIST_URL', 'SETLIST'
+    ];
+
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const targetId = urlParams.get('id');
-
-      if (!targetId) {
-        showStatus('No record ID specified in URL.', 'red');
-        return;
-      }
 
       Papa.parse(CSV_FILENAME, {
         download: true,
@@ -297,14 +376,16 @@
         skipEmptyLines: true,
         complete: function(results) {
           fullCsvData = results.data;
-          currentRecordIndex = fullCsvData.findIndex(r => r.ID_LISTKU === targetId);
-
-          if (currentRecordIndex === -1) {
-            showStatus(`Record ID '${targetId}' not found in CSV!`, 'red');
-            return;
+          
+          if (targetId) {
+            currentRecordIndex = fullCsvData.findIndex(r => r.ID_LISTKU === targetId);
           }
 
-          populateForm(fullCsvData[currentRecordIndex]);
+          if (currentRecordIndex === -1) {
+            currentRecordIndex = 0; // Default to first record if not specified or found
+          }
+
+          loadRecord(currentRecordIndex);
         },
         error: function(err) {
           showStatus('Failed to load master CSV file.', 'red');
@@ -312,23 +393,70 @@
       });
     });
 
-    function populateForm(data) {
-      document.getElementById('recordIdTitle').textContent = data.ID_LISTKU || 'N/A';
+    // Support keyboard navigation (ArrowLeft / ArrowRight)
+    window.addEventListener('keydown', (e) => {
+      // Don't trigger navigation if focused inside an input/textarea element
+      const activeTag = document.activeElement.tagName.toLowerCase();
+      if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
+        return;
+      }
 
-      const fields = [
-        'ID_LISTKU', 'TURNE', 'KATEGORIE', 'DATUM', 'INFO_TEXT',
-        'SOUBOR_SKEN', 'CONTRIBUTOR_TEXT', 'MESTO',
-        'SUPPORTING_ACT', 'YOUTUBE_URL', 'SETLIST_URL', 'SETLIST'
-      ];
+      if (e.key === 'ArrowLeft') {
+        navigateRecord(-1);
+      } else if (e.key === 'ArrowRight') {
+        navigateRecord(1);
+      }
+    });
+
+    function saveCurrentChangesToMemory() {
+      if (currentRecordIndex >= 0 && currentRecordIndex < fullCsvData.length) {
+        fullCsvData[currentRecordIndex] = getFormData();
+      }
+    }
+
+    function loadRecord(index) {
+      if (index < 0 || index >= fullCsvData.length) return;
+      
+      currentRecordIndex = index;
+      const data = fullCsvData[currentRecordIndex];
+
+      document.getElementById('recordIdTitle').textContent = data.ID_LISTKU || 'N/A';
 
       fields.forEach(field => {
         const el = document.getElementById(field);
         if (el) {
-          el.value = data[field] || '';
+          if (field === 'CONTRIBUTOR_TEXT') {
+            el.value = data.CONTRIBUTOR_TEXT || data.ZDROJ_POSKYTNUL || '';
+          } else {
+            el.value = data[field] || '';
+          }
         }
       });
 
       updateYtPreview();
+      updateNavUI();
+
+      // Update URL query string in address bar without reloading
+      const newUrl = `${window.location.pathname}?id=${encodeURIComponent(data.ID_LISTKU || '')}`;
+      window.history.replaceState({ path: newUrl }, '', newUrl);
+    }
+
+    function navigateRecord(direction) {
+      saveCurrentChangesToMemory();
+      const newIndex = currentRecordIndex + direction;
+      if (newIndex >= 0 && newIndex < fullCsvData.length) {
+        loadRecord(newIndex);
+      }
+    }
+
+    function updateNavUI() {
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const counter = document.getElementById('recordCounter');
+
+      prevBtn.disabled = currentRecordIndex === 0;
+      nextBtn.disabled = currentRecordIndex === fullCsvData.length - 1;
+      counter.textContent = `Record ${currentRecordIndex + 1} of ${fullCsvData.length}`;
     }
 
     function updateYtPreview() {
@@ -344,18 +472,16 @@
     function getFormData() {
       const updated = { ...fullCsvData[currentRecordIndex] };
 
-      const fields = [
-        'ID_LISTKU', 'TURNE', 'KATEGORIE', 'DATUM', 'INFO_TEXT',
-        'SOUBOR_SKEN', 'CONTRIBUTOR_TEXT', 'MESTO',
-        'SUPPORTING_ACT', 'YOUTUBE_URL', 'SETLIST_URL', 'SETLIST'
-      ];
-
       fields.forEach(field => {
         const el = document.getElementById(field);
         if (el) {
           updated[field] = el.value.trim();
         }
       });
+
+      if (updated.CONTRIBUTOR_TEXT) {
+        updated.ZDROJ_POSKYTNUL = updated.CONTRIBUTOR_TEXT;
+      }
 
       if (updated.SETLIST) {
         const songs = updated.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
@@ -370,7 +496,7 @@
     function downloadUpdatedCSV() {
       if (currentRecordIndex === -1) return;
 
-      fullCsvData[currentRecordIndex] = getFormData();
+      saveCurrentChangesToMemory();
       const csvString = Papa.unparse(fullCsvData);
 
       const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
@@ -393,7 +519,7 @@
         : 'Enter your GitHub Personal Access Token (PAT):';
 
       const newToken = prompt(msg, currentToken);
-      if (newToken === null) return; // Storno
+      if (newToken === null) return;
 
       if (newToken.trim() === '') {
         localStorage.removeItem('jj_github_pat');
@@ -419,7 +545,7 @@
 
       if (currentRecordIndex === -1) return;
 
-      fullCsvData[currentRecordIndex] = getFormData();
+      saveCurrentChangesToMemory();
       const csvString = Papa.unparse(fullCsvData);
 
       const repoOwner = '19forever';
