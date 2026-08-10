@@ -117,6 +117,20 @@
 
     .btn-add-new:hover { background-color: #fde047; }
 
+    .btn-dup {
+      background-color: var(--accent-blue);
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-dup:hover { background-color: #7dd3fc; }
+
     .record-counter { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
     /* Main 2-Column Layout */
@@ -341,7 +355,10 @@
     
     <div class="record-counter" id="recordCounter">Record 0 of 0</div>
 
-    <button class="btn-add-new" onclick="addNewRecord()">➕ Add New Record</button>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button class="btn-add-new" onclick="addNewRecord()" title="Add empty new record">➕ Add</button>
+      <button class="btn-dup" onclick="duplicateCurrentRecord()" title="Duplicate current record with prefilled details">📋 Dup</button>
+    </div>
   </div>
 
   <div class="main-editor-layout">
@@ -615,6 +632,33 @@
       showStatus(`Created new record with ID: ${newId}. Fill details and click Save to GitHub.`, 'blue');
     }
 
+    /* DUPLIKACE AKTUÁLNÍHO ZÁZNAMU S PROČIŠTĚNÍM KONFLIKTNÍCH POLÍ */
+    function duplicateCurrentRecord() {
+      if (currentRecordIndex < 0 || currentRecordIndex >= fullCsvData.length) return;
+
+      saveCurrentChangesToMemory();
+
+      const currentRecord = fullCsvData[currentRecordIndex];
+      const newId = generateNextId();
+
+      // Zkopírujeme stávající záznam
+      const duplicatedRecord = { ...currentRecord };
+
+      // Nové ID
+      duplicatedRecord.ID_LISTKU = newId;
+
+      // Vyprázdnění položek, které vyvolávají konflikty s kontrolami:
+      // 1. SOUBOR_SKEN - neexistující soubor / duplicita souboru
+      // 2. DATUM - vyvolání varování o duplicitním koncertním datu
+      duplicatedRecord.SOUBOR_SKEN = '';
+      duplicatedRecord.DATUM = '';
+
+      fullCsvData.push(duplicatedRecord);
+      currentRecordIndex = fullCsvData.length - 1;
+      loadRecord(currentRecordIndex);
+      showStatus(`📋 Duplicated record from ${currentRecord.ID_LISTKU} to new ID: ${newId} (Scan file & Date cleared to avoid validation conflicts).`, 'blue');
+    }
+
     /* CHYTRÁ KONTROLA DATA A DUPLICIT */
     function checkDataQuality() {
       const currentId = document.getElementById('ID_LISTKU').value;
@@ -665,7 +709,6 @@
           hintEl.textContent = `❌ Warning: File '${firstFile}' not found in /scans/ folder!`;
         }
       } catch (e) {
-        // Fallback pokud HEAD selže
         hintEl.className = 'validation-hint warning';
         hintEl.textContent = `ℹ️ Checking file '${firstFile}'...`;
       }
