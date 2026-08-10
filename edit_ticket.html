@@ -40,6 +40,24 @@
 
     h1 { font-size: 1.5rem; color: #fff; }
 
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-token {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .btn-token:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
+
     .btn-back {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
@@ -166,7 +184,10 @@
 
   <header>
     <h1>✏️ Edit Record: <span id="recordIdTitle">...</span></h1>
-    <a href="index.html" class="btn-back">◄ Cancel & Back</a>
+    <div class="header-actions">
+      <button class="btn-token" onclick="manageToken()">🔑 PAT Settings</button>
+      <a href="index.html" class="btn-back">◄ Cancel & Back</a>
+    </div>
   </header>
 
   <form id="editForm" onsubmit="event.preventDefault();">
@@ -205,7 +226,7 @@
       </div>
     </div>
 
-    <!-- Scans & Venue Details -->
+    <!-- Scans & Details -->
     <div class="form-section">
       <h3>Files, Source & Details</h3>
       <div class="form-grid">
@@ -214,24 +235,12 @@
           <input type="text" id="SOUBOR_SKEN" placeholder="kk-file1.jpg, kk-file2.webp">
         </div>
         <div class="form-group">
-          <label for="ZDROJ_POSKYTNUL">Source / Contributor (ZDROJ_POSKYTNUL)</label>
-          <input type="text" id="ZDROJ_POSKYTNUL">
+          <label for="CONTRIBUTOR_TEXT">Source / Contributor (CONTRIBUTOR_TEXT)</label>
+          <input type="text" id="CONTRIBUTOR_TEXT">
         </div>
         <div class="form-group">
           <label for="MESTO">City / Venue (MESTO)</label>
           <input type="text" id="MESTO">
-        </div>
-        <div class="form-group">
-          <label for="CENA">Price (CENA)</label>
-          <input type="text" id="CENA">
-        </div>
-        <div class="form-group">
-          <label for="MENA">Currency (MENA)</label>
-          <input type="text" id="MENA" placeholder="EUR, USD, GBP, CHF...">
-        </div>
-        <div class="form-group">
-          <label for="SEKTOR_RADA_SEDADLO">Seat / Row / Section</label>
-          <input type="text" id="SEKTOR_RADA_SEDADLO">
         </div>
         <div class="form-group">
           <label for="SUPPORTING_ACT">Supporting Act</label>
@@ -308,9 +317,8 @@
 
       const fields = [
         'ID_LISTKU', 'TURNE', 'KATEGORIE', 'DATUM', 'INFO_TEXT',
-        'SOUBOR_SKEN', 'ZDROJ_POSKYTNUL', 'MESTO', 'CENA', 'MENA',
-        'SEKTOR_RADA_SEDADLO', 'SUPPORTING_ACT', 'YOUTUBE_URL',
-        'SETLIST_URL', 'SETLIST'
+        'SOUBOR_SKEN', 'CONTRIBUTOR_TEXT', 'MESTO',
+        'SUPPORTING_ACT', 'YOUTUBE_URL', 'SETLIST_URL', 'SETLIST'
       ];
 
       fields.forEach(field => {
@@ -338,9 +346,8 @@
 
       const fields = [
         'ID_LISTKU', 'TURNE', 'KATEGORIE', 'DATUM', 'INFO_TEXT',
-        'SOUBOR_SKEN', 'ZDROJ_POSKYTNUL', 'MESTO', 'CENA', 'MENA',
-        'SEKTOR_RADA_SEDADLO', 'SUPPORTING_ACT', 'YOUTUBE_URL',
-        'SETLIST_URL', 'SETLIST'
+        'SOUBOR_SKEN', 'CONTRIBUTOR_TEXT', 'MESTO',
+        'SUPPORTING_ACT', 'YOUTUBE_URL', 'SETLIST_URL', 'SETLIST'
       ];
 
       fields.forEach(field => {
@@ -350,7 +357,6 @@
         }
       });
 
-      // Recalculate song count
       if (updated.SETLIST) {
         const songs = updated.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
         updated.POCET_SKLADEB = songs.length;
@@ -376,9 +382,40 @@
       showStatus('Updated CSV file downloaded! Replace it in your repository.', 'green');
     }
 
+    function getStoredToken() {
+      return localStorage.getItem('jj_github_pat') || '';
+    }
+
+    function manageToken() {
+      const currentToken = getStoredToken();
+      let msg = currentToken 
+        ? 'A GitHub PAT is currently saved in your browser.\n\nEnter new token to replace it, or leave empty and click OK to clear it:'
+        : 'Enter your GitHub Personal Access Token (PAT):';
+
+      const newToken = prompt(msg, currentToken);
+      if (newToken === null) return; // Storno
+
+      if (newToken.trim() === '') {
+        localStorage.removeItem('jj_github_pat');
+        alert('Token removed from browser storage.');
+      } else {
+        localStorage.setItem('jj_github_pat', newToken.trim());
+        alert('Token saved successfully in browser!');
+      }
+    }
+
     async function commitToGitHub() {
-      const token = prompt('Enter your GitHub Personal Access Token (PAT):');
-      if (!token) return;
+      let token = getStoredToken();
+
+      if (!token) {
+        token = prompt('Enter your GitHub Personal Access Token (PAT):');
+        if (!token) return;
+        token = token.trim();
+
+        if (confirm('Do you want to save this PAT in your browser for future edits?')) {
+          localStorage.setItem('jj_github_pat', token);
+        }
+      }
 
       if (currentRecordIndex === -1) return;
 
@@ -392,17 +429,21 @@
       showStatus('Committing changes to GitHub...', 'blue');
 
       try {
-        // 1. Get file SHA
         const getFileRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
           headers: { 'Authorization': `token ${token}` }
         });
 
-        if (!getFileRes.ok) throw new Error('Failed to fetch existing file details from GitHub.');
+        if (!getFileRes.ok) {
+          if (getFileRes.status === 401) {
+            localStorage.removeItem('jj_github_pat');
+            throw new Error('Invalid or expired PAT token. Please try again.');
+          }
+          throw new Error('Failed to fetch existing file details from GitHub.');
+        }
 
         const fileData = await getFileRes.json();
         const sha = fileData.sha;
 
-        // 2. Commit update
         const contentEncoded = btoa(unescape(encodeURIComponent(csvString)));
 
         const updateRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
