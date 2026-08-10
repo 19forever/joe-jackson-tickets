@@ -188,12 +188,16 @@
 
     .controls {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 110px auto;
-      gap: 12px;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 110px auto;
+      gap: 10px;
       background-color: var(--bg-panel);
       padding: 12px 15px;
       border-radius: 8px;
       border: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 1200px) {
+      .controls { grid-template-columns: 1fr 1fr 1fr; }
     }
 
     .controls input, .controls select {
@@ -287,7 +291,18 @@
 
     .tour-name { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
     .card-date { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
-    .info-text { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px; flex-grow: 1; }
+    .info-text { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px; flex-grow: 1; }
+
+    /* Supporting Act Tag on Card */
+    .card-support-tag {
+      font-size: 0.75rem;
+      color: var(--accent-blue);
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
     /* Related Item Badge Buttons */
     .related-items-bar {
@@ -587,6 +602,7 @@
     <div class="controls">
       <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, donor, date, tour..." onkeyup="filterData()">
       <select id="tourFilter" onchange="filterData()"><option value="">All Tours & Eras</option></select>
+      <select id="venueFilter" onchange="filterData()"><option value="">All Venues / Cities</option></select>
       <select id="donorFilter" onchange="filterData()"><option value="">All Donors / Sources</option></select>
       <select id="sortFilter" onchange="filterData()">
         <option value="oldest">Date (Oldest First)</option>
@@ -764,9 +780,9 @@
           if (targetIndex !== -1) {
             openModal(targetIndex);
           } else {
-            // Pokud koncert není v aktuálním filtru, zrušíme filtry a otevřeme
             document.getElementById('searchInput').value = '';
             document.getElementById('tourFilter').value = '';
+            document.getElementById('venueFilter').value = '';
             document.getElementById('donorFilter').value = '';
             currentCategory = 'ALL';
             filterData();
@@ -811,6 +827,7 @@
     }
 
     function populateFilters() {
+      // Tours Filter
       const tourSelect = document.getElementById('tourFilter');
       const tours = [...new Set(allTickets.map(t => t.TURNE).filter(isValidValue))].sort();
       tours.forEach(tour => {
@@ -819,6 +836,16 @@
         tourSelect.appendChild(opt);
       });
 
+      // Venues / Cities Filter
+      const venueSelect = document.getElementById('venueFilter');
+      const venues = [...new Set(allTickets.map(t => t.MESTO).filter(isValidValue))].sort();
+      venues.forEach(venue => {
+        const opt = document.createElement('option');
+        opt.value = venue; opt.textContent = venue;
+        venueSelect.appendChild(opt);
+      });
+
+      // Donors Filter
       const donorSelect = document.getElementById('donorFilter');
       const donors = [...new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL).filter(isValidValue))].sort();
       donors.forEach(donor => {
@@ -872,6 +899,7 @@
     function filterData() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const tour = document.getElementById('tourFilter').value;
+      const venue = document.getElementById('venueFilter').value;
       const donor = document.getElementById('donorFilter').value;
       const sort = document.getElementById('sortFilter').value;
 
@@ -881,11 +909,13 @@
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
           donorVal.toLowerCase().includes(query) ||
           (t.MESTO || '').toLowerCase().includes(query) ||
+          (t.SUPPORTING_ACT || '').toLowerCase().includes(query) ||
           (t.SETLIST || '').toLowerCase().includes(query);
           
         const tMatch = !tour || t.TURNE === tour;
+        const vMatch = !venue || t.MESTO === venue;
         const dMatch = !donor || donorVal === donor;
-        return qMatch && tMatch && dMatch;
+        return qMatch && tMatch && vMatch && dMatch;
       });
 
       renderCategoryTabs(matchesBase);
@@ -989,6 +1019,11 @@
             ${donorHTML}
           </div>` : '';
 
+        let supportActHTML = '';
+        if (isValidValue(t.SUPPORTING_ACT)) {
+          supportActHTML = `<div class="card-support-tag">🎸 Support: ${t.SUPPORTING_ACT.trim()}</div>`;
+        }
+
         let setlistSection = '';
         const setlistStr = t.SETLIST || '';
         const songCount = parseInt(t.POCET_SKLADEB) || 0;
@@ -1015,6 +1050,7 @@
             </div>
             ${parsed.date ? `<div class="card-date">${parsed.date}</div>` : ''}
             <div class="info-text">${parsed.text}</div>
+            ${supportActHTML}
             
             ${relatedHTML}
             ${metaRowHTML}
