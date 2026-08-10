@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joe Jackson´s Memorabilia Museum</title>
+  <title>Rolf Thalmann´s Ticket Museum</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <!-- Viewer.js (Image Zoom & Inspection) -->
@@ -188,7 +188,7 @@
 
     .controls {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 110px auto;
+      grid-template-columns: 2fr 1fr 1fr 1fr 110px auto;
       gap: 10px;
       background-color: var(--bg-panel);
       padding: 12px 15px;
@@ -244,7 +244,7 @@
     }
 
     .tickets-container.list-view .ticket-card { flex-direction: row; align-items: center; height: auto; }
-    .tickets-container.list-view .card-img-wrapper { width: 180px; height: 120px; flex-shrink: 0; }
+    .tickets-container.list-view .card-img-wrapper { width: 220px; height: 160px; flex-shrink: 0; }
 
     .ticket-card {
       background-color: var(--bg-card);
@@ -260,7 +260,7 @@
 
     .ticket-card:hover { border-color: #38bdf8; transform: translateY(-2px); }
 
-    .card-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .card-header-row { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 6px; }
 
     .edit-icon-btn {
       color: var(--text-muted);
@@ -277,7 +277,7 @@
 
     .card-img-wrapper {
       position: relative;
-      height: 160px;
+      height: 220px;
       background-color: #000;
       display: flex;
       align-items: center;
@@ -289,7 +289,6 @@
 
     .card-content { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
 
-    .tour-name { color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
     .card-date { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
     .info-text { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px; flex-grow: 1; }
 
@@ -333,19 +332,6 @@
       color: #fff;
       border-color: #38bdf8;
     }
-
-    .meta-details-row {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border-color);
-      padding-top: 8px;
-      margin-top: 6px;
-    }
-
-    .source-val { color: var(--text-main); font-weight: 600; text-align: right; }
 
     .setlist-toggle-btn {
       background: rgba(255, 255, 255, 0.05);
@@ -483,7 +469,7 @@
 
     .modal-img-container img {
       max-width: 100%;
-      max-height: 48vh;
+      max-height: 52vh;
       object-fit: contain;
       border-radius: 6px;
       cursor: zoom-in;
@@ -509,7 +495,6 @@
     .modal-thumb:hover, .modal-thumb.active { opacity: 1; border-color: var(--accent-yellow); }
 
     .modal-body { padding: 25px; }
-    .modal-tour { color: var(--accent-yellow); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
     .modal-date { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
     .modal-title { font-size: 0.95rem; font-weight: 500; color: var(--text-muted); margin-bottom: 20px; }
 
@@ -573,16 +558,15 @@
       <div class="header-left">
         <div class="logo">JJ</div>
         <div class="title-area">
-          <h1>Joe Jackson´s Memorabilia Museum <span class="year-badge" id="yearBadge">...</span></h1>
-          <p>Historical archive of Joe Jackson´s concert tickets & memorabilia dedicated to Rolf Thalmann´s legacy</p>
+          <h1>Rolf Thalmann´s Ticket Museum <span class="year-badge" id="yearBadge">...</span></h1>
+          <p>Historical archive of Joe Jackson´s concert tickets, venues & memorabilia</p>
         </div>
       </div>
     </header>
 
     <div class="stats-bar">
-      <div>LOADED ITEMS: <strong class="stat-val-yellow" id="stat-tickets">0</strong></div> <span>|</span>
-      <div>TOURS REPRESENTED: <strong class="stat-val-white" id="stat-tours">0</strong></div> <span>|</span>
-      <div>CONTRIBUTORS / DONORS: <strong class="stat-val-white" id="stat-donors">0</strong></div>
+      <div>LOADED RECORDS: <strong class="stat-val-yellow" id="stat-tickets">0</strong></div> <span>|</span>
+      <div>TOURS REPRESENTED: <strong class="stat-val-white" id="stat-tours">0</strong></div>
     </div>
 
     <!-- On This Day in History Banner -->
@@ -600,10 +584,9 @@
     <div class="category-tabs" id="categoryTabs"></div>
 
     <div class="controls">
-      <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, donor, date, tour..." onkeyup="filterData()">
+      <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, date, tour..." onkeyup="filterData()">
       <select id="tourFilter" onchange="filterData()"><option value="">All Tours & Eras</option></select>
       <select id="venueFilter" onchange="filterData()"><option value="">All Venues / Cities</option></select>
-      <select id="donorFilter" onchange="filterData()"><option value="">All Donors / Sources</option></select>
       <select id="sortFilter" onchange="filterData()">
         <option value="oldest">Date (Oldest First)</option>
         <option value="newest">Date (Newest First)</option>
@@ -644,15 +627,10 @@
       </div>
 
       <div class="modal-body">
-        <div class="modal-tour" id="modalTour"></div>
         <div class="modal-date" id="modalDate"></div>
         <div class="modal-title" id="modalInfo"></div>
         
         <div class="modal-grid" id="modalGrid">
-          <div class="modal-grid-item" id="modalSourceGroup">
-            <span>Source / Contributor</span>
-            <strong id="modalSource"></strong>
-          </div>
           <div class="modal-grid-item" id="modalSupportGroup">
             <span>Supporting Act</span>
             <strong id="modalSupport"></strong>
@@ -783,7 +761,6 @@
             document.getElementById('searchInput').value = '';
             document.getElementById('tourFilter').value = '';
             document.getElementById('venueFilter').value = '';
-            document.getElementById('donorFilter').value = '';
             currentCategory = 'ALL';
             filterData();
             setTimeout(() => {
@@ -813,8 +790,6 @@
       document.getElementById('stat-tickets').textContent = allTickets.length;
       const uniqueTours = new Set(allTickets.map(t => t.TURNE).filter(isValidValue));
       document.getElementById('stat-tours').textContent = uniqueTours.size;
-      const uniqueDonors = new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL).filter(isValidValue));
-      document.getElementById('stat-donors').textContent = uniqueDonors.size;
 
       const years = allTickets
         .map(t => parseToDate(t).getFullYear())
@@ -841,12 +816,9 @@
       const venueSet = new Set();
 
       allTickets.forEach(t => {
-        // 1. Pokud je přímo vyplněné pole MESTO
         if (isValidValue(t.MESTO)) {
           venueSet.add(t.MESTO.trim());
-        } 
-        // 2. Pokud MESTO chybí, vytáhne město/venue z INFO_TEXT
-        else {
+        } else {
           const parsed = parseInfoText(t);
           if (parsed.text && parsed.text.trim()) {
             venueSet.add(parsed.text.trim());
@@ -854,7 +826,6 @@
         }
       });
 
-      // Seřazení unikátních hodnot a naplnění do pop-up nabídky
       const uniqueVenues = [...venueSet].sort((a, b) => a.localeCompare(b));
       
       uniqueVenues.forEach(venue => {
@@ -864,15 +835,6 @@
           opt.textContent = venue;
           venueSelect.appendChild(opt);
         }
-      });
-
-      // Donors Filter
-      const donorSelect = document.getElementById('donorFilter');
-      const donors = [...new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL).filter(isValidValue))].sort();
-      donors.forEach(donor => {
-        const opt = document.createElement('option');
-        opt.value = donor; opt.textContent = donor;
-        donorSelect.appendChild(opt);
       });
     }
 
@@ -921,25 +883,21 @@
       const query = document.getElementById('searchInput').value.toLowerCase();
       const tour = document.getElementById('tourFilter').value;
       const venue = document.getElementById('venueFilter').value;
-      const donor = document.getElementById('donorFilter').value;
       const sort = document.getElementById('sortFilter').value;
 
       const matchesBase = allTickets.filter(t => {
-        const donorVal = t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL || '';
         const parsed = parseInfoText(t);
         const venueVal = (t.MESTO || parsed.text || '').trim();
 
         const qMatch = !query || 
           (t.INFO_TEXT || '').toLowerCase().includes(query) ||
-          donorVal.toLowerCase().includes(query) ||
           (t.MESTO || '').toLowerCase().includes(query) ||
           (t.SUPPORTING_ACT || '').toLowerCase().includes(query) ||
           (t.SETLIST || '').toLowerCase().includes(query);
           
         const tMatch = !tour || t.TURNE === tour;
         const vMatch = !venue || venueVal === venue || (t.INFO_TEXT || '').includes(venue);
-        const dMatch = !donor || donorVal === donor;
-        return qMatch && tMatch && vMatch && dMatch;
+        return qMatch && tMatch && vMatch;
       });
 
       renderCategoryTabs(matchesBase);
@@ -1035,14 +993,6 @@
           relatedHTML += '</div>';
         }
 
-        const donorVal = t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL || '';
-        const donorHTML = isValidValue(donorVal) ? `<span class="source-val">${donorVal}</span>` : '';
-
-        const metaRowHTML = donorHTML ? `
-          <div class="meta-details-row">
-            ${donorHTML}
-          </div>` : '';
-
         let supportActHTML = '';
         if (isValidValue(t.SUPPORTING_ACT)) {
           supportActHTML = `<div class="card-support-tag">🎸 Support: ${t.SUPPORTING_ACT.trim()}</div>`;
@@ -1056,7 +1006,7 @@
           const songs = setlistStr.split(',').map(s => s.trim());
           const listItems = songs.map(s => `<li>${s}</li>`).join('');
           setlistSection = `
-            <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleSetlist('${globalIndex}')">🎵 View Setlist (${songCount})</button>
+            <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleSetlist('${globalIndex}')">🎵 View Setlist.fm (${songCount})</button>
             <div class="setlist-content" id="setlist-${globalIndex}"><ol>${listItems}</ol></div>
           `;
         }
@@ -1069,15 +1019,12 @@
           </div>
           <div class="card-content">
             <div class="card-header-row">
-              <div class="tour-name">${t.TURNE || 'UNKNOWN TOUR'}</div>
               <a href="${editUrl}" target="_blank" class="edit-icon-btn" onclick="event.stopPropagation();" title="Edit this record">✏️ Edit</a>
             </div>
             ${parsed.date ? `<div class="card-date">${parsed.date}</div>` : ''}
             <div class="info-text">${parsed.text}</div>
             ${supportActHTML}
-            
             ${relatedHTML}
-            ${metaRowHTML}
             ${setlistSection}
           </div>
         `;
@@ -1159,16 +1106,8 @@
       }, 100);
 
       const parsed = parseInfoText(t);
-      document.getElementById('modalTour').textContent = t.TURNE || 'UNKNOWN TOUR';
       document.getElementById('modalDate').textContent = parsed.date || '';
       document.getElementById('modalInfo').textContent = parsed.text || '';
-
-      const donorVal = t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL || '';
-      const srcGroup = document.getElementById('modalSourceGroup');
-      if (isValidValue(donorVal)) {
-        document.getElementById('modalSource').textContent = donorVal;
-        srcGroup.style.display = 'block';
-      } else { srcGroup.style.display = 'none'; }
 
       const supportGroup = document.getElementById('modalSupportGroup');
       if (isValidValue(t.SUPPORTING_ACT)) {
