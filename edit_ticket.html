@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Ticket Record - Joe Jackson Museum</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <!-- Viewer.js pro přibližování a inspekci obrázku -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
+
   <style>
     :root {
       --bg-main: #0a0f1c;
@@ -25,7 +30,7 @@
       background-color: var(--bg-main);
       color: var(--text-main);
       padding: 30px;
-      max-width: 950px;
+      max-width: 1100px;
       margin: 0 auto;
     }
 
@@ -57,7 +62,7 @@
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 10px 15px;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .nav-btn {
@@ -113,6 +118,69 @@
 
     .btn-back:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
 
+    /* Scan Preview Box */
+    .scan-preview-card {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .scan-preview-card h3 {
+      font-size: 0.9rem;
+      color: var(--accent-yellow);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: left;
+    }
+
+    .img-container {
+      background-color: #000;
+      border-radius: 6px;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+      max-height: 450px;
+      overflow: hidden;
+    }
+
+    .img-container img {
+      max-width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      cursor: zoom-in;
+      border-radius: 4px;
+    }
+
+    .thumb-list {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .thumb-item {
+      width: 60px;
+      height: 45px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      opacity: 0.6;
+      transition: all 0.2s;
+    }
+
+    .thumb-item:hover, .thumb-item.active {
+      opacity: 1;
+      border-color: var(--accent-yellow);
+    }
+
+    /* Form Layout */
     .form-section {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
@@ -240,6 +308,15 @@
     <button class="nav-btn" id="nextBtn" onclick="navigateRecord(1)">Next Record ►</button>
   </div>
 
+  <!-- Scan Image Preview Section -->
+  <div class="scan-preview-card">
+    <h3>🔍 Scan Preview (Click to Inspect / Zoom)</h3>
+    <div class="img-container">
+      <img id="previewImg" src="" alt="Ticket Scan Preview" title="Click to open zoom viewer">
+    </div>
+    <div class="thumb-list" id="thumbList"></div>
+  </div>
+
   <form id="editForm" onsubmit="event.preventDefault();">
     
     <!-- Basic Metadata -->
@@ -290,7 +367,7 @@
       <div class="form-grid">
         <div class="form-group full-width">
           <label for="SOUBOR_SKEN">Scan File(s) (SOUBOR_SKEN)</label>
-          <input type="text" id="SOUBOR_SKEN" placeholder="kk-file1.jpg, kk-file2.webp">
+          <input type="text" id="SOUBOR_SKEN" placeholder="kk-file1.jpg, kk-file2.webp" oninput="updateImageFromInput()">
         </div>
         <div class="form-group full-width">
           <label for="CONTRIBUTOR_TEXT">Source / Contributor (CONTRIBUTOR_TEXT)</label>
@@ -358,6 +435,7 @@
     const CSV_FILENAME = 'joe_jackson_tickets_master_with_setlists.csv';
     let fullCsvData = [];
     let currentRecordIndex = -1;
+    let viewerInstance = null;
 
     const fields = [
       'ID_LISTKU', 'ZDROJOVY_SOUBOR', 'TURNE', 'KATEGORIE', 'DATUM', 'MESTO', 'INFO_TEXT',
@@ -382,7 +460,7 @@
           }
 
           if (currentRecordIndex === -1) {
-            currentRecordIndex = 0; // Default to first record if not specified or found
+            currentRecordIndex = 0;
           }
 
           loadRecord(currentRecordIndex);
@@ -393,9 +471,7 @@
       });
     });
 
-    // Support keyboard navigation (ArrowLeft / ArrowRight)
     window.addEventListener('keydown', (e) => {
-      // Don't trigger navigation if focused inside an input/textarea element
       const activeTag = document.activeElement.tagName.toLowerCase();
       if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
         return;
@@ -433,12 +509,63 @@
         }
       });
 
+      renderImagePreview(data.SOUBOR_SKEN);
       updateYtPreview();
       updateNavUI();
 
-      // Update URL query string in address bar without reloading
       const newUrl = `${window.location.pathname}?id=${encodeURIComponent(data.ID_LISTKU || '')}`;
       window.history.replaceState({ path: newUrl }, '', newUrl);
+    }
+
+    function renderImagePreview(skenStr) {
+      if (viewerInstance) {
+        viewerInstance.destroy();
+        viewerInstance = null;
+      }
+
+      const imgEl = document.getElementById('previewImg');
+      const thumbListEl = document.getElementById('thumbList');
+      thumbListEl.innerHTML = '';
+
+      const files = (skenStr || '').split(',').map(s => s.trim()).filter(Boolean);
+
+      if (files.length > 0) {
+        imgEl.src = `./scans/${files[0]}`;
+        imgEl.onerror = () => {
+          imgEl.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMDAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iIzMzMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=';
+        };
+
+        if (files.length > 1) {
+          files.forEach((f, idx) => {
+            const thumb = document.createElement('img');
+            thumb.className = `thumb-item ${idx === 0 ? 'active' : ''}`;
+            thumb.src = `./scans/${f}`;
+            thumb.onclick = () => {
+              imgEl.src = `./scans/${f}`;
+              document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+              thumb.classList.add('active');
+
+              if (viewerInstance) {
+                viewerInstance.destroy();
+                viewerInstance = new Viewer(imgEl, { toolbar: true, navbar: false, title: false });
+              }
+            };
+            thumbListEl.appendChild(thumb);
+          });
+        }
+
+        setTimeout(() => {
+          viewerInstance = new Viewer(imgEl, { toolbar: true, navbar: false, title: false });
+        }, 100);
+
+      } else {
+        imgEl.src = '';
+      }
+    }
+
+    function updateImageFromInput() {
+      const val = document.getElementById('SOUBOR_SKEN').value;
+      renderImagePreview(val);
     }
 
     function navigateRecord(direction) {
