@@ -826,7 +826,7 @@
       }
     }
 
-function populateFilters() {
+    function populateFilters() {
       // Tours Filter
       const tourSelect = document.getElementById('tourFilter');
       const tours = [...new Set(allTickets.map(t => t.TURNE).filter(isValidValue))].sort();
@@ -864,23 +864,6 @@ function populateFilters() {
           opt.textContent = venue;
           venueSelect.appendChild(opt);
         }
-      });
-
-      // Donors Filter
-      const donorSelect = document.getElementById('donorFilter');
-      const donors = [...new Set(allTickets.map(t => t.CONTRIBUTOR_TEXT || t.ZDROJ_POSKYTNUL).filter(isValidValue))].sort();
-      donors.forEach(donor => {
-        const opt = document.createElement('option');
-        opt.value = donor; opt.textContent = donor;
-        donorSelect.appendChild(opt);
-      });
-    }
-
-      const venues = [...venueSet].sort();
-      venues.forEach(venue => {
-        const opt = document.createElement('option');
-        opt.value = venue; opt.textContent = venue;
-        venueSelect.appendChild(opt);
       });
 
       // Donors Filter
