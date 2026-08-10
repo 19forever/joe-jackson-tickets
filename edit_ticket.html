@@ -378,11 +378,11 @@
         <div class="grid-2">
           <div class="form-group">
             <label for="DATUM">Concert Date (DATUM)</label>
-            <input type="text" id="DATUM" placeholder="e.g. 1st October 2010">
+            <input type="text" id="DATUM" placeholder="e.g. 24th March 2003">
           </div>
           <div class="form-group">
             <label for="MESTO">City & Venue (MESTO)</label>
-            <input type="text" id="MESTO" placeholder="e.g. London, U.K. - Royal Albert Hall">
+            <input type="text" id="MESTO" placeholder="e.g. San Francisco, CA, U.S.A. - The Fillmore">
           </div>
         </div>
 
@@ -546,9 +546,14 @@
       let rawText = (infoVal || '').trim();
       let explicitDate = (datumVal || '').trim();
       const dateRegex = /\b(\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]+\s+\d{4}|\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4})\b/i;
+      
+      if (explicitDate) {
+        const mExplicit = explicitDate.match(dateRegex);
+        if (mExplicit) return mExplicit[0];
+        return explicitDate;
+      }
+      
       const match = rawText.match(dateRegex);
-
-      if (explicitDate) return explicitDate;
       if (match) return match[0];
       return null;
     }
@@ -749,6 +754,36 @@
       }
     }
 
+    /* Bezpečné volání Setlist.fm API s přenosem hlaviček přes CORS Proxy */
+    async function fetchSetlistApiSecure(targetApiUrl) {
+      const apiKey = SETLIST_API_KEY_DEFAULT;
+      
+      // Použijeme proxy s explicitní předávkou hlaviček
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetApiUrl)}`;
+      
+      // Primární přímý pokus přes corsproxy.io s custom headers
+      try {
+        const directProxy = `https://corsproxy.io/?${encodeURIComponent(targetApiUrl)}`;
+        const res = await fetch(directProxy, {
+          headers: {
+            'x-api-key': apiKey,
+            'Accept': 'application/json'
+          }
+        });
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn('Direct proxy failed, fallback to secondary proxy...');
+      }
+
+      // Záložní pokus
+      const response = await fetch(proxyUrl);
+      if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+      const wrapper = await response.json();
+      if (!wrapper.contents) throw new Error("No response body from proxy");
+      
+      return JSON.parse(wrapper.contents);
+    }
+
     /* 1. Auto-Find Setlist by Date on Setlist.fm */
     async function autoFindSetlist() {
       const datumVal = document.getElementById('DATUM').value.trim();
@@ -776,25 +811,12 @@
       showStatus(`Searching Setlist.fm for Joe Jackson show on ${apiFormattedDate}...`, 'blue');
 
       const targetApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?date=${apiFormattedDate}`;
-      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetApiUrl)}`;
 
       try {
-        const res = await fetch(proxyUrl, {
-          headers: {
-            'x-api-key': SETLIST_API_KEY_DEFAULT,
-            'Accept': 'application/json'
-          }
-        });
-
-        if (!res.ok) {
-          if (res.status === 404) throw new Error(`No concert found on Setlist.fm for date ${apiFormattedDate}.`);
-          throw new Error(`Setlist.fm API error HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
+        const data = await fetchSetlistApiSecure(targetApiUrl);
         
         if (!data.setlist || data.setlist.length === 0) {
-          showStatus(`No show recorded on Setlist.fm for ${apiFormattedDate}.`, 'red');
+          showStatus(`No show recorded on Setlist.fm for date ${apiFormattedDate}.`, 'red');
           return;
         }
 
@@ -816,7 +838,7 @@
         }
 
         if (songNames.length === 0) {
-          showStatus(`Found concert on Setlist.fm, but no song list is logged. Direct URL saved!`, 'blue');
+          showStatus(`Found concert on Setlist.fm (${foundShow.url}), but no song list is logged. Direct URL saved!`, 'blue');
           return;
         }
 
@@ -845,27 +867,12 @@
       }
 
       const setlistId = match[1];
-
       showStatus(`Fetching setlist ID '${setlistId}' from Setlist.fm...`, 'blue');
 
       const targetApiUrl = `https://api.setlist.fm/rest/1.0/setlist/${setlistId}`;
-      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetApiUrl)}`;
 
       try {
-        const res = await fetch(proxyUrl, {
-          headers: {
-            'x-api-key': SETLIST_API_KEY_DEFAULT,
-            'Accept': 'application/json'
-          }
-        });
-
-        if (!res.ok) {
-          if (res.status === 404) throw new Error('Setlist ID not found on Setlist.fm.');
-          if (res.status === 401 || res.status === 403) throw new Error('Invalid Setlist.fm API key or unauthorized request.');
-          throw new Error(`API error HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
+        const data = await fetchSetlistApiSecure(targetApiUrl);
         
         let songNames = [];
         if (data.sets && data.sets.set && Array.isArray(data.sets.set)) {
