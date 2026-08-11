@@ -430,7 +430,7 @@
           </div>
           <div class="form-group">
             <label for="KATEGORIE">Category (KATEGORIE)</label>
-            <select id="KATEGORIE">
+            <select id="KATEGORIE" onchange="checkDataQuality()">
               <option value="tickets">Tickets</option>
               <option value="passes">Passes</option>
               <option value="programs">Programs</option>
@@ -707,9 +707,10 @@
       const currentId = document.getElementById('ID_MEMORABILIA').value;
       const dateVal = document.getElementById('DATUM').value.trim().toLowerCase();
       const cityVal = document.getElementById('MESTO').value.trim().toLowerCase();
+      const catVal = document.getElementById('KATEGORIE').value.trim().toLowerCase();
       const warningEl = document.getElementById('duplicateWarning');
 
-      if (!dateVal || !cityVal) {
+      if (!dateVal || !cityVal || !catVal) {
         warningEl.textContent = '';
         return;
       }
@@ -717,13 +718,16 @@
       const duplicate = fullCsvData.find(r => {
         const rId = r.ID_MEMORABILIA || r.ID_LISTKU;
         if (rId === currentId) return false;
+        
         const rDate = (r.DATUM || '').trim().toLowerCase();
         const rCity = (r.MESTO || '').trim().toLowerCase();
-        return rDate === dateVal && rCity === cityVal && rDate !== '';
+        const rCat = (r.KATEGORIE || '').trim().toLowerCase();
+
+        return rDate === dateVal && rCity === cityVal && rCat === catVal && rDate !== '';
       });
 
       if (duplicate) {
-        warningEl.textContent = `⚠️ Possible Duplicate: Same concert date & city already exists in record ${duplicate.ID_MEMORABILIA || duplicate.ID_LISTKU}!`;
+        warningEl.textContent = `⚠️ Possible Duplicate: Same category (${catVal.toUpperCase()}), concert date & city already exists in record ${duplicate.ID_MEMORABILIA || duplicate.ID_LISTKU}!`;
       } else {
         warningEl.textContent = '';
       }
