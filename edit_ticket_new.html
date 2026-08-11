@@ -548,12 +548,33 @@
     let currentRecordIndex = -1;
     let viewerInstance = null;
     let selectedImageFile = null;
+    let lastDeletedId = null;
 
     const fields = [
       'ID_MEMORABILIA', 'SHOW_ID', 'DATUM', 'MESTO', 'STAT', 'VENUE',
       'KATEGORIE', 'SOUBOR_SKEN', 'CONTRIBUTOR', 'LINEUP',
       'SETLIST', 'POCET_SKLADEB', 'SETLIST_URL', 'YOUTUBE_URL', 'REVIEW_URL'
     ];
+
+    function normalizeRecord(raw) {
+      const clean = {};
+      clean.ID_MEMORABILIA = raw.ID_MEMORABILIA || raw.ID_LISTKU || '';
+      clean.SHOW_ID = raw.SHOW_ID || '';
+      clean.DATUM = raw.DATUM || '';
+      clean.MESTO = raw.MESTO || '';
+      clean.STAT = raw.STAT || '';
+      clean.VENUE = raw.VENUE || '';
+      clean.KATEGORIE = raw.KATEGORIE || 'tickets';
+      clean.SOUBOR_SKEN = raw.SOUBOR_SKEN || raw.SOUBOR || raw.SKEN || '';
+      clean.CONTRIBUTOR = raw.CONTRIBUTOR || raw.CONTRIBUTOR_TEXT || raw.ZDROJ_POSKYTNUL || '';
+      clean.LINEUP = raw.LINEUP || '';
+      clean.SETLIST = raw.SETLIST || '';
+      clean.POCET_SKLADEB = raw.POCET_SKLADEB || '0';
+      clean.SETLIST_URL = raw.SETLIST_URL || '';
+      clean.YOUTUBE_URL = raw.YOUTUBE_URL || '';
+      clean.REVIEW_URL = raw.REVIEW_URL || '';
+      return clean;
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -564,12 +585,12 @@
         header: true,
         skipEmptyLines: true,
         complete: function(results) {
-          fullCsvData = results.data;
+          fullCsvData = results.data.map(normalizeRecord);
           
           populateDropdowns();
 
           if (targetId) {
-            currentRecordIndex = fullCsvData.findIndex(r => r.ID_MEMORABILIA === targetId || r.ID_LISTKU === targetId);
+            currentRecordIndex = fullCsvData.findIndex(r => r.ID_MEMORABILIA === targetId);
           }
 
           if (currentRecordIndex === -1) {
@@ -617,7 +638,7 @@
     function generateNextId() {
       let maxNum = 0;
       fullCsvData.forEach(r => {
-        const idStr = r.ID_MEMORABILIA || r.ID_LISTKU;
+        const idStr = r.ID_MEMORABILIA;
         if (idStr) {
           const match = idStr.match(/\d+/);
           if (match) {
@@ -666,7 +687,7 @@
       const currentRecord = fullCsvData[currentRecordIndex];
       const newId = generateNextId();
 
-      const duplicatedRecord = { ...currentRecord };
+      const duplicatedRecord = normalizeRecord(currentRecord);
       duplicatedRecord.ID_MEMORABILIA = newId;
       duplicatedRecord.SOUBOR_SKEN = '';
       duplicatedRecord.DATUM = '';
@@ -675,23 +696,24 @@
       fullCsvData.push(duplicatedRecord);
       currentRecordIndex = fullCsvData.length - 1;
       loadRecord(currentRecordIndex);
-      showStatus(`📋 Duplicated record from ${currentRecord.ID_MEMORABILIA || currentRecord.ID_LISTKU} to new ID: ${newId}.`, 'blue');
+      showStatus(`📋 Duplicated record to new ID: ${newId}.`, 'blue');
     }
 
     function deleteCurrentRecord() {
       if (currentRecordIndex < 0 || currentRecordIndex >= fullCsvData.length) return;
 
-      const currentId = fullCsvData[currentRecordIndex].ID_MEMORABILIA || fullCsvData[currentRecordIndex].ID_LISTKU || 'current record';
+      const currentId = fullCsvData[currentRecordIndex].ID_MEMORABILIA || 'current record';
 
       if (!confirm(`Are you sure you want to delete record ${currentId}?`)) {
         return;
       }
 
+      lastDeletedId = currentId;
       fullCsvData.splice(currentRecordIndex, 1);
 
       if (fullCsvData.length === 0) {
         addNewRecord();
-        showStatus('Deleted last record. A new empty record was created.', 'blue');
+        showStatus(`🗑️ Deleted record ${currentId}. Database is empty - created blank record.`, 'blue');
         return;
       }
 
@@ -700,7 +722,8 @@
       }
 
       loadRecord(currentRecordIndex);
-      showStatus(`🗑️ Record ${currentId} removed. Click 'Save to GitHub' to apply changes permanently.`, 'blue');
+      const nextId = fullCsvData[currentRecordIndex].ID_MEMORABILIA;
+      showStatus(`🗑️ Record ${currentId} deleted locally. Now displaying ${nextId}. Click '🚀 Save Directly to GitHub' to commit deletion!`, 'blue');
     }
 
     function checkDataQuality() {
@@ -716,7 +739,7 @@
       }
 
       const duplicate = fullCsvData.find(r => {
-        const rId = r.ID_MEMORABILIA || r.ID_LISTKU;
+        const rId = r.ID_MEMORABILIA;
         if (rId === currentId) return false;
         
         const rDate = (r.DATUM || '').trim().toLowerCase();
@@ -727,7 +750,7 @@
       });
 
       if (duplicate) {
-        warningEl.textContent = `⚠️ Possible Duplicate: Same category (${catVal.toUpperCase()}), concert date & city already exists in record ${duplicate.ID_MEMORABILIA || duplicate.ID_LISTKU}!`;
+        warningEl.textContent = `⚠️ Possible Duplicate: Same category (${catVal.toUpperCase()}), concert date & city already exists in record ${duplicate.ID_MEMORABILIA}!`;
       } else {
         warningEl.textContent = '';
       }
@@ -762,7 +785,7 @@
 
     function populateDropdowns() {
       const contributorSelect = document.getElementById('CONTRIBUTOR');
-      const uniqueContributors = [...new Set(fullCsvData.map(r => r.CONTRIBUTOR || r.CONTRIBUTOR_TEXT || r.ZDROJ_POSKYTNUL).filter(isValid))].sort();
+      const uniqueContributors = [...new Set(fullCsvData.map(r => r.CONTRIBUTOR).filter(isValid))].sort();
 
       contributorSelect.innerHTML = '<option value="">-- Select Contributor --</option>';
       uniqueContributors.forEach(item => {
@@ -800,24 +823,19 @@
       currentRecordIndex = index;
       const data = fullCsvData[currentRecordIndex];
 
-      const recordIdVal = data.ID_MEMORABILIA || data.ID_LISTKU || 'N/A';
+      const recordIdVal = data.ID_MEMORABILIA || 'N/A';
       document.getElementById('recordIdTitle').textContent = recordIdVal;
 
       fields.forEach(field => {
         const el = document.getElementById(field);
         if (el) {
           if (field === 'CONTRIBUTOR') {
-            const val = data.CONTRIBUTOR || data.CONTRIBUTOR_TEXT || data.ZDROJ_POSKYTNUL || '';
-            setDropdownValue(el, val);
+            setDropdownValue(el, data.CONTRIBUTOR || '');
           } else {
             el.value = data[field] || '';
           }
         }
       });
-
-      if (!document.getElementById('ID_MEMORABILIA').value) {
-        document.getElementById('ID_MEMORABILIA').value = recordIdVal;
-      }
 
       renderImagePreview(data.SOUBOR_SKEN);
       updateYtPreview();
@@ -1079,15 +1097,11 @@
     }
 
     function getFormData() {
-      const updated = { ...fullCsvData[currentRecordIndex] };
-
+      const updated = {};
       fields.forEach(field => {
         const el = document.getElementById(field);
-        if (el) {
-          updated[field] = el.value.trim();
-        }
+        updated[field] = el ? el.value.trim() : '';
       });
-
       return updated;
     }
 
@@ -1175,6 +1189,10 @@
 
         const contentEncoded = btoa(unescape(encodeURIComponent(csvString)));
 
+        const commitMessage = lastDeletedId 
+          ? `Delete record ${lastDeletedId} via Web Editor`
+          : `Update record ${fullCsvData[currentRecordIndex].ID_MEMORABILIA} via Web Editor`;
+
         const updateRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
           method: 'PUT',
           headers: {
@@ -1183,14 +1201,15 @@
             'Accept': 'application/vnd.github.v3+json'
           },
           body: JSON.stringify({
-            message: `Update record ${fullCsvData[currentRecordIndex].ID_MEMORABILIA} via Web Editor`,
+            message: commitMessage,
             content: contentEncoded,
             sha: sha
           })
         });
 
         if (updateRes.ok) {
-          showStatus('✅ Successfully saved directly to GitHub! Changes will be live in ~30s.', 'green');
+          showStatus(`✅ Successfully saved directly to GitHub! (${commitMessage})`, 'green');
+          lastDeletedId = null;
           selectedImageFile = null;
           document.getElementById('imageUploadName').textContent = '';
         } else {
