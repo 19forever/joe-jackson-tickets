@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rolf Thalmann´s Ticket Museum - Analytics & Stats</title>
+  <title>Joe Jackson Museum - Analytics & Stats</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <!-- Chart.js pro vykreslení grafů -->
+  <!-- Chart.js for rendering graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -174,21 +174,21 @@
       <div class="logo">JJ</div>
       <div class="title-area">
         <h1>Museum Analytics & Geographic Insights</h1>
-        <p>Distribution of ticketed concerts across venues, cities, countries and time</p>
+        <p>Distribution of ticketed concerts and memorabilia across venues, cities, countries, and timeline</p>
       </div>
     </div>
-    <a href="index.html" class="btn-back">◄ Back to Museum</a>
+    <a href="index_short.html" class="btn-back">◄ Back to Museum</a>
   </header>
 
   <!-- KPI Key Numbers -->
   <div class="stats-summary-grid">
     <div class="stat-card">
-      <span>Concert Tickets</span>
+      <span>Total Memorabilia</span>
       <strong id="statRecords">0</strong>
     </div>
     <div class="stat-card">
-      <span>Tours Represented</span>
-      <strong id="statTours" style="color: #fff;">0</strong>
+      <span>Concert Tickets</span>
+      <strong id="statTickets" style="color: #fff;">0</strong>
     </div>
     <div class="stat-card">
       <span>Unique Cities</span>
@@ -209,7 +209,7 @@
     
     <!-- Timeline Chart (Full Width) -->
     <div class="chart-box full-width">
-      <h3>📅 Concert Tickets per Year</h3>
+      <h3>📅 Concert Items per Year</h3>
       <div class="chart-wrapper">
         <canvas id="chartYears"></canvas>
       </div>
@@ -233,7 +233,7 @@
 
     <!-- Country Breakdown -->
     <div class="chart-box full-width">
-      <h3>🌍 Concerts by Country</h3>
+      <h3>🌍 Items by Country</h3>
       <div class="chart-wrapper">
         <canvas id="chartCountries"></canvas>
       </div>
@@ -242,17 +242,22 @@
   </div>
 
   <script>
-    // Globální konfigurace pro tmavé téma v Chart.js
+    const CSV_FILENAME = 'joe_jackson_tickets_cleaned.csv';
+
+    // Global theme settings for Chart.js
     Chart.defaults.color = '#9ca3af';
     Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
     window.addEventListener('DOMContentLoaded', () => {
-      Papa.parse('joe_jackson_tickets_master_with_setlists.csv', {
+      Papa.parse(CSV_FILENAME, {
         download: true,
         header: true,
         skipEmptyLines: true,
         complete: function(results) {
           processAndRenderStats(results.data);
+        },
+        error: function(err) {
+          console.error("Failed to parse CSV file for stats:", err);
         }
       });
     });
@@ -264,70 +269,55 @@
     }
 
     function processAndRenderStats(data) {
-      const toursSet = new Set();
       const citiesMap = {};
       const venuesMap = {};
       const countriesMap = {};
       const yearsMap = {};
+      
+      let totalRecords = data.length;
       let ticketCount = 0;
 
       data.forEach(item => {
-        // FILTR: Počítáme výhradně položky kategorie 'Tickets'
         const cat = (item.KATEGORIE || '').trim().toLowerCase();
-        if (cat !== '' && cat !== 'tickets') {
-          return; // Přeskočit plakáty, trička, pasy, memorabilie
+        if (cat === 'tickets' || cat === '') {
+          ticketCount++;
         }
 
-        ticketCount++;
-
-        if (item.TURNE && isValid(item.TURNE)) {
-          toursSet.add(item.TURNE.trim());
-        }
-
-        const infoText = item.INFO_TEXT || '';
+        // Year extraction directly from DATUM field YYYY-MM-DD
         const datumText = item.DATUM || '';
-        
-        // Extrakce roku z DATUM nebo INFO_TEXT
-        const yearMatch = `${datumText} ${infoText}`.match(/\b(19\d\d|20\d\d)\b/);
+        const yearMatch = datumText.match(/\b(19\d\d|20\d\d)\b/);
         if (yearMatch) {
           const year = yearMatch[0];
           yearsMap[year] = (yearsMap[year] || 0) + 1;
         }
 
-        // Extrakce Města / Klubu / Státu z MESTO nebo z INFO_TEXT
+        // City statistics
         if (isValid(item.MESTO)) {
           const city = item.MESTO.trim();
           citiesMap[city] = (citiesMap[city] || 0) + 1;
-        } else if (infoText.includes(' - ')) {
-          const parts = infoText.split(' - ').map(p => p.trim());
-          if (parts.length >= 2) {
-            const locPart = parts[1];
-            if (locPart.includes(',')) {
-              const locSub = locPart.split(',');
-              const city = locSub[0].trim();
-              const country = locSub[1].trim();
-              citiesMap[city] = (citiesMap[city] || 0) + 1;
-              countriesMap[country] = (countriesMap[country] || 0) + 1;
-            } else {
-              citiesMap[locPart] = (citiesMap[locPart] || 0) + 1;
-            }
+        }
 
-            if (parts.length >= 3) {
-              const venue = parts[2].split('-')[0].trim();
-              if (venue) venuesMap[venue] = (venuesMap[venue] || 0) + 1;
-            }
-          }
+        // Country statistics
+        if (isValid(item.STAT)) {
+          const country = item.STAT.trim();
+          countriesMap[country] = (countriesMap[country] || 0) + 1;
+        }
+
+        // Venue statistics
+        if (isValid(item.VENUE)) {
+          const venue = item.VENUE.trim();
+          venuesMap[venue] = (venuesMap[venue] || 0) + 1;
         }
       });
 
-      // Aktualizace KPI čísel na stránce
-      document.getElementById('statRecords').textContent = ticketCount;
-      document.getElementById('statTours').textContent = toursSet.size;
+      // Update KPI metrics on page
+      document.getElementById('statRecords').textContent = totalRecords;
+      document.getElementById('statTickets').textContent = ticketCount;
       document.getElementById('statCities').textContent = Object.keys(citiesMap).length;
       document.getElementById('statVenues').textContent = Object.keys(venuesMap).length;
       document.getElementById('statCountries').textContent = Object.keys(countriesMap).length;
 
-      // Vykreslení grafů
+      // Render Charts
       renderYearChart(yearsMap);
       renderBarChart('chartCities', citiesMap, 10, '#38bdf8');
       renderBarChart('chartVenues', venuesMap, 10, '#f97316');
@@ -343,7 +333,7 @@
         data: {
           labels: sortedYears,
           datasets: [{
-            label: 'Concert Tickets Count',
+            label: 'Items Count',
             data: counts,
             borderColor: '#facc15',
             backgroundColor: 'rgba(250, 204, 21, 0.15)',
