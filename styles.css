@@ -729,4 +729,71 @@ header {
     width: 100%;
     height: 200px;
   }
+
+  /* Sjednocení výšky obrázku v kartě */
+.card-img-wrapper {
+  position: relative;
+  height: 230px; /* Pevná výška karty pro optické sjednocení */
+  width: 100%;
+  background-color: #000;
+  overflow: hidden;
+}
+
+.card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Obrázek vyplní celou plochu bez deformace */
+}
+
+/* Lišta ikon v pravém dolním rohu obrázku (odprava doleva) */
+.card-icon-bar {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: row-reverse; /* Řazení odprava doleva */
+  gap: 6px;
+  z-index: 10;
+}
+
+.icon-btn {
+  background: rgba(10, 15, 28, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.icon-btn:hover {
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+  background: rgba(17, 24, 39, 0.95);
+  transform: translateY(-1px);
+}
+
+.icon-btn.badge-setlist {
+  background: rgba(250, 204, 21, 0.25);
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
+}
+
+/* Úprava šířek vyhlašovacích prvků v hlavičce */
+#yearFilter {
+  width: 105px !important; /* Zúženo pouze na 4 číslice */
+  flex-shrink: 0;
+}
+
+#sortFilter {
+  min-width: 185px !important; /* Rozšířeno pro čitelný text řazení */
+  flex-shrink: 0;
+}
 }
