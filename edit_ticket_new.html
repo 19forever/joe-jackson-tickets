@@ -1007,7 +1007,7 @@
       try {
         let foundShow = null;
 
-        // 1. Zkusíme přímé vyhledání podle data (ignorujeme 404)
+        // 1. Zkusíme přímý dotaz na datum
         const primaryApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?date=${apiFormattedDate}`;
         try {
           const primaryData = await fetchSetlistApiSecure(primaryApiUrl);
@@ -1016,27 +1016,39 @@
             if (list.length > 0) foundShow = list[0];
           }
         } catch (e) {
-          // Ignorujeme případnou 404
+          // Ignorujeme případné 404
         }
 
-        // 2. Pokud přesné datum selhalo, počkáme 1s (kvůli rate limitu 429) a zkusíme rok
+        // 2. Pokud přímé datum selhalo, prohledáme ročník skrze STRÁNKOVÁNÍ (Pagination)
         if (!foundShow) {
-          showStatus(`Exact date not indexed. Waiting 1s to bypass API rate limit & search year ${concertYear}...`, 'blue');
-          await delay(1100);
+          let page = 1;
+          let totalPages = 1;
 
-          const fallbackApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?year=${concertYear}`;
-          const fallbackData = await fetchSetlistApiSecure(fallbackApiUrl);
+          while (page <= totalPages && !foundShow) {
+            showStatus(`Searching Setlist.fm archive year ${concertYear} (Page ${page}/${totalPages})...`, 'blue');
+            await delay(1100); // pauza kvůli rate limitu API
 
-          if (fallbackData && fallbackData.setlist) {
-            const list = Array.isArray(fallbackData.setlist) ? fallbackData.setlist : [fallbackData.setlist];
-            
-            foundShow = list.find(s => {
-              if (s.eventDate === apiFormattedDate) return true;
-              if (cityVal && s.venue && s.venue.city) {
-                return s.venue.city.name.toLowerCase().includes(cityVal.toLowerCase());
-              }
-              return false;
-            });
+            const fallbackApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?year=${concertYear}&p=${page}`;
+            const fallbackData = await fetchSetlistApiSecure(fallbackApiUrl);
+
+            if (fallbackData && fallbackData.setlist) {
+              const list = Array.isArray(fallbackData.setlist) ? fallbackData.setlist : [fallbackData.setlist];
+              
+              // Spočítáme celkový počet stránek ročníku
+              const itemsPerPage = fallbackData.itemsPerPage || 20;
+              const totalItems = fallbackData.total || list.length;
+              totalPages = Math.ceil(totalItems / itemsPerPage);
+
+              foundShow = list.find(s => {
+                if (s.eventDate === apiFormattedDate) return true;
+                if (cityVal && s.venue && s.venue.city) {
+                  return s.venue.city.name.toLowerCase().includes(cityVal.toLowerCase());
+                }
+                return false;
+              });
+            }
+
+            page++;
           }
         }
 
