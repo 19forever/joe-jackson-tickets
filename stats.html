@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Joe Jackson Museum - Analytics & Stats</title>
+  <title>Joe Jackson Museum - Analytics & Map</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <!-- Chart.js for rendering graphs -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Leaflet CSS & JS for World Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
     :root {
@@ -127,6 +130,32 @@
       color: var(--accent-yellow);
     }
 
+    /* Map Box styling */
+    .map-box {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+
+    .map-box h3 {
+      font-size: 1.1rem;
+      color: var(--text-main);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #worldMap {
+      width: 100%;
+      height: 480px;
+      border-radius: 8px;
+      background-color: #111;
+      border: 1px solid var(--border-color);
+    }
+
     /* Charts Grid */
     .charts-grid {
       display: grid;
@@ -162,10 +191,22 @@
       min-height: 280px;
     }
 
+    /* Custom Leaflet Popup dark styling */
+    .leaflet-popup-content-wrapper {
+      background-color: #1f2937 !important;
+      color: #f3f4f6 !important;
+      border: 1px solid #374151;
+      border-radius: 8px !important;
+    }
+    .leaflet-popup-tip {
+      background-color: #1f2937 !important;
+    }
+
     @media (max-width: 900px) {
       body { padding: 15px; }
       header { flex-direction: column; align-items: flex-start; gap: 15px; }
       .charts-grid { grid-template-columns: 1fr; }
+      #worldMap { height: 350px; }
     }
   </style>
 </head>
@@ -208,6 +249,12 @@
       <span>Contributors</span>
       <strong id="statContributors" style="color: var(--accent-purple);">0</strong>
     </div>
+  </div>
+
+  <!-- Interactive World Map -->
+  <div class="map-box">
+    <h3>🗺️ Interactive Global Concert Map</h3>
+    <div id="worldMap"></div>
   </div>
 
   <!-- Charts -->
@@ -286,6 +333,41 @@
     Chart.defaults.color = '#9ca3af';
     Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
+    // Geocoding Coordinates lookup dictionary for major concert cities
+    const CITY_COORDS = {
+      "London": [51.5074, -0.1278],
+      "New York": [40.7128, -74.0060],
+      "Paris": [48.8566, 2.3522],
+      "Amsterdam": [52.3676, 4.9041],
+      "Hamburg": [53.5511, 9.9937],
+      "Berlin": [52.5200, 13.4050],
+      "Köln": [50.9375, 6.9603],
+      "Cologne": [50.9375, 6.9603],
+      "Brussels": [50.8503, 4.3517],
+      "Rotterdam": [51.9244, 4.4777],
+      "Groningen": [53.2194, 6.5665],
+      "Eindhoven": [51.4416, 5.4697],
+      "Mainz": [50.0000, 8.2711],
+      "München": [48.1351, 11.5820],
+      "Munich": [48.1351, 11.5820],
+      "Boston": [42.3601, -71.0589],
+      "Chicago": [41.8781, -87.6298],
+      "Los Angeles": [34.0522, -118.2437],
+      "Washington": [38.9072, -77.0369],
+      "Toronto": [43.6532, -79.3832],
+      "Vancouver": [49.2827, -123.1207],
+      "Sydney": [-33.8688, 151.2093],
+      "Melbourne": [-37.8136, 144.9631],
+      "Tokyo": [35.6762, 139.6503],
+      "Rome": [41.9028, 12.4964],
+      "Milan": [45.4642, 9.1900],
+      "Vienna": [48.2082, 16.3738],
+      "Zurich": [47.3769, 8.5417],
+      "Basel": [47.5596, 7.5886],
+      "Dublin": [53.3498, -6.2603],
+      "Prague": [50.0755, 14.4378]
+    };
+
     window.addEventListener('DOMContentLoaded', () => {
       Papa.parse(CSV_FILENAME, {
         download: true,
@@ -315,6 +397,7 @@
       const contributorsMap = {};
       const songsMap = {};
       const musiciansMap = {};
+      const cityDetails = {};
       
       let totalRecords = data.length;
       let ticketCount = 0;
@@ -337,10 +420,14 @@
           yearsMap[year] = (yearsMap[year] || 0) + 1;
         }
 
-        // City
+        // City & Details for Map
         if (isValid(item.MESTO)) {
           const city = item.MESTO.trim();
           citiesMap[city] = (citiesMap[city] || 0) + 1;
+
+          if (!cityDetails[city]) cityDetails[city] = { count: 0, venues: new Set() };
+          cityDetails[city].count++;
+          if (isValid(item.VENUE)) cityDetails[city].venues.add(item.VENUE.trim());
         }
 
         // Country
@@ -361,11 +448,10 @@
           contributorsMap[contrib] = (contributorsMap[contrib] || 0) + 1;
         }
 
-        // Setlist Songs Count
+        // Setlist Songs
         if (isValid(item.SETLIST)) {
           const songs = item.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
           songs.forEach(song => {
-            // Clean up basic song names
             if (song.length > 2 && song.length < 50) {
               songsMap[song] = (songsMap[song] || 0) + 1;
             }
@@ -376,7 +462,6 @@
         if (isValid(item.LINEUP)) {
           const musicians = item.LINEUP.split(/[;/]/).map(m => m.trim()).filter(Boolean);
           musicians.forEach(mus => {
-            // Extract just the name before parentheses, e.g., "Graham Maby (bass)" -> "Graham Maby"
             const cleanName = mus.split('(')[0].trim();
             if (cleanName.length > 3 && !cleanName.toLowerCase().includes('solo')) {
               musiciansMap[cleanName] = (musiciansMap[cleanName] || 0) + 1;
@@ -393,6 +478,9 @@
       document.getElementById('statCountries').textContent = Object.keys(countriesMap).length;
       document.getElementById('statContributors').textContent = Object.keys(contributorsMap).length;
 
+      // Render World Map
+      renderWorldMap(cityDetails);
+
       // Render Charts
       renderYearBarChart(yearsMap);
       renderDoughnutChart('chartCategories', categoriesMap);
@@ -404,7 +492,47 @@
       renderBarChart('chartCountries', countriesMap, 15, '#eab308');
     }
 
-    // SLAUPCOVÝ GRAF PRO ROKY (BAR CHART)
+    // MAPA
+    function renderWorldMap(cityDetails) {
+      const map = L.map('worldMap').setView([30.0, 10.0], 2);
+
+      // Dark theme map tiles (CartoDB DarkMatter)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 18
+      }).addTo(map);
+
+      Object.keys(cityDetails).forEach(city => {
+        let coords = CITY_COORDS[city];
+        
+        // Fallback matching logic for city names
+        if (!coords) {
+          const matchKey = Object.keys(CITY_COORDS).find(k => city.toLowerCase().includes(k.toLowerCase()));
+          if (matchKey) coords = CITY_COORDS[matchKey];
+        }
+
+        if (coords) {
+          const details = cityDetails[city];
+          const venueList = Array.from(details.venues).slice(0, 3).join(', ');
+          
+          const circle = L.circleMarker(coords, {
+            color: '#38bdf8',
+            fillColor: '#facc15',
+            fillOpacity: 0.7,
+            radius: Math.min(18, 5 + details.count * 1.2)
+          }).addTo(map);
+
+          circle.bindPopup(`
+            <strong style="color:#facc15; font-size:1rem;">${city}</strong><br>
+            <span>🎫 Items in Archive: <strong>${details.count}</strong></span><br>
+            ${venueList ? `<span style="font-size:0.75rem; color:#9ca3af;">Venues: ${venueList}...</span>` : ''}
+          `);
+        }
+      });
+    }
+
+    // SLAUPCOVÝ GRAF PRO ROKY
     function renderYearBarChart(yearsMap) {
       const sortedYears = Object.keys(yearsMap).sort();
       const counts = sortedYears.map(y => yearsMap[y]);
@@ -433,7 +561,7 @@
       });
     }
 
-    // KOLÁČOVÝ / KROUŽKOVÝ GRAF KATEGORIÍ
+    // KROUŽKOVÝ GRAF KATEGORIÍ
     function renderDoughnutChart(canvasId, dataMap) {
       const labels = Object.keys(dataMap);
       const values = Object.values(dataMap);
@@ -463,7 +591,7 @@
       });
     }
 
-    // HORIZONTÁLNÍ BAR CHART PRO VŠECHNY OSTATNÍ ŽEBŘÍČKY
+    // HORIZONTÁLNÍ BAR CHART
     function renderBarChart(canvasId, dataMap, limit, color) {
       const sorted = Object.entries(dataMap)
         .sort((a, b) => b[1] - a[1])
