@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Record - Joe Jackson Museum</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎫</text></svg>">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <title>Joe Jackson Museum - Web Editor</title>
 
-  <!-- Viewer.js (Image Inspection & Zoom) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
+  <!-- PapaParse for CSV parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
     :root {
@@ -20,6 +17,8 @@
       --text-muted: #9ca3af;
       --accent-yellow: #facc15;
       --accent-blue: #38bdf8;
+      --accent-orange: #f97316;
+      --accent-green: #4ade80;
       --accent-red: #ef4444;
       --border-color: #1f2937;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -31,1211 +30,510 @@
       font-family: var(--font-family);
       background-color: var(--bg-main);
       color: var(--text-main);
-      padding: 20px;
-      max-width: 1400px;
-      margin: 0 auto;
+      padding: 30px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     header {
+      width: 100%;
+      max-width: 900px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
       border-bottom: 1px solid var(--border-color);
     }
 
-    h1 { font-size: 1.3rem; color: #fff; }
-
-    .header-actions {
+    .header-left { display: flex; align-items: center; gap: 15px; }
+    .logo {
+      background-color: var(--accent-orange);
+      color: #000;
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
       display: flex;
-      gap: 10px;
       align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.3rem;
     }
-
-    .btn-token {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-
-    .btn-token:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
 
     .btn-back {
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 6px 14px;
-      border-radius: 6px;
-      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 20px;
       font-size: 0.85rem;
-      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
     }
+    .btn-back:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
 
-    .btn-back:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
-
-    /* Navigation Bar */
-    .record-nav-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .editor-card {
+      width: 100%;
+      max-width: 900px;
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 8px 15px;
-      margin-bottom: 20px;
-      gap: 10px;
-      flex-wrap: wrap;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.5);
     }
 
-    .nav-btn {
+    .token-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      background: var(--bg-card);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      align-items: center;
+    }
+
+    .token-bar input {
+      flex-grow: 1;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full-width { grid-column: 1 / -1; }
+
+    label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+    label span { color: var(--accent-orange); }
+
+    input[type="text"], input[type="date"], select, textarea {
       background-color: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .nav-btn:hover:not(:disabled) { border-color: var(--accent-blue); color: var(--accent-blue); }
-    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-    .btn-add-new {
-      background-color: var(--accent-yellow);
-      color: #000;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-add-new:hover { background-color: #fde047; }
-
-    .btn-dup {
-      background-color: var(--accent-blue);
-      color: #000;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-dup:hover { background-color: #7dd3fc; }
-
-    .btn-del {
-      background-color: var(--accent-red);
-      color: #fff;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-del:hover { background-color: #f87171; }
-
-    .record-counter { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
-
-    /* Main 2-Column Layout */
-    .main-editor-layout {
-      display: grid;
-      grid-template-columns: 420px 1fr;
-      gap: 20px;
-      align-items: start;
-    }
-
-    @media (max-width: 1024px) {
-      .main-editor-layout { grid-template-columns: 1fr; }
-    }
-
-    /* Left Column: Image Preview Sticky Box */
-    .scan-preview-sticky {
-      position: sticky;
-      top: 20px;
-      background-color: var(--bg-panel);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
       padding: 12px;
-    }
-
-    .scan-preview-sticky h3 {
-      font-size: 0.8rem;
-      color: var(--accent-yellow);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .img-box {
-      background-color: #000;
-      border-radius: 6px;
-      padding: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 250px;
-      max-height: 520px;
-      overflow: hidden;
-    }
-
-    .img-box img {
-      max-width: 100%;
-      max-height: 500px;
-      object-fit: contain;
-      cursor: zoom-in;
-    }
-
-    .thumb-list {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    .thumb-item {
-      width: 50px;
-      height: 38px;
-      object-fit: cover;
-      border-radius: 4px;
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-      opacity: 0.6;
-    }
-
-    .thumb-item:hover, .thumb-item.active { opacity: 1; border-color: var(--accent-yellow); }
-
-    /* Upload Box in Left Column */
-    .upload-box {
-      border: 1px dashed var(--border-color);
-      padding: 10px;
-      border-radius: 6px;
-      text-align: center;
-      background: rgba(0,0,0,0.2);
-      margin-top: 12px;
-    }
-
-    .upload-box input[type="file"] { display: none; }
-
-    .upload-label-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--accent-yellow);
-      color: var(--accent-yellow);
-      padding: 5px 12px;
-      border-radius: 5px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-block;
-      margin-top: 4px;
-    }
-
-    .upload-label-btn:hover { background: var(--accent-yellow); color: #000; }
-
-    /* Right Column: Form Panels */
-    .form-panel {
-      background-color: var(--bg-panel);
-      border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 15px;
-    }
-
-    .form-panel h3 {
-      font-size: 0.85rem;
-      color: var(--accent-yellow);
-      margin-bottom: 12px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 8px;
-    }
-
-    .form-group.full-width { grid-column: 1 / -1; }
-
-    label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
-
-    input, select, textarea {
-      background-color: var(--bg-main);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px 10px;
-      border-radius: 5px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       outline: none;
-      font-family: inherit;
     }
 
     input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); }
 
-    textarea { resize: vertical; min-height: 60px; }
-
-    .input-with-btn {
+    .setlist-import-box {
       display: flex;
-      gap: 6px;
+      gap: 10px;
+      margin-top: 5px;
     }
 
-    .input-with-btn input {
-      flex-grow: 1;
-    }
-
-    .btn-fetch-setlist {
-      background-color: #0284c7;
-      color: #fff;
+    .btn-action {
+      background-color: var(--accent-blue);
+      color: #000;
       border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
-      transition: background-color 0.2s;
     }
 
-    .btn-fetch-setlist:hover { background-color: #0369a1; }
-    .btn-fetch-secondary { background-color: #475569; }
-    .btn-fetch-secondary:hover { background-color: #334155; }
-
-    /* Status & Validation Badges */
-    .validation-hint {
-      font-size: 0.75rem;
-      margin-top: 2px;
-      font-weight: 600;
-    }
-    .validation-hint.error { color: #f87171; }
-    .validation-hint.warning { color: #facc15; }
-    .validation-hint.success { color: #4ade80; }
-
-    .action-bar {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 15px;
-    }
-
-    .btn-submit {
+    .btn-save {
       background-color: var(--accent-yellow);
       color: #000;
       border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 800;
       cursor: pointer;
-      font-size: 0.85rem;
+      width: 100%;
+      margin-top: 20px;
     }
+    .btn-save:hover { background-color: #fde047; }
 
-    .btn-github {
-      background-color: #238636;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-
-    #statusMessage {
+    .status-msg {
       margin-top: 15px;
       padding: 12px;
-      border-radius: 5px;
+      border-radius: 8px;
       display: none;
-      font-size: 0.85rem;
-      word-break: break-word;
+      font-size: 0.9rem;
+      text-align: center;
     }
+    .status-msg.success { background: rgba(74, 222, 128, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+    .status-msg.error { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
 
-    .yt-preview { margin-top: 4px; font-size: 0.8rem; }
-    .yt-preview a { color: var(--accent-blue); text-decoration: none; }
+    @media (max-width: 768px) {
+      body { padding: 15px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>✏️ Edit Record: <span id="recordIdTitle">...</span></h1>
-    <div class="header-actions">
-      <button class="btn-token" onclick="manageToken()">🔑 PAT Settings</button>
-      <button type="button" class="btn-back" onclick="if (document.referrer) { history.back(); } else { window.location.href='index_short.html'; }">◄ Back to Museum</button>
+    <div class="header-left">
+      <div class="logo">JJ</div>
+      <div>
+        <h1 id="editorTitle">Record Editor</h1>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Edit or add memorabilia to GitHub Master CSV</p>
+      </div>
     </div>
+    <a href="index_short.html" class="btn-back">◄ Back to Museum</a>
   </header>
 
-  <!-- Navigation & Action Bar -->
-  <div class="record-nav-bar">
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <button class="nav-btn" id="prevBtn" onclick="navigateRecord(-1)">◄ Previous</button>
-      <button class="nav-btn" id="nextBtn" onclick="navigateRecord(1)">Next ►</button>
-    </div>
+  <div class="editor-card">
     
-    <div class="record-counter" id="recordCounter">Record 0 of 0</div>
-
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <button class="btn-add-new" onclick="addNewRecord()" title="Add empty new record">➕ Add</button>
-      <button class="btn-dup" onclick="duplicateCurrentRecord()" title="Duplicate current record with prefilled details">📋 Dup</button>
-      <button class="btn-del" onclick="deleteCurrentRecord()" title="Delete current record">🗑️ Del</button>
-    </div>
-  </div>
-
-  <div class="main-editor-layout">
-    
-    <!-- Left Sticky Column: Image Inspection & Upload -->
-    <div class="scan-preview-sticky">
-      <h3>🔍 Scan Inspection (Click to Zoom)</h3>
-      <div class="img-box">
-        <img id="previewImg" src="" alt="Ticket Scan" title="Click to open full zoom viewer">
-      </div>
-      <div class="thumb-list" id="thumbList"></div>
-
-      <div class="upload-box">
-        <p style="font-size: 0.75rem; color: var(--text-muted);">Upload new scan to repository (<code>scans/</code> folder)</p>
-        <label for="imageFileInput" class="upload-label-btn">📁 Select Image File</label>
-        <input type="file" id="imageFileInput" accept="image/*" onchange="handleImageSelected(event)">
-        <div id="imageUploadName" style="font-size: 0.75rem; margin-top: 4px; color: var(--accent-blue);"></div>
-      </div>
+    <!-- GitHub Personal Access Token Bar -->
+    <div class="token-bar">
+      <label for="ghToken" style="white-space: nowrap;">GitHub Token:</label>
+      <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" onchange="saveTokenLocally()">
+      <span style="font-size: 0.75rem; color: var(--text-muted);">Saved in browser local storage</span>
     </div>
 
-    <!-- Right Column: Cleaned Form Panels -->
-    <form id="editForm" onsubmit="event.preventDefault();">
+    <form id="editForm" class="form-grid" onsubmit="handleFormSubmit(event)">
       
-      <!-- Primary Classification & Location -->
-      <div class="form-panel">
-        <h3>Primary Metadata & Location</h3>
-        <div class="grid-3">
-          <div class="form-group">
-            <label for="ID_MEMORABILIA">ID Memorabilia</label>
-            <input type="text" id="ID_MEMORABILIA" readonly style="opacity: 0.6; cursor: not-allowed;">
-          </div>
-          <div class="form-group">
-            <label for="SHOW_ID">Show ID (Event Key)</label>
-            <input type="text" id="SHOW_ID" placeholder="e.g. SHOW_2010-10-01_GRONINGEN" oninput="autoGenerateShowId()">
-          </div>
-          <div class="form-group">
-            <label for="KATEGORIE">Category (KATEGORIE)</label>
-            <select id="KATEGORIE" onchange="checkDataQuality()">
-              <option value="tickets">Tickets</option>
-              <option value="passes">Passes</option>
-              <option value="programs">Programs</option>
-              <option value="posters">Posters</option>
-              <option value="t-shirts">T-shirts</option>
-              <option value="memorabilia">Memorabilia</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid-3">
-          <div class="form-group">
-            <label for="DATUM">Concert Date (YYYY-MM-DD)</label>
-            <input type="date" id="DATUM" onchange="autoGenerateShowId(); checkDataQuality();">
-          </div>
-          <div class="form-group">
-            <label for="MESTO">City (MESTO)</label>
-            <input type="text" id="MESTO" placeholder="e.g. Groningen" oninput="autoGenerateShowId(); checkDataQuality();">
-          </div>
-          <div class="form-group">
-            <label for="STAT">Country (STAT)</label>
-            <input type="text" id="STAT" placeholder="e.g. Netherlands">
-          </div>
-        </div>
-
-        <div class="form-group full-width">
-          <label for="VENUE">Venue (Hall / Club / Stadium)</label>
-          <input type="text" id="VENUE" placeholder="e.g. De Oosterpoort, Grote Zaal">
-        </div>
-
-        <div id="duplicateWarning" class="validation-hint warning"></div>
+      <!-- ID Memorabilia (Hidden or Readonly) -->
+      <div class="form-group">
+        <label for="id_memorabilia">ID Memorabilia <span>*</span></label>
+        <input type="text" id="id_memorabilia" name="ID_MEMORABILIA" readonly required style="opacity: 0.7;">
       </div>
 
-      <!-- Scans & Contributor -->
-      <div class="form-panel">
-        <h3>Files & Contributor</h3>
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="SOUBOR_SKEN">Scan Image Filename(s) (SOUBOR_SKEN)</label>
-            <input type="text" id="SOUBOR_SKEN" placeholder="file1.jpg, file2.jpg" oninput="updateImageFromInput(); checkScanFileExistence();">
-            <div id="fileValidationHint" class="validation-hint"></div>
-          </div>
-          <div class="form-group">
-            <label for="CONTRIBUTOR">Donor / Contributor (CONTRIBUTOR)</label>
-            <select id="CONTRIBUTOR" onchange="handleDropdownCustom('CONTRIBUTOR')">
-              <!-- Populated dynamically -->
-            </select>
-          </div>
-        </div>
+      <!-- Show ID -->
+      <div class="form-group">
+        <label for="show_id">Show ID (Group ID)</label>
+        <input type="text" id="show_id" name="SHOW_ID" placeholder="e.g. SHOW_19820612_LONDON">
       </div>
 
-      <!-- Setlist & Songs Panel -->
-      <div class="form-panel">
-        <h3>Setlist & Songs</h3>
-        
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="SETLIST_URL">Setlist.fm Link (SETLIST_URL)</label>
-            <div class="input-with-btn">
-              <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
-              <button type="button" class="btn-fetch-setlist" onclick="openSetlistUrl()" title="Open Setlist.fm link in a new tab">↗ Open Link</button>
-              <button type="button" class="btn-fetch-setlist btn-fetch-secondary" onclick="fetchSetlistFromApi()" title="Fetch songs using direct URL from field">🔗 From URL</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="POCET_SKLADEB">Song Count (POCET_SKLADEB)</label>
-            <input type="number" id="POCET_SKLADEB" readonly style="opacity: 0.6; cursor: not-allowed;">
-          </div>
-        </div>
+      <!-- Category -->
+      <div class="form-group">
+        <label for="kategorie">Category <span>*</span></label>
+        <select id="kategorie" name="KATEGORIE" required>
+          <option value="Tickets">Ticket</option>
+          <option value="Passes">Pass / Backstage</option>
+          <option value="Posters">Poster / Flyer</option>
+          <option value="Programs">Tour Program</option>
+          <option value="T-shirts">T-shirt / Merch</option>
+          <option value="Memorabilia">Other Memorabilia</option>
+        </select>
+      </div>
 
-        <div class="form-group full-width" style="margin-top: 6px;">
-          <label for="SETLIST">Setlist Songs (Comma separated)</label>
-          <textarea id="SETLIST" placeholder="Song 1, Song 2, Song 3..." oninput="recalculateSongCount()"></textarea>
+      <!-- Date -->
+      <div class="form-group">
+        <label for="datum">Concert Date (YYYY-MM-DD) <span>*</span></label>
+        <input type="date" id="datum" name="DATUM" required>
+      </div>
+
+      <!-- City -->
+      <div class="form-group">
+        <label for="mesto">City <span>*</span></label>
+        <input type="text" id="mesto" name="MESTO" required>
+      </div>
+
+      <!-- Country -->
+      <div class="form-group">
+        <label for="stat">Country</label>
+        <input type="text" id="stat" name="STAT" placeholder="e.g. UK, USA, Germany">
+      </div>
+
+      <!-- Venue -->
+      <div class="form-group full-width">
+        <label for="venue">Venue / Club / Hall</label>
+        <input type="text" id="venue" name="VENUE">
+      </div>
+
+      <!-- Supporting Act -->
+      <div class="form-group full-width">
+        <label for="supporting_act">Supporting Act</label>
+        <input type="text" id="supporting_act" name="SUPPORTING_ACT">
+      </div>
+
+      <!-- Lineup -->
+      <div class="form-group full-width">
+        <label for="lineup">Band Line-up</label>
+        <textarea id="lineup" name="LINEUP" rows="2" placeholder="Joe Jackson (vocals, piano) ; Graham Maby (bass) ..."></textarea>
+      </div>
+
+      <!-- Setlist.fm URL Import Field -->
+      <div class="form-group full-width">
+        <label for="setlistFmUrl">Import Setlist from Setlist.fm URL:</label>
+        <div class="setlist-import-box">
+          <input type="text" id="setlistFmUrl" placeholder="https://www.setlist.fm/setlist/joe-jackson/1982/royal-albert-hall-london-england-3bd61890.html">
+          <button type="button" class="btn-action" onclick="importSetlistFm()">Fetch Setlist</button>
         </div>
       </div>
 
-      <!-- Band Line-up & Media Links -->
-      <div class="form-panel">
-        <h3>Band Line-up & Media Links</h3>
-        
-        <div class="form-group full-width">
-          <label for="LINEUP">Band Line-up (LINEUP - Semicolon separated, e.g. Joe Jackson - piano, vocals; Graham Maby - bass)</label>
-          <textarea id="LINEUP" placeholder="Joe Jackson - vocals, keyboards; Graham Maby - bass; Dave Houghton - drums..."></textarea>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="YOUTUBE_URL">🎬 YouTube Video URL (YOUTUBE_URL)</label>
-            <input type="url" id="YOUTUBE_URL" placeholder="https://www.youtube.com/watch?v=..." oninput="updateYtPreview()">
-            <div class="yt-preview" id="ytPreview"></div>
-          </div>
-          <div class="form-group">
-            <label for="REVIEW_URL">📰 Press / Archive Embed URL (REVIEW_URL)</label>
-            <input type="url" id="REVIEW_URL" placeholder="https://archive.org/embed/...">
-          </div>
-        </div>
+      <!-- Setlist Textarea -->
+      <div class="form-group full-width">
+        <label for="setlist">Setlist (Comma-separated songs)</label>
+        <textarea id="setlist" name="SETLIST" rows="4" oninput="updateSongCount()"></textarea>
       </div>
 
-      <div class="action-bar">
-        <button type="button" class="btn-submit" onclick="downloadUpdatedCSV()">💾 Download Updated CSV</button>
-        <button type="button" class="btn-github" onclick="commitToGitHub()">🚀 Save Directly to GitHub</button>
+      <!-- Song Count -->
+      <div class="form-group">
+        <label for="pocet_skladeb">Number of Songs</label>
+        <input type="text" id="pocet_skladeb" name="POCET_SKLADEB" readonly style="opacity: 0.7;">
       </div>
 
-      <div id="statusMessage"></div>
+      <!-- Scan File Name -->
+      <div class="form-group">
+        <label for="soubor_sken">Scan File Name(s)</label>
+        <input type="text" id="soubor_sken" name="SOUBOR_SKEN" placeholder="TICKET_0126.jpg">
+      </div>
+
+      <!-- YouTube URL -->
+      <div class="form-group full-width">
+        <label for="youtube_url">YouTube Live Recording URL</label>
+        <input type="text" id="youtube_url" name="YOUTUBE_URL" placeholder="https://www.youtube.com/watch?v=...">
+      </div>
+
+      <!-- Contributor -->
+      <div class="form-group full-width">
+        <label for="contributor">Contributor / Source Credit</label>
+        <input type="text" id="contributor" name="CONTRIBUTOR" placeholder="e.g. Collection of John Doe">
+      </div>
+
+      <div class="form-group full-width">
+        <button type="submit" class="btn-save">💾 Save Changes to GitHub</button>
+      </div>
+
     </form>
 
+    <div id="statusMsg" class="status-msg"></div>
   </div>
 
   <script>
-    const CSV_FILENAME = 'joe_jackson_tickets_cleaned.csv';
-    const WORKER_PROXY_URL = 'https://jj-setlist-proxy.marek-kraus.workers.dev';
+    const REPO_OWNER = '19forever';
+    const REPO_NAME = 'joe-jackson-tickets';
+    const CSV_PATH = 'joe_jackson_tickets_cleaned.csv';
+    const WORKER_PROXY_URL = 'https://jj-setlist-proxy.19forever.workers.dev'; // Váš Cloudflare Worker Proxy
 
     let fullCsvData = [];
-    let currentRecordIndex = -1;
-    let viewerInstance = null;
-    let selectedImageFile = null;
-    let lastDeletedId = null;
-
-    const fields = [
-      'ID_MEMORABILIA', 'SHOW_ID', 'DATUM', 'MESTO', 'STAT', 'VENUE',
-      'KATEGORIE', 'SOUBOR_SKEN', 'CONTRIBUTOR', 'LINEUP',
-      'SETLIST', 'POCET_SKLADEB', 'SETLIST_URL', 'YOUTUBE_URL', 'REVIEW_URL'
-    ];
-
-    function normalizeRecord(raw) {
-      const clean = {};
-      clean.ID_MEMORABILIA = raw.ID_MEMORABILIA || raw.ID_LISTKU || '';
-      clean.SHOW_ID = raw.SHOW_ID || '';
-      clean.DATUM = raw.DATUM || '';
-      clean.MESTO = raw.MESTO || '';
-      clean.STAT = raw.STAT || '';
-      clean.VENUE = raw.VENUE || '';
-      clean.KATEGORIE = raw.KATEGORIE || 'tickets';
-      clean.SOUBOR_SKEN = raw.SOUBOR_SKEN || raw.SOUBOR || raw.SKEN || '';
-      clean.CONTRIBUTOR = raw.CONTRIBUTOR || raw.CONTRIBUTOR_TEXT || raw.ZDROJ_POSKYTNUL || '';
-      clean.LINEUP = raw.LINEUP || '';
-      clean.SETLIST = raw.SETLIST || '';
-      clean.POCET_SKLADEB = raw.POCET_SKLADEB || '0';
-      clean.SETLIST_URL = raw.SETLIST_URL || '';
-      clean.YOUTUBE_URL = raw.YOUTUBE_URL || '';
-      clean.REVIEW_URL = raw.REVIEW_URL || '';
-      return clean;
-    }
+    let currentSha = '';
+    let recordIdToEdit = null;
 
     window.addEventListener('DOMContentLoaded', () => {
+      // Načtení uloženého GitHub tokenu
+      const savedToken = localStorage.getItem('jj_gh_token');
+      if (savedToken) document.getElementById('ghToken').value = savedToken;
+
+      // Získání ID záznamu z URL parametrů (?id=TICKET_0126)
       const urlParams = new URLSearchParams(window.location.search);
-      const targetId = urlParams.get('id');
+      recordIdToEdit = urlParams.get('id');
 
-      Papa.parse(CSV_FILENAME, {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results) {
-          fullCsvData = results.data.map(normalizeRecord);
-          
-          populateDropdowns();
-
-          if (targetId) {
-            currentRecordIndex = fullCsvData.findIndex(r => r.ID_MEMORABILIA === targetId);
-          }
-
-          if (currentRecordIndex === -1) {
-            currentRecordIndex = 0;
-          }
-
-          loadRecord(currentRecordIndex);
-        },
-        error: function(err) {
-          showStatus('Failed to load master CSV file.', 'red');
-        }
-      });
+      fetchMasterCsvFromGitHub();
     });
 
-    window.addEventListener('keydown', (e) => {
-      const activeTag = document.activeElement.tagName.toLowerCase();
-      if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
-        return;
-      }
-
-      if (e.key === 'ArrowLeft') {
-        navigateRecord(-1);
-      } else if (e.key === 'ArrowRight') {
-        navigateRecord(1);
-      }
-    });
-
-    function isValid(val) {
-      if (!val) return false;
-      const clean = String(val).trim().toLowerCase();
-      return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'null';
+    function saveTokenLocally() {
+      const token = document.getElementById('ghToken').value.trim();
+      localStorage.setItem('jj_gh_token', token);
     }
 
-    function autoGenerateShowId() {
-      const datum = document.getElementById('DATUM').value;
-      const mesto = document.getElementById('MESTO').value.trim();
-      const showIdInput = document.getElementById('SHOW_ID');
-
-      if (datum && mesto && !showIdInput.dataset.manualOverride) {
-        const cleanCity = mesto.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-        showIdInput.value = `SHOW_${datum}_${cleanCity}`;
-      }
+    function showStatus(msg, type = 'success') {
+      const el = document.getElementById('statusMsg');
+      el.textContent = msg;
+      el.className = `status-msg ${type}`;
+      el.style.display = 'block';
     }
 
-    function generateNextId() {
-      let maxNum = 0;
-      fullCsvData.forEach(r => {
-        const idStr = r.ID_MEMORABILIA;
-        if (idStr) {
-          const match = idStr.match(/\d+/);
-          if (match) {
-            const num = parseInt(match[0], 10);
-            if (num > maxNum) maxNum = num;
-          }
-        }
-      });
-      const nextNum = maxNum + 1;
-      return `TICKET_${String(nextNum).padStart(4, '0')}`;
-    }
+    // Načtení master CSV přímo z GitHub API (včetně SHA kódu souboru)
+    async function fetchMasterCsvFromGitHub() {
+      try {
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${CSV_PATH}`);
+        if (!res.ok) throw new Error("Could not fetch CSV file from GitHub repository.");
 
-    function addNewRecord() {
-      saveCurrentChangesToMemory();
+        const json = await res.json();
+        currentSha = json.sha;
 
-      const newId = generateNextId();
-      const newRecord = {
-        ID_MEMORABILIA: newId,
-        SHOW_ID: '',
-        DATUM: '',
-        MESTO: '',
-        STAT: '',
-        VENUE: '',
-        KATEGORIE: 'tickets',
-        SOUBOR_SKEN: '',
-        CONTRIBUTOR: '',
-        LINEUP: '',
-        SETLIST: '',
-        POCET_SKLADEB: '0',
-        SETLIST_URL: '',
-        YOUTUBE_URL: '',
-        REVIEW_URL: ''
-      };
-
-      fullCsvData.push(newRecord);
-      currentRecordIndex = fullCsvData.length - 1;
-      loadRecord(currentRecordIndex);
-      showStatus(`Created new record with ID: ${newId}. Fill details and click Save to GitHub.`, 'blue');
-    }
-
-    function duplicateCurrentRecord() {
-      if (currentRecordIndex < 0 || currentRecordIndex >= fullCsvData.length) return;
-
-      saveCurrentChangesToMemory();
-
-      const currentRecord = fullCsvData[currentRecordIndex];
-      const newId = generateNextId();
-
-      const duplicatedRecord = normalizeRecord(currentRecord);
-      duplicatedRecord.ID_MEMORABILIA = newId;
-      duplicatedRecord.SOUBOR_SKEN = '';
-      duplicatedRecord.DATUM = '';
-      duplicatedRecord.SHOW_ID = '';
-
-      fullCsvData.push(duplicatedRecord);
-      currentRecordIndex = fullCsvData.length - 1;
-      loadRecord(currentRecordIndex);
-      showStatus(`📋 Duplicated record to new ID: ${newId}.`, 'blue');
-    }
-
-    function deleteCurrentRecord() {
-      if (currentRecordIndex < 0 || currentRecordIndex >= fullCsvData.length) return;
-
-      const currentId = fullCsvData[currentRecordIndex].ID_MEMORABILIA || 'current record';
-
-      if (!confirm(`Are you sure you want to delete record ${currentId}?`)) {
-        return;
-      }
-
-      lastDeletedId = currentId;
-      fullCsvData.splice(currentRecordIndex, 1);
-
-      if (fullCsvData.length === 0) {
-        addNewRecord();
-        showStatus(`🗑️ Deleted record ${currentId}. Database is empty - created blank record.`, 'blue');
-        return;
-      }
-
-      if (currentRecordIndex >= fullCsvData.length) {
-        currentRecordIndex = fullCsvData.length - 1;
-      }
-
-      loadRecord(currentRecordIndex);
-      const nextId = fullCsvData[currentRecordIndex].ID_MEMORABILIA;
-      showStatus(`🗑️ Record ${currentId} deleted locally. Now displaying ${nextId}. Click '🚀 Save Directly to GitHub' to commit deletion!`, 'blue');
-    }
-
-    function checkDataQuality() {
-      const currentId = document.getElementById('ID_MEMORABILIA').value;
-      const dateVal = document.getElementById('DATUM').value.trim().toLowerCase();
-      const cityVal = document.getElementById('MESTO').value.trim().toLowerCase();
-      const catVal = document.getElementById('KATEGORIE').value.trim().toLowerCase();
-      const warningEl = document.getElementById('duplicateWarning');
-
-      if (!dateVal || !cityVal || !catVal) {
-        warningEl.textContent = '';
-        return;
-      }
-
-      const duplicate = fullCsvData.find(r => {
-        const rId = r.ID_MEMORABILIA;
-        if (rId === currentId) return false;
+        // Dekódování UTF-8 obsahu z base64
+        const csvContent = decodeURIComponent(escape(atob(json.content)));
         
-        const rDate = (r.DATUM || '').trim().toLowerCase();
-        const rCity = (r.MESTO || '').trim().toLowerCase();
-        const rCat = (r.KATEGORIE || '').trim().toLowerCase();
-
-        return rDate === dateVal && rCity === cityVal && rCat === catVal && rDate !== '';
-      });
-
-      if (duplicate) {
-        warningEl.textContent = `⚠️ Possible Duplicate: Same category (${catVal.toUpperCase()}), concert date & city already exists in record ${duplicate.ID_MEMORABILIA}!`;
-      } else {
-        warningEl.textContent = '';
+        Papa.parse(csvContent, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            fullCsvData = results.data;
+            populateForm();
+          }
+        });
+      } catch (err) {
+        showStatus("Error loading repository data: " + err.message, 'error');
       }
     }
 
-    async function checkScanFileExistence() {
-      const hintEl = document.getElementById('fileValidationHint');
-      const skenStr = document.getElementById('SOUBOR_SKEN').value.trim();
+    function populateForm() {
+      if (recordIdToEdit) {
+        document.getElementById('editorTitle').textContent = `Edit Record: ${recordIdToEdit}`;
+        const record = fullCsvData.find(r => r.ID_MEMORABILIA === recordIdToEdit);
+        if (record) {
+          Object.keys(record).forEach(key => {
+            const input = document.getElementById(key.toLowerCase());
+            if (input) input.value = record[key] || '';
+          });
+        }
+      } else {
+        document.getElementById('editorTitle').textContent = "Create New Memorabilia Record";
+        const newId = `TICKET_${String(fullCsvData.length + 1).padStart(4, '0')}`;
+        document.getElementById('id_memorabilia').value = newId;
+      }
+      updateSongCount();
+    }
 
-      if (!skenStr) {
-        hintEl.textContent = '';
+    function updateSongCount() {
+      const setlistText = document.getElementById('setlist').value;
+      if (!setlistText.trim()) {
+        document.getElementById('pocet_skladeb').value = 0;
+        return;
+      }
+      const songs = setlistText.split(',').map(s => s.trim()).filter(Boolean);
+      // Nepočítáme hlavičky přídavků [Encore X] jako samostatné písničky
+      const actualSongs = songs.filter(s => !s.startsWith('[Encore'));
+      document.getElementById('pocet_skladeb').value = actualSongs.length;
+    }
+
+    // NAČÍTÁNÍ SETLISTU SE ZAPOČÍTÁNÍM ENCORE, INFO A COVER POZNÁMEK
+    async function importSetlistFm() {
+      const urlInput = document.getElementById('setlistFmUrl').value.trim();
+      if (!urlInput) {
+        alert("Please paste a valid Setlist.fm URL first!");
         return;
       }
 
-      const firstFile = skenStr.split(',')[0].trim();
-      const imgUrl = `./scans/${firstFile}`;
+      // Extrakce ID setlistu z URL adresy (např. ...-3bd61890.html -> 3bd61890)
+      const match = urlInput.match(/-([a-z0-9]+)\.html$/i);
+      if (!match) {
+        alert("Invalid Setlist.fm URL format.");
+        return;
+      }
+
+      const setlistId = match[1];
+      showStatus("Fetching setlist details from Setlist.fm...", 'success');
 
       try {
-        const res = await fetch(imgUrl, { method: 'HEAD' });
-        if (res.ok) {
-          hintEl.className = 'validation-hint success';
-          hintEl.textContent = `✅ Image file '${firstFile}' verified in /scans/`;
-        } else {
-          hintEl.className = 'validation-hint error';
-          hintEl.textContent = `❌ Warning: File '${firstFile}' not found in /scans/ folder!`;
-        }
-      } catch (e) {
-        hintEl.className = 'validation-hint warning';
-        hintEl.textContent = `ℹ️ Checking file '${firstFile}'...`;
-      }
-    }
+        const response = await fetch(`${WORKER_PROXY_URL}?setlistId=${setlistId}`);
+        if (!response.ok) throw new Error("Failed to fetch setlist data via Proxy.");
 
-    function populateDropdowns() {
-      const contributorSelect = document.getElementById('CONTRIBUTOR');
-      const uniqueContributors = [...new Set(fullCsvData.map(r => r.CONTRIBUTOR).filter(isValid))].sort();
+        const data = await response.json();
+        let formattedSongs = [];
 
-      contributorSelect.innerHTML = '<option value="">-- Select Contributor --</option>';
-      uniqueContributors.forEach(item => {
-        contributorSelect.innerHTML += `<option value="${item}">${item}</option>`;
-      });
-      contributorSelect.innerHTML += '<option value="__ADD_NEW__">➕ Add new Contributor...</option>';
-    }
+        if (data.sets && data.sets.set) {
+          data.sets.set.forEach((setItem, index) => {
+            // 1. Zpracování přídavků (Encore)
+            if (setItem.encore) {
+              formattedSongs.push(`[Encore ${setItem.encore}]`);
+            } else if (index > 0 && data.sets.set.length > 1) {
+              formattedSongs.push(`[Set ${index + 1}]`);
+            }
 
-    function handleDropdownCustom(fieldId) {
-      const selectEl = document.getElementById(fieldId);
-      if (selectEl.value === '__ADD_NEW__') {
-        const newValue = prompt(`Enter name for new ${fieldId}:`);
-        if (newValue && newValue.trim()) {
-          const cleanVal = newValue.trim();
-          const newOpt = document.createElement('option');
-          newOpt.value = cleanVal;
-          newOpt.textContent = cleanVal;
-          selectEl.insertBefore(newOpt, selectEl.lastElementChild);
-          selectEl.value = cleanVal;
-        } else {
-          selectEl.value = '';
-        }
-      }
-    }
+            // 2. Zpracování jednotlivých písní
+            if (setItem.song) {
+              setItem.song.forEach(song => {
+                let songTitle = song.name;
+                let extraNotes = [];
 
-    function saveCurrentChangesToMemory() {
-      if (currentRecordIndex >= 0 && currentRecordIndex < fullCsvData.length) {
-        fullCsvData[currentRecordIndex] = getFormData();
-      }
-    }
+                // Dodatečné info (např. á cappella, acoustic, solo piano)
+                if (song.info) {
+                  extraNotes.push(song.info);
+                }
 
-    function loadRecord(index) {
-      if (index < 0 || index >= fullCsvData.length) return;
-      
-      currentRecordIndex = index;
-      const data = fullCsvData[currentRecordIndex];
+                // Převzaté skladby (Cover versions)
+                if (song.cover && song.cover.name) {
+                  extraNotes.push(`cover of ${song.cover.name}`);
+                }
 
-      const recordIdVal = data.ID_MEMORABILIA || 'N/A';
-      document.getElementById('recordIdTitle').textContent = recordIdVal;
+                if (extraNotes.length > 0) {
+                  songTitle += ` (${extraNotes.join(', ')})`;
+                }
 
-      fields.forEach(field => {
-        const el = document.getElementById(field);
-        if (el) {
-          if (field === 'CONTRIBUTOR') {
-            setDropdownValue(el, data.CONTRIBUTOR || '');
-          } else {
-            el.value = data[field] || '';
-          }
-        }
-      });
-
-      renderImagePreview(data.SOUBOR_SKEN);
-      updateYtPreview();
-      recalculateSongCount();
-      updateNavUI();
-      checkDataQuality();
-      checkScanFileExistence();
-
-      const newUrl = `${window.location.pathname}?id=${encodeURIComponent(recordIdVal)}`;
-      window.history.replaceState({ path: newUrl }, '', newUrl);
-    }
-
-    function setDropdownValue(selectEl, value) {
-      if (!value) {
-        selectEl.value = '';
-        return;
-      }
-      let exists = Array.from(selectEl.options).some(opt => opt.value === value);
-      if (!exists) {
-        const newOpt = document.createElement('option');
-        newOpt.value = value;
-        newOpt.textContent = value;
-        selectEl.insertBefore(newOpt, selectEl.lastElementChild);
-      }
-      selectEl.value = value;
-    }
-
-    function renderImagePreview(skenStr) {
-      if (viewerInstance) {
-        viewerInstance.destroy();
-        viewerInstance = null;
-      }
-
-      const imgEl = document.getElementById('previewImg');
-      const thumbListEl = document.getElementById('thumbList');
-      thumbListEl.innerHTML = '';
-
-      const files = (skenStr || '').split(',').map(s => s.trim()).filter(Boolean);
-
-      if (files.length > 0) {
-        imgEl.src = `./scans/${files[0]}`;
-        imgEl.onerror = () => {
-          imgEl.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IxMDAlIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMzMzMiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+';
-        };
-
-        if (files.length > 1) {
-          files.forEach((f, idx) => {
-            const thumb = document.createElement('img');
-            thumb.className = `thumb-item ${idx === 0 ? 'active' : ''}`;
-            thumb.src = `./scans/${f}`;
-            thumb.onclick = () => {
-              imgEl.src = `./scans/${f}`;
-              document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
-              thumb.classList.add('active');
-
-              if (viewerInstance) {
-                viewerInstance.destroy();
-                viewerInstance = new Viewer(imgEl, { toolbar: true, navbar: false, title: false });
-              }
-            };
-            thumbListEl.appendChild(thumb);
+                formattedSongs.push(songTitle);
+              });
+            }
           });
         }
 
-        setTimeout(() => {
-          viewerInstance = new Viewer(imgEl, { toolbar: true, navbar: false, title: false });
-        }, 100);
-
-      } else {
-        imgEl.src = '';
-      }
-    }
-
-    function updateImageFromInput() {
-      const val = document.getElementById('SOUBOR_SKEN').value;
-      renderImagePreview(val);
-    }
-
-    function handleImageSelected(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      selectedImageFile = file;
-      document.getElementById('imageUploadName').textContent = `Selected: ${file.name} (${Math.round(file.size / 1024)} KB)`;
-      
-      const currentSkens = document.getElementById('SOUBOR_SKEN').value.trim();
-      if (!currentSkens.includes(file.name)) {
-        document.getElementById('SOUBOR_SKEN').value = currentSkens ? `${currentSkens}, ${file.name}` : file.name;
-        renderImagePreview(document.getElementById('SOUBOR_SKEN').value);
-      }
-    }
-
-    function recalculateSongCount() {
-      const text = document.getElementById('SETLIST').value;
-      const countEl = document.getElementById('POCET_SKLADEB');
-      if (text) {
-        const songs = text.split(',').map(s => s.trim()).filter(Boolean);
-        countEl.value = songs.length;
-      } else {
-        countEl.value = 0;
-      }
-    }
-
-    function extractSetlistId(input) {
-      if (!input) return null;
-      const clean = input.trim();
-      if (/^[a-f0-9]{7,8}$/i.test(clean)) {
-        return clean;
-      }
-      const match = clean.match(/-([a-f0-9]{7,8})\.html/i) || clean.match(/\/([a-f0-9]{7,8})$/i);
-      return match ? match[1] : null;
-    }
-
-    function openSetlistUrl() {
-      const url = document.getElementById('SETLIST_URL').value.trim();
-      if (url && url.startsWith('http')) {
-        window.open(url, '_blank');
-      } else {
-        showStatus('Please enter a valid Setlist.fm URL first.', 'red');
-      }
-    }
-
-    async function fetchSetlistApiSecure(targetApiUrl) {
-      const proxyUrl = `${WORKER_PROXY_URL}?url=${encodeURIComponent(targetApiUrl)}`;
-
-      try {
-        const res = await fetch(proxyUrl);
-        if (!res.ok) {
-          if (res.status === 404) throw new Error('NOT_FOUND');
-          throw new Error(`HTTP Error ${res.status}`);
-        }
-        return await res.json();
-      } catch (err) {
-        throw err;
-      }
-    }
-
-    function parseSongsFromShow(foundShow) {
-      let songNames = [];
-      if (foundShow && foundShow.sets && foundShow.sets.set) {
-        let setListArray = Array.isArray(foundShow.sets.set) ? foundShow.sets.set : [foundShow.sets.set];
-        setListArray.forEach(setObj => {
-          if (setObj.song) {
-            let songArray = Array.isArray(setObj.song) ? setObj.song : [setObj.song];
-            songArray.forEach(song => {
-              if (song.name) songNames.push(song.name.trim());
-            });
-          }
-        });
-      }
-      return songNames;
-    }
-
-    async function fetchSetlistFromApi() {
-      const urlInput = document.getElementById('SETLIST_URL').value.trim();
-      if (!urlInput) {
-        showStatus('Please enter a valid Setlist.fm URL first.', 'red');
-        return;
-      }
-
-      const setlistId = extractSetlistId(urlInput);
-      if (!setlistId) {
-        showStatus('Could not extract Setlist ID from URL. Example format: ...-5bb283e4.html', 'red');
-        return;
-      }
-
-      showStatus(`Fetching setlist ID '${setlistId}' from Setlist.fm...`, 'blue');
-
-      const targetApiUrl = `https://api.setlist.fm/rest/1.0/setlist/${setlistId}`;
-
-      try {
-        const data = await fetchSetlistApiSecure(targetApiUrl);
-        const songNames = parseSongsFromShow(data);
-
-        if (songNames.length === 0) {
-          showStatus('Setlist record found on Setlist.fm, but no songs are listed for this show.', 'red');
-          return;
+        if (formattedSongs.length > 0) {
+          document.getElementById('setlist').value = formattedSongs.join(', ');
+          updateSongCount();
+          showStatus("Setlist imported successfully including Encore & Notes!", 'success');
+        } else {
+          showStatus("Setlist on Setlist.fm is empty.", 'error');
         }
 
-        document.getElementById('SETLIST').value = songNames.join(', ');
-        recalculateSongCount();
-
-        showStatus(`✅ Successfully retrieved ${songNames.length} songs from Setlist.fm!`, 'green');
       } catch (err) {
-        showStatus(`❌ Setlist.fm fetch error: ${err.message}`, 'red');
+        showStatus("Error importing setlist: " + err.message, 'error');
       }
     }
 
-    function navigateRecord(direction) {
-      saveCurrentChangesToMemory();
-      const newIndex = currentRecordIndex + direction;
-      if (newIndex >= 0 && newIndex < fullCsvData.length) {
-        loadRecord(newIndex);
-      }
-    }
+    // Uložení zpět do GitHub Master CSV přes GitHub REST API
+    async function handleFormSubmit(e) {
+      e.preventDefault();
 
-    function updateNavUI() {
-      const prevBtn = document.getElementById('prevBtn');
-      const nextBtn = document.getElementById('nextBtn');
-      const counter = document.getElementById('recordCounter');
-
-      prevBtn.disabled = currentRecordIndex === 0;
-      nextBtn.disabled = currentRecordIndex === fullCsvData.length - 1;
-      counter.textContent = `Record ${currentRecordIndex + 1} of ${fullCsvData.length}`;
-    }
-
-    function updateYtPreview() {
-      const val = document.getElementById('YOUTUBE_URL').value.trim();
-      const prevEl = document.getElementById('ytPreview');
-      if (val && val.startsWith('http')) {
-        prevEl.innerHTML = `🔗 Test Link: <a href="${val}" target="_blank">${val} ↗</a>`;
-      } else {
-        prevEl.innerHTML = '';
-      }
-    }
-
-    function getFormData() {
-      const updated = {};
-      fields.forEach(field => {
-        const el = document.getElementById(field);
-        updated[field] = el ? el.value.trim() : '';
-      });
-      return updated;
-    }
-
-    function downloadUpdatedCSV() {
-      if (currentRecordIndex === -1) return;
-
-      saveCurrentChangesToMemory();
-      const csvString = Papa.unparse(fullCsvData);
-
-      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = CSV_FILENAME;
-      link.click();
-
-      showStatus('Updated CSV file downloaded! Replace it in your repository.', 'green');
-    }
-
-    function getStoredToken() {
-      return localStorage.getItem('jj_github_pat') || '';
-    }
-
-    function manageToken() {
-      const currentToken = getStoredToken();
-      let msg = currentToken 
-        ? 'A GitHub PAT is currently saved in your browser.\n\nEnter new token to replace it, or leave empty to clear it:'
-        : 'Enter your GitHub Personal Access Token (PAT):';
-
-      const newToken = prompt(msg, currentToken);
-      if (newToken === null) return;
-
-      if (newToken.trim() === '') {
-        localStorage.removeItem('jj_github_pat');
-        alert('Token removed from browser storage.');
-      } else {
-        localStorage.setItem('jj_github_pat', newToken.trim());
-        alert('Token saved successfully in browser!');
-      }
-    }
-
-    async function commitToGitHub() {
-      let token = getStoredToken();
-
+      const token = document.getElementById('ghToken').value.trim();
       if (!token) {
-        token = prompt('Enter your GitHub Personal Access Token (PAT with repo scope):');
-        if (!token) return;
-        token = token.trim();
-
-        if (confirm('Do you want to save this PAT in your browser for future edits?')) {
-          localStorage.setItem('jj_github_pat', token);
-        }
+        alert("Please provide a GitHub Personal Access Token to commit changes!");
+        return;
       }
 
-      if (currentRecordIndex === -1) return;
+      const formData = new FormData(e.target);
+      const updatedRecord = {};
+      formData.forEach((val, key) => {
+        updatedRecord[key.toUpperCase()] = val;
+      });
 
-      saveCurrentChangesToMemory();
+      // Aktualizujeme nebo přidáme záznam do paměťového pole
+      const existingIdx = fullCsvData.findIndex(r => r.ID_MEMORABILIA === updatedRecord.ID_MEMORABILIA);
+      if (existingIdx !== -1) {
+        fullCsvData[existingIdx] = updatedRecord;
+      } else {
+        fullCsvData.push(updatedRecord);
+      }
 
-      const repoOwner = '19forever';
-      const repoName = 'joe-jackson-tickets';
-      const filePath = CSV_FILENAME;
+      // Převedeme data zpět do tvaru CSV
+      const newCsvString = Papa.unparse(fullCsvData);
+      
+      // Kódování do Base64 (s ošetřením UTF-8 znaků)
+      const encodedContent = btoa(unescape(encodeURIComponent(newCsvString)));
 
-      showStatus('Connecting to GitHub API...', 'blue');
+      showStatus("Saving changes directly to GitHub repository...", 'success');
 
       try {
-        if (selectedImageFile) {
-          showStatus(`Uploading image ${selectedImageFile.name} to scans/ folder on GitHub...`, 'blue');
-          await uploadImageToGitHub(token, repoOwner, repoName, selectedImageFile);
-        }
-
-        const getFileRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}?t=${Date.now()}`, {
-          headers: { 
-            'Authorization': `token ${token}`,
-            'Accept': 'application/vnd.github.v3+json'
-          }
-        });
-
-        if (!getFileRes.ok) {
-          throw new Error(`GitHub API error: ${getFileRes.status}`);
-        }
-
-        const fileData = await getFileRes.json();
-        const latestSha = fileData.sha;
-
-        const csvString = Papa.unparse(fullCsvData);
-        const contentEncoded = btoa(unescape(encodeURIComponent(csvString)));
-
-        const commitMessage = lastDeletedId 
-          ? `Delete record ${lastDeletedId} via Web Editor`
-          : `Update record ${fullCsvData[currentRecordIndex].ID_MEMORABILIA} via Web Editor`;
-
-        const updateRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+        const commitRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${CSV_PATH}`, {
           method: 'PUT',
           headers: {
             'Authorization': `token ${token}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/vnd.github.v3+json'
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            message: commitMessage,
-            content: contentEncoded,
-            sha: latestSha
+            message: `Update record ${updatedRecord.ID_MEMORABILIA} via Web Editor`,
+            content: encodedContent,
+            sha: currentSha
           })
         });
 
-        if (updateRes.ok) {
-          showStatus(`✅ Successfully saved directly to GitHub! (${commitMessage})`, 'green');
-          lastDeletedId = null;
-          selectedImageFile = null;
-          document.getElementById('imageUploadName').textContent = '';
-        } else {
-          const errJson = await updateRes.json().catch(() => ({}));
-          throw new Error(`GitHub Save Failed (${updateRes.status}): ${errJson.message || 'Check PAT scope permissions'}`);
+        if (!commitRes.ok) {
+          const errData = await commitRes.json();
+          throw new Error(errData.message || "Commit failed.");
         }
+
+        const commitJson = await commitRes.json();
+        currentSha = commitJson.content.sha;
+
+        showStatus(`🎉 Record ${updatedRecord.ID_MEMORABILIA} successfully saved to GitHub! Redirecting...`, 'success');
+        setTimeout(() => {
+          window.location.href = 'index_short.html';
+        }, 1500);
+
       } catch (err) {
-        showStatus(`❌ ${err.message}`, 'red');
-      }
-    }
-
-    async function uploadImageToGitHub(token, repoOwner, repoName, file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-          try {
-            const base64Content = e.target.result.split(',')[1];
-            const imagePath = `scans/${file.name}`;
-
-            let existingSha = null;
-            const checkResp = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${imagePath}`, {
-              headers: { 'Authorization': `token ${token}` }
-            });
-            if (checkResp.ok) {
-              const checkData = await checkResp.json();
-              existingSha = checkData.sha;
-            }
-
-            const putBody = {
-              message: `upload scan ${file.name}`,
-              content: base64Content
-            };
-            if (existingSha) putBody.sha = existingSha;
-
-            const uploadResp = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${imagePath}`, {
-              method: 'PUT',
-              headers: {
-                'Authorization': `token ${token}`,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(putBody)
-            });
-
-            if (!uploadResp.ok) throw new Error(`Image upload failed: ${file.name}`);
-            resolve(true);
-          } catch (err) {
-            reject(err);
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function showStatus(msg, color) {
-      const el = document.getElementById('statusMessage');
-      el.style.display = 'block';
-      el.textContent = msg;
-
-      if (color === 'green') {
-        el.style.background = 'rgba(34, 197, 94, 0.15)';
-        el.style.border = '1px solid #22c55e';
-        el.style.color = '#4ade80';
-      } else if (color === 'red') {
-        el.style.background = 'rgba(239, 68, 68, 0.15)';
-        el.style.border = '1px solid #ef4444';
-        el.style.color = '#f87171';
-      } else {
-        el.style.background = 'rgba(56, 189, 248, 0.15)';
-        el.style.border = '1px solid #38bdf8';
-        el.style.color = '#38bdf8';
+        showStatus("GitHub Commit Error: " + err.message, 'error');
       }
     }
   </script>
