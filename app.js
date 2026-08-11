@@ -207,15 +207,34 @@ function openVideoModal(ticketIndex) {
     lineupHTML += `<p style="color: #9ca3af; font-size: 0.85rem;">No line-up details available for this show.</p>`;
   }
 
-  // 2. Příprava obsahu pro Setlist (vpravo)
+// 2. Příprava obsahu pro Setlist (vpravo)
   let setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist</h4>`;
   if (t && isValidValue(t.SETLIST)) {
-    const songs = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
-    setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist (${songs.length} songs)</h4><ol style="padding-left: 20px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">${songs.map(s => `<li>${s}</li>`).join('')}</ol>`;
+    const rawItems = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
+    
+    let songCount = 0;
+    let listItemsHTML = '';
+    
+    rawItems.forEach(item => {
+      if (item.startsWith('[Encore') || item.startsWith('[Set')) {
+        // Hlavička sekce / přídavku (nečíslovaná)
+        const title = item.replace(/^\[|\]$/g, ''); // Odstraní hranaté závorky
+        listItemsHTML += `<li style="list-style-type: none; font-weight: 700; color: #38bdf8; margin-top: 10px; margin-left: -18px;">${title}</li>`;
+      } else {
+        // Běžná skladba (s číslem)
+        songCount++;
+        listItemsHTML += `<li value="${songCount}">${item}</li>`;
+      }
+    });
+
+    setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist (${songCount} songs)</h4>
+                   <ol style="padding-left: 20px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">
+                     ${listItemsHTML}
+                   </ol>`;
   } else {
     setlistHTML += `<p style="color: #9ca3af; font-size: 0.85rem;">No setlist details available for this show.</p>`;
   }
-
+  
   // 3. Vytvoření kompletního 3-sloupcového modalu v DOMu
   modal = document.createElement('div');
   modal.id = 'jjDynamicVideoModal';
