@@ -227,7 +227,7 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
       }
       
-      // 🎲 ZAMÍCHÁNÍ DATABÁZE HNED PŘI NAČTENÍ STRÁNKY
+      // Zamíchání databáze při prvním načtení
       allTickets = shuffleArray(results.data);
 
       updateYearBadge();
@@ -501,7 +501,8 @@ function renderTickets(tickets) {
       collapsibleHTML += `<div class="collapsible-content" id="setlist-${globalIndex}"><ol>${songs.map(s => `<li>${s}</li>`).join('')}</ol></div>`;
     }
     if (hasLineup) {
-      const members = t.LINEUP.split(';').map(m => m.trim());
+      // PODPORA STŘEDNÍKU AJ LOMÍTKA /
+      const members = t.LINEUP.split(/[;/]/).map(m => m.trim()).filter(Boolean);
       collapsibleHTML += `<div class="collapsible-content" id="lineup-${globalIndex}"><ul>${members.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
     }
 
@@ -632,7 +633,8 @@ function openModal(index) {
   const hasSetlist = setlistStr && isValidValue(setlistStr) && songCount > 0;
 
   if (hasLineup) {
-    const members = lineupStr.split(';').map(m => m.trim());
+    // PODPORA STŘEDNÍKU AJ LOMÍTKA /
+    const members = lineupStr.split(/[;/]/).map(m => m.trim()).filter(Boolean);
     const memberItems = members.map(m => `<li>${m}</li>`).join('');
     colsHTML += `
       <div class="flashcard-col-box">
