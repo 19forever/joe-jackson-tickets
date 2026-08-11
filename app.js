@@ -8,7 +8,7 @@ let currentCategory = 'Tickets';
 let activeViewerInstance = null;
 let quickViewerInstance = null;
 
-// Dynamické přimíchání CSS pro efektní rozostření pozadí a dvousloupcový video modal
+// Dynamické přimíchání CSS pro moderní 3-sloupcový layout videa
 (function injectViewerCustomStyles() {
   const style = document.createElement('style');
   style.textContent = `
@@ -26,77 +26,91 @@ let quickViewerInstance = null;
       text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
     }
 
-    /* Styly pro video modal */
-    #videoModal {
+    /* Třísloupcový video player modal */
+    #jjDynamicVideoModal {
       display: none;
       position: fixed;
       inset: 0;
-      z-index: 9999;
-      background: rgba(5, 8, 16, 0.85);
-      backdrop-filter: blur(8px);
+      z-index: 99999;
+      background: rgba(5, 8, 16, 0.9);
+      backdrop-filter: blur(10px);
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
-    #videoModal.active {
+    #jjDynamicVideoModal.active {
       display: flex;
     }
-    #videoModal .video-modal-content {
+    #jjDynamicVideoModal .video-modal-container {
       position: relative;
       display: flex;
       flex-direction: row;
       gap: 20px;
-      max-width: 960px;
-      width: 100%;
+      max-width: 1280px;
+      width: 98%;
       background-color: #111827;
       border: 1px solid #1f2937;
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      align-items: stretch;
     }
-    .modal-close-btn {
+    .jj-close-btn {
       position: absolute;
       top: 10px;
-      right: 12px;
+      right: 14px;
       background: none;
       border: none;
       color: #9ca3af;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       cursor: pointer;
       z-index: 10;
+      line-height: 1;
     }
-    .modal-close-btn:hover { color: #facc15; }
+    .jj-close-btn:hover { color: #facc15; }
     
-    .video-frame-container {
-      flex: 1 1 60%;
+    .jj-video-center {
+      flex: 1 1 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .jj-video-frame-wrapper {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
+      border: 1px solid #1f2937;
     }
-    .video-frame-container iframe {
+    .jj-video-frame-wrapper iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
-    .video-setlist-box {
-      flex: 1 1 40%;
+    .jj-video-side-col {
+      flex: 1 1 25%;
       background: #151c2b;
       border: 1px solid #1f2937;
       border-radius: 8px;
-      padding: 16px;
-      max-height: 380px;
+      padding: 18px;
+      max-height: 440px;
       overflow-y: auto;
     }
+    .jj-video-side-col h4 {
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
 
-    @media (max-width: 768px) {
-      #videoModal .video-modal-content {
+    @media (max-width: 992px) {
+      #jjDynamicVideoModal .video-modal-container {
         flex-direction: column;
-        padding: 16px;
+        max-height: 90vh;
+        overflow-y: auto;
       }
-      .video-setlist-box {
+      .jj-video-side-col {
         width: 100%;
         max-height: 200px;
       }
@@ -157,7 +171,19 @@ function getYouTubeEmbedUrl(url) {
   return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}?autoplay=1` : null;
 }
 
-// OTEVŘENÍ VIDEO MODALU SE SETLISTEM
+function formatLocationText(t) {
+  let locationParts = [];
+  if (isValidValue(t.MESTO)) locationParts.push(t.MESTO);
+  if (isValidValue(t.STAT)) locationParts.push(t.STAT);
+  
+  let locStr = locationParts.join(', ');
+  if (isValidValue(t.VENUE)) {
+    locStr += locStr ? ` - ${t.VENUE}` : t.VENUE;
+  }
+  return locStr;
+}
+
+// GARANTOVANÉ TŘÍSLOUPCOVÉ OKNO VIDEA (VYTVOŘENÉ DYNAMICKY)
 function openVideoModal(ticketIndex) {
   let t = (typeof ticketIndex === 'number') ? filteredTickets[ticketIndex] : null;
   let rawUrl = t ? t.YOUTUBE_URL : ticketIndex;
@@ -168,37 +194,66 @@ function openVideoModal(ticketIndex) {
     return;
   }
 
-  const iframe = document.getElementById('youtubeIframe');
-  if (iframe) iframe.src = embedUrl;
+  // Odstraníme staré dynamické okno, pokud existuje
+  let modal = document.getElementById('jjDynamicVideoModal');
+  if (modal) modal.remove();
 
-  const setlistContainer = document.getElementById('videoSetlistContainer');
-  if (setlistContainer) {
-    if (t && isValidValue(t.SETLIST)) {
-      const songs = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
-      setlistContainer.innerHTML = `
-        <h4 style="color: #facc15; margin-bottom: 12px; font-size: 0.95rem;">🎵 Setlist (${songs.length} songs)</h4>
-        <ol style="padding-left: 20px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">
-          ${songs.map(s => `<li>${s}</li>`).join('')}
-        </ol>
-      `;
-    } else {
-      setlistContainer.innerHTML = `<p style="color: #9ca3af; font-size: 0.85rem;">No setlist details available for this concert video.</p>`;
-    }
+  // 1. Příprava obsahu pro Lineup (vlevo)
+  let lineupHTML = `<h4 style="color: #38bdf8;">👥 Band Line-up</h4>`;
+  if (t && isValidValue(t.LINEUP)) {
+    const members = t.LINEUP.split(/[;/]/).map(m => m.trim()).filter(Boolean);
+    lineupHTML += `<ul style="padding-left: 18px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">${members.map(m => `<li>${m}</li>`).join('')}</ul>`;
+  } else {
+    lineupHTML += `<p style="color: #9ca3af; font-size: 0.85rem;">No line-up details available for this show.</p>`;
   }
 
-  const modal = document.getElementById('videoModal');
-  if (modal) modal.classList.add('active');
+  // 2. Příprava obsahu pro Setlist (vpravo)
+  let setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist</h4>`;
+  if (t && isValidValue(t.SETLIST)) {
+    const songs = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
+    setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist (${songs.length} songs)</h4><ol style="padding-left: 20px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">${songs.map(s => `<li>${s}</li>`).join('')}</ol>`;
+  } else {
+    setlistHTML += `<p style="color: #9ca3af; font-size: 0.85rem;">No setlist details available for this show.</p>`;
+  }
+
+  // 3. Vytvoření kompletního 3-sloupcového modalu v DOMu
+  modal = document.createElement('div');
+  modal.id = 'jjDynamicVideoModal';
+  modal.onclick = (e) => { if (e.target === modal) closeVideoModal(); };
+
+  modal.innerHTML = `
+    <div class="video-modal-container">
+      <button class="jj-close-btn" onclick="closeVideoModal()">✕</button>
+      
+      <!-- Sloupec 1: Lineup (Vlevo) -->
+      <div class="jj-video-side-col">
+        ${lineupHTML}
+      </div>
+
+      <!-- Sloupec 2: Video (Uprostřed) -->
+      <div class="jj-video-center">
+        <div class="jj-video-frame-wrapper">
+          <iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <!-- Sloupec 3: Setlist (Vpravo) -->
+      <div class="jj-video-side-col">
+        ${setlistHTML}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  setTimeout(() => modal.classList.add('active'), 10);
 }
 
 function closeVideoModal() {
-  const modal = document.getElementById('videoModal');
-  const iframe = document.getElementById('youtubeIframe');
-  if (iframe) iframe.src = '';
-  if (modal) modal.classList.remove('active');
-}
-
-function closeVideoModalOnOverlay(e) {
-  if (e.target.id === 'videoModal') closeVideoModal();
+  const modal = document.getElementById('jjDynamicVideoModal');
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => modal.remove(), 200);
+  }
 }
 
 function getTicketCategory(t) {
@@ -212,18 +267,6 @@ function getTicketCategory(t) {
     if (cat.includes('ticket')) return 'Tickets';
   }
   return 'Tickets';
-}
-
-function formatLocationText(t) {
-  let locationParts = [];
-  if (isValidValue(t.MESTO)) locationParts.push(t.MESTO);
-  if (isValidValue(t.STAT)) locationParts.push(t.STAT);
-  
-  let locStr = locationParts.join(', ');
-  if (isValidValue(t.VENUE)) {
-    locStr += locStr ? ` - ${t.VENUE}` : t.VENUE;
-  }
-  return locStr;
 }
 
 function handleSearchInput() {
