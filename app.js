@@ -654,3 +654,113 @@ function closeModal() {
 function closeModalOnOverlay(e) {
   if (e.target.id === 'detailModal') closeModal();
 }
+// Odchytávání klávesy Esc pro vymazání vyhledávání
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        clearSearchInput();
+      }
+    });
+  }
+});
+
+// Aktualizovaný render karty v renderTickets()
+function renderTickets(tickets) {
+  const container = document.getElementById('ticketsContainer');
+  container.innerHTML = '';
+
+  if (tickets.length === 0) {
+    container.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 40px;">No items found matching your criteria.</p>';
+    return;
+  }
+
+  tickets.forEach((t) => {
+    const globalIndex = filteredTickets.indexOf(t);
+    const card = document.createElement('div');
+    card.className = 'ticket-card';
+    card.onclick = (e) => {
+      if (e.target.closest('.icon-btn')) return;
+      openModal(globalIndex);
+    };
+
+    const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
+    const firstImgFile = skenFiles[0] || '';
+    const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
+    const locationText = formatLocationText(t);
+
+    // Příprava ikon do pravého dolního rohu obrázku (vykreslí se jen existující)
+    let iconBarHTML = '<div class="card-icon-bar">';
+
+    // 1. YouTube ikona
+    if (isValidValue(t.YOUTUBE_URL)) {
+      iconBarHTML += `
+        <button class="icon-btn" title="YouTube video" onclick="event.stopPropagation(); openVideoModal('${t.YOUTUBE_URL}');">
+          🎬
+        </button>`;
+    }
+
+    // 2. Setlist ikona / Počet skladeb
+    const songCount = parseInt(t.POCET_SKLADEB, 10) || 0;
+    if (isValidValue(t.SETLIST) && songCount > 0) {
+      iconBarHTML += `
+        <button class="icon-btn badge-setlist" title="Setlist (${songCount} songs)" onclick="event.stopPropagation(); toggleCollapsible('setlist-${globalIndex}');">
+          🎵 ${songCount}
+        </button>`;
+    }
+
+    // 3. Line-up ikona
+    if (isValidValue(t.LINEUP)) {
+      iconBarHTML += `
+        <button class="icon-btn" title="Band Line-up" onclick="event.stopPropagation(); toggleCollapsible('lineup-${globalIndex}');">
+          👥
+        </button>`;
+    }
+
+    // 4. Propojené plakáty / lístky (Related items)
+    const relatedItems = getRelatedItems(t);
+    relatedItems.forEach(rel => {
+      const relCat = getTicketCategory(rel);
+      let icon = '🖼️';
+      let title = 'Related Poster';
+
+      if (relCat === 'Tickets') { icon = '🎫'; title = 'Related Ticket'; }
+      else if (relCat === 'Passes') { icon = '🪪'; title = 'Related Pass'; }
+      else if (relCat === 'Programs') { icon = '📖'; title = 'Related Program'; }
+
+      const relFile = (rel.SOUBOR_SKEN || '').split(',')[0].trim();
+      iconBarHTML += `
+        <button class="icon-btn" title="${title}" onclick="event.stopPropagation(); openQuickImageModal('${relFile}');">
+          ${icon}
+        </button>`;
+    });
+
+    iconBarHTML += '</div>';
+
+    // Skryté panely pro rozbalení Setlistu / Line-upu
+    let collapsibleHTML = '';
+    if (isValidValue(t.SETLIST) && songCount > 0) {
+      const songs = t.SETLIST.split(',').map(s => s.trim());
+      collapsibleHTML += `<div class="collapsible-content" id="setlist-${globalIndex}"><ol>${songs.map(s => `<li>${s}</li>`).join('')}</ol></div>`;
+    }
+    if (isValidValue(t.LINEUP)) {
+      const members = t.LINEUP.split(';').map(m => m.trim());
+      collapsibleHTML += `<div class="collapsible-content" id="lineup-${globalIndex}"><ul>${members.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-img-wrapper">
+        ${imgSrc ? `<img src="${imgSrc}" alt="Scan" onerror="this.src='data:image/svg+xml;base64,...'">` : ''}
+        ${iconBarHTML}
+      </div>
+      <div class="card-content">
+        ${t.DATUM ? `<div class="card-date">${formatDisplayDate(t.DATUM)}</div>` : ''}
+        <div class="info-text">${locationText}</div>
+        ${collapsibleHTML}
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+}
