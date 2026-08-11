@@ -97,7 +97,14 @@ function formatLocationText(t) {
 function handleSearchInput() {
   const input = document.getElementById('searchInput');
   const clearBtn = document.getElementById('searchClearBtn');
-  clearBtn.style.display = input.value.trim().length > 0 ? 'block' : 'none';
+  const val = input.value;
+  
+  // Průběžné ukládání dotazu do sessionStorage
+  sessionStorage.setItem('jj_museum_search', val);
+  
+  if (clearBtn) {
+    clearBtn.style.display = val.trim().length > 0 ? 'block' : 'none';
+  }
   filterData();
 }
 
@@ -105,7 +112,8 @@ function clearSearchInput() {
   const input = document.getElementById('searchInput');
   const clearBtn = document.getElementById('searchClearBtn');
   input.value = '';
-  clearBtn.style.display = 'none';
+  sessionStorage.removeItem('jj_museum_search');
+  if (clearBtn) clearBtn.style.display = 'none';
   filterData();
 }
 
@@ -165,7 +173,10 @@ function checkOnThisDayAnniversary() {
         openModal(targetIndex);
       } else {
         document.getElementById('searchInput').value = '';
-        document.getElementById('searchClearBtn').style.display = 'none';
+        sessionStorage.removeItem('jj_museum_search');
+        if (document.getElementById('searchClearBtn')) {
+          document.getElementById('searchClearBtn').style.display = 'none';
+        }
         document.getElementById('yearFilter').value = '';
         document.getElementById('cityFilter').value = '';
         currentCategory = 'ALL';
@@ -178,6 +189,7 @@ function checkOnThisDayAnniversary() {
   }
 }
 
+// Jediný a správný blok pro inicializaci po načtení DOMu
 window.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
@@ -186,6 +198,8 @@ window.addEventListener('DOMContentLoaded', () => {
         clearSearchInput();
       }
     });
+    // Navázání ukládání vyhledávání při psaní
+    searchInput.addEventListener('input', handleSearchInput);
   }
 
   Papa.parse('joe_jackson_tickets_cleaned.csv', {
@@ -200,6 +214,15 @@ window.addEventListener('DOMContentLoaded', () => {
       allTickets = results.data;
       updateYearBadge();
       populateFilters();
+
+      // Obnovení hledaného výrazu ze sessionStorage po načtení dat
+      const savedSearch = sessionStorage.getItem('jj_museum_search');
+      if (savedSearch && searchInput) {
+        searchInput.value = savedSearch;
+        const clearBtn = document.getElementById('searchClearBtn');
+        if (clearBtn) clearBtn.style.display = 'block';
+      }
+
       filterData();
       checkOnThisDayAnniversary();
     },
