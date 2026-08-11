@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joe Jackson Museum - Contribute Memorabilia</title>
+
+  <style>
+    :root {
+      --bg-main: #0a0f1c;
+      --bg-panel: #111827;
+      --bg-card: #151c2b;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-yellow: #facc15;
+      --accent-blue: #38bdf8;
+      --accent-orange: #f97316;
+      --border-color: #1f2937;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      padding: 30px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      max-width: 750px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      background-color: var(--accent-orange);
+      color: #000;
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.5rem;
+      letter-spacing: -1px;
+    }
+
+    .title-area h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .title-area p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .btn-back {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      border-color: var(--accent-yellow);
+      color: var(--accent-yellow);
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 750px;
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .form-intro {
+      margin-bottom: 25px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .form-intro strong {
+      color: var(--accent-yellow);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    label span {
+      color: var(--accent-orange);
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="email"],
+    select,
+    textarea {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-blue);
+    }
+
+    input[type="file"] {
+      background-color: var(--bg-card);
+      border: 1px dashed var(--accent-blue);
+      color: var(--text-muted);
+      padding: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-submit {
+      background-color: var(--accent-yellow);
+      color: #000;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: transform 0.1s, background-color 0.2s;
+    }
+
+    .btn-submit:hover {
+      background-color: #fde047;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 15px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <div class="logo">JJ</div>
+      <div class="title-area">
+        <h1>Contribute to Archive</h1>
+        <p>Share your Joe Jackson concert tickets, passes, or posters</p>
+      </div>
+    </div>
+    <a href="index_short.html" class="btn-back">◄ Back to Museum</a>
+  </header>
+
+  <div class="form-container">
+    <p class="form-intro">
+      Do you possess a Joe Jackson concert ticket, pass, poster, or program scan not yet featured in our museum? 
+      <strong>Help us grow the archive!</strong> Fill in the details below and attach your scan. Your contribution will be credited to your name in our global database.
+    </p>
+
+    <!--
+      Můžete zdarma použít např. https://formspree.io/f/{YOUR_FORM_ID} 
+      Nebo jakýkoliv jiný zdarma e-mailový endpoint pro statické weby.
+    -->
+    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" enctype="multipart/form-data" class="form-grid">
+      
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category">Category <span>*</span></label>
+        <select id="category" name="category" required>
+          <option value="Tickets">Ticket</option>
+          <option value="Passes">Pass / Backstage</option>
+          <option value="Posters">Poster / Flyer</option>
+          <option value="Programs">Tour Program</option>
+          <option value="T-shirts">Merchandise / T-shirt</option>
+          <option value="Memorabilia">Other Memorabilia</option>
+        </select>
+      </div>
+
+      <!-- Concert Date -->
+      <div class="form-group">
+        <label for="date">Concert Date <span>*</span></label>
+        <input type="date" id="date" name="date" required>
+      </div>
+
+      <!-- City -->
+      <div class="form-group">
+        <label for="city">City <span>*</span></label>
+        <input type="text" id="city" name="city" placeholder="e.g. London, New York" required>
+      </div>
+
+      <!-- Country -->
+      <div class="form-group">
+        <label for="country">Country</label>
+        <input type="text" id="country" name="country" placeholder="e.g. UK, USA, Germany">
+      </div>
+
+      <!-- Venue -->
+      <div class="form-group full-width">
+        <label for="venue">Venue / Club / Hall</label>
+        <input type="text" id="venue" name="venue" placeholder="e.g. Royal Albert Hall, The Bottom Line">
+      </div>
+
+      <!-- Supporting Act -->
+      <div class="form-group full-width">
+        <label for="supporting_act">Supporting Act / Special Guest</label>
+        <input type="text" id="supporting_act" name="supporting_act" placeholder="e.g. The Members, Lincoln Durham">
+      </div>
+
+      <!-- Contributor Name -->
+      <div class="form-group">
+        <label for="contributor">Your Name / Credit <span>*</span></label>
+        <input type="text" id="contributor" name="contributor" placeholder="How you want to be listed" required>
+      </div>
+
+      <!-- Contributor Email -->
+      <div class="form-group">
+        <label for="email">Your Email (Private)</label>
+        <input type="email" id="email" name="email" placeholder="For verification only (optional)">
+      </div>
+
+      <!-- File Upload -->
+      <div class="form-group full-width">
+        <label for="scan_file">Upload Image Scan / Photo <span>*</span></label>
+        <input type="file" id="scan_file" name="scan_file" accept="image/*" required>
+      </div>
+
+      <!-- Additional Notes -->
+      <div class="form-group full-width">
+        <label for="notes">Additional Information / Notes</label>
+        <textarea id="notes" name="notes" rows="3" placeholder="Setlist details, story behind the ticket, or seat number..."></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-group full-width">
+        <button type="submit" class="btn-submit">🚀 Submit Memorabilia to Archive</button>
+      </div>
+
+    </form>
+  </div>
+
+</body>
+</html>
