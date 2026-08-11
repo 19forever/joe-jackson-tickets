@@ -22,6 +22,7 @@ body {
 
 .viewer-container { z-index: 99999 !important; }
 
+/* Sticky Top Header */
 .top-header-container {
   position: sticky;
   top: 0;
@@ -77,7 +78,7 @@ header {
 
 .title-area p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
 
-/* Banner "On This Day in History" */
+/* On This Day Banner */
 .on-this-day-banner {
   background: linear-gradient(135deg, rgba(250, 204, 21, 0.15), rgba(56, 189, 248, 0.1));
   border: 1px solid rgba(250, 204, 21, 0.4);
@@ -130,6 +131,7 @@ header {
 
 .otd-btn:hover { background-color: #fde047; }
 
+/* Category Tabs */
 .category-tabs {
   display: flex;
   gap: 8px;
@@ -157,25 +159,24 @@ header {
 .tab-btn:hover { border-color: #38bdf8; color: #fff; }
 .tab-btn.active { background-color: var(--accent-yellow); color: #000; border-color: var(--accent-yellow); }
 
+/* Search Controls Bar */
 .controls {
-  display: grid;
-  grid-template-columns: 2fr auto 1fr 1fr 110px auto;
+  display: flex;
   gap: 10px;
   background-color: var(--bg-panel);
   padding: 12px 15px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
-}
-
-@media (max-width: 1200px) {
-  .controls { grid-template-columns: 1fr 1fr 1fr; }
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .search-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  width: 100%;
+  flex: 1;
+  min-width: 200px;
 }
 
 .search-input-wrapper input {
@@ -243,8 +244,21 @@ header {
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 0.85rem;
-  width: 100%;
   outline: none;
+}
+
+#yearFilter {
+  width: 105px !important;
+  flex-shrink: 0;
+}
+
+#sortFilter {
+  min-width: 185px !important;
+  flex-shrink: 0;
+}
+
+#cityFilter, #pageSizeFilter {
+  flex-shrink: 0;
 }
 
 .controls select:focus { border-color: var(--accent-blue); }
@@ -256,7 +270,7 @@ header {
   border: 1px solid var(--border-color);
   color: var(--text-muted);
   width: 36px;
-  height: 100%;
+  height: 35px;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -267,6 +281,7 @@ header {
 
 .toggle-btn.active { background-color: var(--accent-yellow); color: #000; border-color: var(--accent-yellow); }
 
+/* Grid / List Views */
 .tickets-container.grid-view {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -279,9 +294,10 @@ header {
   gap: 15px;
 }
 
-.tickets-container.list-view .ticket-card { flex-direction: row; align-items: center; height: auto; }
+.tickets-container.list-view .ticket-card { flex-direction: row; align-items: flex-start; height: auto; }
 .tickets-container.list-view .card-img-wrapper { width: 220px; height: 160px; flex-shrink: 0; }
 
+/* Ticket Card Styling */
 .ticket-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -298,117 +314,92 @@ header {
 
 .card-img-wrapper {
   position: relative;
-  height: 220px;
+  height: 230px;
+  width: 100%;
   background-color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
 }
 
-.card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 .card-content { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
 
-.card-date { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
-.info-text { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px; flex-grow: 1; }
-
-.related-items-bar {
+/* 2-Column Row Under Image */
+.card-main-row {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-  margin-bottom: 6px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
 }
 
-.related-btn {
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  color: #38bdf8;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 12px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  transition: all 0.2s;
+.card-info-left {
+  flex: 1;
+  min-width: 0;
 }
 
-.related-btn:hover {
-  background: rgba(56, 189, 248, 0.3);
+.card-date {
+  font-size: 0.9rem;
+  font-weight: 700;
   color: #fff;
-  border-color: #38bdf8;
+  margin-bottom: 4px;
+  word-wrap: break-word;
 }
 
-.collapsible-group {
-  display: flex;
-  gap: 6px;
-  margin-top: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.setlist-toggle-btn, .lineup-toggle-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
+.info-text {
+  font-size: 0.83rem;
+  font-weight: 500;
   color: var(--text-muted);
-  padding: 8px 12px;
+  line-height: 1.35;
+  word-wrap: break-word;
+}
+
+/* Right Column Icon Bar */
+.card-icon-col {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  flex-shrink: 0;
+  max-width: 110px;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 5px 8px;
   border-radius: 6px;
   font-size: 0.8rem;
+  font-weight: 700;
   cursor: pointer;
-  text-align: center;
-  transition: all 0.2s;
-  flex-grow: 1;
-}
-
-.setlist-toggle-btn.has-setlist {
-  background: rgba(250, 204, 21, 0.12);
-  border-color: rgba(250, 204, 21, 0.5);
-  color: var(--accent-yellow);
-  font-weight: 700;
-}
-
-.setlist-toggle-btn.has-setlist:hover {
-  background: rgba(250, 204, 21, 0.25);
-}
-
-.lineup-toggle-btn.has-lineup {
-  background: rgba(56, 189, 248, 0.12);
-  border-color: rgba(56, 189, 248, 0.5);
-  color: var(--accent-blue);
-  font-weight: 700;
-}
-
-.lineup-toggle-btn.has-lineup:hover {
-  background: rgba(56, 189, 248, 0.25);
-}
-
-.external-link-icon-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
-  color: var(--text-muted);
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  flex-shrink: 0;
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
 
-.external-link-icon-btn:hover {
+.icon-btn:hover {
   border-color: var(--accent-yellow);
   color: var(--accent-yellow);
   background: rgba(250, 204, 21, 0.15);
 }
 
+.icon-btn.badge-setlist {
+  background: rgba(250, 204, 21, 0.15);
+  border-color: rgba(250, 204, 21, 0.4);
+  color: var(--accent-yellow);
+}
+
 .collapsible-content {
   display: none;
-  margin-top: 8px;
+  margin-top: 10px;
   background: rgba(0,0,0,0.3);
   padding: 10px;
   border-radius: 6px;
@@ -417,8 +408,9 @@ header {
 }
 
 .collapsible-content.open { display: block; }
-.collapsible-content ol, .collapsible-content ul { padding-left: 20px; margin: 8px 0; }
+.collapsible-content ol, .collapsible-content ul { padding-left: 20px; margin: 4px 0; }
 
+/* Pagination Controls */
 .pagination-container {
   display: flex;
   justify-content: center;
@@ -447,6 +439,7 @@ header {
   font-weight: 700;
 }
 
+/* Modals & Detail Flashcard */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
@@ -630,27 +623,23 @@ header {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
 .media-link-btn:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
-/* ==========================================
-   RESPONSIVE & iOS MOBILE OPTIMIZATIONS
-   ========================================== */
 
+/* Responsive & iOS Mobile Optimizations */
 @media (max-width: 768px) {
-  /* 1. Zrušení fixace hlavičky na mobilu (aby nezabírala místo a dalo se plynule scrollovat) */
   .top-header-container {
-    position: relative; /* Zrušeno sticky */
+    position: relative;
     top: auto;
     padding-top: 10px;
     padding-bottom: 10px;
     margin-bottom: 15px;
   }
 
-  body {
-    padding: 0 12px 20px 12px; /* Zmenšení obrovských okrajů na telefonu */
-  }
+  body { padding: 0 12px 20px 12px; }
 
   header {
     flex-direction: column;
@@ -663,7 +652,6 @@ header {
     flex-wrap: wrap;
   }
 
-  /* 2. Oprava banneru "On This Day in History" na úzkém displeji */
   .on-this-day-banner.active {
     flex-direction: column;
     align-items: stretch;
@@ -671,32 +659,28 @@ header {
     padding: 12px;
   }
 
-  .otd-left {
-    align-items: flex-start;
-  }
+  .otd-left { align-items: flex-start; }
+  .otd-text p { font-size: 0.82rem; line-height: 1.35; }
+  .otd-btn { width: 100%; text-align: center; padding: 10px; }
 
-  .otd-text p {
-    font-size: 0.82rem;
-    line-height: 1.35;
-  }
-
-  .otd-btn {
-    width: 100%;
-    text-align: center;
-    padding: 10px;
-  }
-
-  /* 3. Přehledné seřazení vyhledávání a filtrů pod sebe */
   .controls {
-    display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 10px;
     padding: 12px;
   }
 
+  .search-input-wrapper { width: 100%; }
+
   .search-input-wrapper input,
   .controls select {
-    font-size: 16px !important; /* DŮLEŽITÉ PRO iOS: Zabraňuje nežádoucímu auto-zoomu Safari při kliknutí do pole */
+    font-size: 16px !important;
+    width: 100% !important;
+  }
+
+  #yearFilter, #sortFilter {
+    width: 100% !important;
+    min-width: unset !important;
   }
 
   .surprise-btn {
@@ -715,7 +699,6 @@ header {
     height: 38px;
   }
 
-  /* 4. Úprava mřížky karet pro mobil */
   .tickets-container.grid-view {
     grid-template-columns: 1fr;
     gap: 15px;
@@ -729,71 +712,4 @@ header {
     width: 100%;
     height: 200px;
   }
-
-  /* Sjednocení výšky obrázku v kartě */
-.card-img-wrapper {
-  position: relative;
-  height: 230px; /* Pevná výška karty pro optické sjednocení */
-  width: 100%;
-  background-color: #000;
-  overflow: hidden;
-}
-
-.card-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Obrázek vyplní celou plochu bez deformace */
-}
-
-/* Lišta ikon v pravém dolním rohu obrázku (odprava doleva) */
-.card-icon-bar {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  display: flex;
-  flex-direction: row-reverse; /* Řazení odprava doleva */
-  gap: 6px;
-  z-index: 10;
-}
-
-.icon-btn {
-  background: rgba(10, 15, 28, 0.85);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.icon-btn:hover {
-  border-color: var(--accent-yellow);
-  color: var(--accent-yellow);
-  background: rgba(17, 24, 39, 0.95);
-  transform: translateY(-1px);
-}
-
-.icon-btn.badge-setlist {
-  background: rgba(250, 204, 21, 0.25);
-  border-color: var(--accent-yellow);
-  color: var(--accent-yellow);
-}
-
-/* Úprava šířek vyhlašovacích prvků v hlavičce */
-#yearFilter {
-  width: 105px !important; /* Zúženo pouze na 4 číslice */
-  flex-shrink: 0;
-}
-
-#sortFilter {
-  min-width: 185px !important; /* Rozšířeno pro čitelný text řazení */
-  flex-shrink: 0;
-}
 }
