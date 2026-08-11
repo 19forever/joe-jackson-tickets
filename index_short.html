@@ -126,17 +126,24 @@
   <!-- External Application Logic -->
   <script src="app.js"></script>
   
-<!-- Video Modal s podporou setlistu napravo -->
+<!-- Video Modal s Line-upem vlevo a Setlistem vpravo -->
 <div id="videoModal" class="modal" onclick="closeVideoModalOnOverlay(event)">
   <div class="video-modal-content">
     <button class="modal-close-btn" onclick="closeVideoModal()">✕</button>
     
+    <!-- Levý sloupec: Lineup -->
+    <div id="videoLineupContainer" class="video-side-box">
+      <!-- Lineup se načte přes app.js -->
+    </div>
+
+    <!-- Střední sloupec: Video -->
     <div class="video-frame-container">
       <iframe id="youtubeIframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
     
-    <div id="videoSetlistContainer" class="video-setlist-box">
-      <!-- Setlist se načte dynamicky přes app.js -->
+    <!-- Pravý sloupec: Setlist -->
+    <div id="videoSetlistContainer" class="video-side-box">
+      <!-- Setlist se načte přes app.js -->
     </div>
   </div>
 </div>
