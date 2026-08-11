@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Record - Joe Jackson Museum</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎫</text></svg>">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <!-- Viewer.js (Image Inspection & Zoom) -->
@@ -544,6 +545,7 @@
     const CSV_FILENAME = 'joe_jackson_tickets_cleaned.csv';
     const WORKER_PROXY_URL = 'https://jj-setlist-proxy.marek-kraus.workers.dev';
     const JOE_JACKSON_MBID = '81561021-d707-427d-94d7-0624a0d9f48f';
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     let fullCsvData = [];
     let currentRecordIndex = -1;
@@ -957,6 +959,7 @@
         const res = await fetch(proxyUrl);
         if (!res.ok) {
           if (res.status === 404) throw new Error('NOT_FOUND');
+          if (res.status === 429) throw new Error('RATE_LIMIT');
           throw new Error(`HTTP Error ${res.status}`);
         }
         return await res.json();
@@ -1013,12 +1016,14 @@
             if (list.length > 0) foundShow = list[0];
           }
         } catch (e) {
-          console.log('Direct date lookup returned 404, falling back to year search...');
+          // Ignorujeme případnou 404
         }
 
-        // 2. Záložní vyhledávání podle celého ROKU (Setlist.fm 404 obchvat)
+        // 2. Pokud přesné datum selhalo, počkáme 1s (kvůli rate limitu 429) a zkusíme rok
         if (!foundShow) {
-          showStatus(`Searching Setlist.fm archive for year ${concertYear}...`, 'blue');
+          showStatus(`Exact date not indexed. Waiting 1s to bypass API rate limit & search year ${concertYear}...`, 'blue');
+          await delay(1100);
+
           const fallbackApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?year=${concertYear}`;
           const fallbackData = await fetchSetlistApiSecure(fallbackApiUrl);
 
@@ -1057,7 +1062,11 @@
         showStatus(`✅ Successfully loaded ${songNames.length} songs and updated URL from Setlist.fm!`, 'green');
 
       } catch (err) {
-        showStatus(`❌ ${err.message === 'NOT_FOUND' ? 'No show recorded on Setlist.fm for date ' + apiFormattedDate : err.message}`, 'red');
+        if (err.message === 'RATE_LIMIT') {
+          showStatus(`❌ Setlist.fm Rate Limit reached. Please wait 5 seconds and click Auto-Find again.`, 'red');
+        } else {
+          showStatus(`❌ ${err.message === 'NOT_FOUND' ? 'No show recorded on Setlist.fm for date ' + apiFormattedDate : err.message}`, 'red');
+        }
       }
     }
 
