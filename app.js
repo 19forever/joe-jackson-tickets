@@ -8,6 +8,27 @@ let currentCategory = 'Tickets';
 let activeViewerInstance = null;
 let quickViewerInstance = null;
 
+// Dynamické přimíchání CSS pro efektní rozostření a ztmavení pozadí pod Viewer.js
+(function injectViewerCustomStyles() {
+  const style = document.createElement('style');
+  style.textContent = `
+    .viewer-backdrop {
+      background-color: rgba(5, 8, 16, 0.88) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+    }
+    .viewer-title {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      font-size: 1rem !important;
+      color: #facc15 !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.5px !important;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
 // Funkce pro náhodné zamíchání pole (Fisher-Yates Shuffle)
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -206,7 +227,7 @@ function checkOnThisDayAnniversary() {
   }
 }
 
-// PAŘÍM SOUBOR VIEWER.JS ROVNOU Z KARTY NA 1-KLIK
+// OTEVŘENÍ LIGHTBOXU S ZTMAVENÝM A ROZOSTŘENÝM POZADÍM
 function openDirectImagePreview(ticketIndex) {
   const t = filteredTickets[ticketIndex];
   if (!t || !t.SOUBOR_SKEN) return;
@@ -219,7 +240,6 @@ function openDirectImagePreview(ticketIndex) {
     activeViewerInstance = null;
   }
 
-  // Vytvoříme dynamickou galerii obrázků v paměti pro Viewer.js
   const container = document.createElement('div');
   container.style.display = 'none';
 
@@ -233,6 +253,7 @@ function openDirectImagePreview(ticketIndex) {
   document.body.appendChild(container);
 
   activeViewerInstance = new Viewer(container, {
+    backdrop: 'static',
     hidden: function() {
       activeViewerInstance.destroy();
       activeViewerInstance = null;
@@ -269,6 +290,7 @@ function openQuickImageModal(scanFileName) {
   }
 
   quickViewerInstance = new Viewer(quickImg, {
+    backdrop: 'static',
     hidden: function() {
       quickViewerInstance.destroy();
       quickViewerInstance = null;
@@ -482,7 +504,6 @@ function renderTickets(tickets) {
     const card = document.createElement('div');
     card.className = 'ticket-card';
     
-    // Kliknutí na kartu otevírá rovnou Viewer.js
     card.onclick = (e) => {
       if (e.target.closest('.icon-btn')) return;
       openDirectImagePreview(globalIndex);
@@ -495,7 +516,6 @@ function renderTickets(tickets) {
 
     let iconsHTML = '';
 
-    // Tlačítko pro rychlou editaci přímo na kartě
     if (isValidValue(t.ID_MEMORABILIA)) {
       iconsHTML += `
         <button class="icon-btn" title="Edit Record" onclick="event.stopPropagation(); window.location.href='edit_ticket_new.html?id=${encodeURIComponent(t.ID_MEMORABILIA)}';">
