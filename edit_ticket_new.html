@@ -525,7 +525,7 @@
 
   <script>
     const CSV_FILENAME = 'joe_jackson_tickets_cleaned.csv';
-    const SETLIST_API_KEY_DEFAULT = '3pc6VtmOHzQbQVh9xedw_LLpNRCCfDhEvop7';
+    const WORKER_PROXY_URL = 'https://jj-setlist-proxy.marek-kraus.workers.dev';
     const JOE_JACKSON_MBID = '81561021-d707-427d-94d7-0624a0d9f48f';
 
     let fullCsvData = [];
@@ -876,7 +876,6 @@
       }
     }
 
-    // Pomocná funkce pro vytažení ID ze Setlist.fm URL nebo zadaného textu
     function extractSetlistId(input) {
       if (!input) return null;
       const clean = input.trim();
@@ -887,53 +886,19 @@
       return match ? match[1] : null;
     }
 
-    // Odolný stahovač přes funkční CORS proxy s automatickým fallbackem
     async function fetchSetlistApiSecure(targetApiUrl) {
-      const apiKey = SETLIST_API_KEY_DEFAULT;
+      const proxyUrl = `${WORKER_PROXY_URL}?url=${encodeURIComponent(targetApiUrl)}`;
 
-      // Seznam proxy serverů podporujících předávání x-api-key hlavičky
-      const proxyList = [
-        url => `https://thingproxy.freeboard.io/fetch/${url}`,
-        url => `https://corsproxy.org/?${encodeURIComponent(url)}`
-      ];
-
-      let lastError = null;
-
-      for (const getProxyUrl of proxyList) {
-        const proxyUrl = getProxyUrl(targetApiUrl);
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 7000);
-
-        try {
-          const res = await fetch(proxyUrl, {
-            method: 'GET',
-            headers: {
-              'x-api-key': apiKey,
-              'Accept': 'application/json'
-            },
-            signal: controller.signal
-          });
-
-          clearTimeout(timeoutId);
-
-          if (res.ok) {
-            return await res.json();
-          }
-
-          if (res.status === 404) {
-            throw new Error('Concert or Setlist ID not found on Setlist.fm.');
-          }
-          if (res.status === 401 || res.status === 403) {
-            throw new Error('Setlist.fm API key was rejected.');
-          }
-        } catch (err) {
-          clearTimeout(timeoutId);
-          lastError = err;
-          // Vyzkoušíme další proxy v seznamu
+      try {
+        const res = await fetch(proxyUrl);
+        if (!res.ok) {
+          if (res.status === 404) throw new Error('Concert or Setlist ID not found on Setlist.fm.');
+          throw new Error(`HTTP Error ${res.status}`);
         }
+        return await res.json();
+      } catch (err) {
+        throw new Error(`Setlist.fm Fetch Failed: ${err.message}`);
       }
-
-      throw new Error(lastError ? lastError.message : 'Could not fetch from Setlist.fm via proxy.');
     }
 
     async function autoFindSetlist() {
