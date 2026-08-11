@@ -18,6 +18,8 @@
       --accent-yellow: #facc15;
       --accent-blue: #38bdf8;
       --accent-orange: #f97316;
+      --accent-green: #4ade80;
+      --accent-purple: #c084fc;
       --border-color: #1f2937;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
@@ -96,7 +98,7 @@
     /* Key Numbers Bar */
     .stats-summary-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 15px;
       margin-bottom: 30px;
     }
@@ -105,7 +107,7 @@
       background-color: var(--bg-panel);
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 20px;
+      padding: 18px 12px;
       text-align: center;
     }
 
@@ -120,7 +122,7 @@
     }
 
     .stat-card strong {
-      font-size: 1.8rem;
+      font-size: 1.7rem;
       font-weight: 800;
       color: var(--accent-yellow);
     }
@@ -183,7 +185,7 @@
   <!-- KPI Key Numbers -->
   <div class="stats-summary-grid">
     <div class="stat-card">
-      <span>Total Memorabilia</span>
+      <span>Total Records</span>
       <strong id="statRecords">0</strong>
     </div>
     <div class="stat-card">
@@ -200,18 +202,54 @@
     </div>
     <div class="stat-card">
       <span>Countries</span>
-      <strong id="statCountries" style="color: #4ade80;">0</strong>
+      <strong id="statCountries" style="color: var(--accent-green);">0</strong>
+    </div>
+    <div class="stat-card">
+      <span>Contributors</span>
+      <strong id="statContributors" style="color: var(--accent-purple);">0</strong>
     </div>
   </div>
 
   <!-- Charts -->
   <div class="charts-grid">
     
-    <!-- Timeline Chart (Full Width) -->
+    <!-- Timeline Chart - BAR CHART (Full Width) -->
     <div class="chart-box full-width">
-      <h3>📅 Concert Items per Year</h3>
+      <h3>📊 Concert Items per Year (Timeline)</h3>
       <div class="chart-wrapper">
         <canvas id="chartYears"></canvas>
+      </div>
+    </div>
+
+    <!-- Category Breakdown (Donut Chart) -->
+    <div class="chart-box">
+      <h3>🪪 Items by Category</h3>
+      <div class="chart-wrapper">
+        <canvas id="chartCategories"></canvas>
+      </div>
+    </div>
+
+    <!-- Top Contributors -->
+    <div class="chart-box">
+      <h3>⭐ Top 10 Contributors / Donors</h3>
+      <div class="chart-wrapper">
+        <canvas id="chartContributors"></canvas>
+      </div>
+    </div>
+
+    <!-- Top Songs Played in Setlists -->
+    <div class="chart-box">
+      <h3>🎵 Top 10 Songs in Setlists</h3>
+      <div class="chart-wrapper">
+        <canvas id="chartSongs"></canvas>
+      </div>
+    </div>
+
+    <!-- Top Band Collaborators -->
+    <div class="chart-box">
+      <h3>👥 Top Band Members / Musicians</h3>
+      <div class="chart-wrapper">
+        <canvas id="chartMusicians"></canvas>
       </div>
     </div>
 
@@ -231,7 +269,7 @@
       </div>
     </div>
 
-    <!-- Country Breakdown -->
+    <!-- Country Breakdown (Full Width) -->
     <div class="chart-box full-width">
       <h3>🌍 Items by Country</h3>
       <div class="chart-wrapper">
@@ -273,17 +311,25 @@
       const venuesMap = {};
       const countriesMap = {};
       const yearsMap = {};
+      const categoriesMap = {};
+      const contributorsMap = {};
+      const songsMap = {};
+      const musiciansMap = {};
       
       let totalRecords = data.length;
       let ticketCount = 0;
 
       data.forEach(item => {
-        const cat = (item.KATEGORIE || '').trim().toLowerCase();
-        if (cat === 'tickets' || cat === '') {
+        // Category
+        const cat = (item.KATEGORIE || 'tickets').trim();
+        const cleanCat = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase();
+        categoriesMap[cleanCat] = (categoriesMap[cleanCat] || 0) + 1;
+
+        if (cleanCat.toLowerCase() === 'tickets') {
           ticketCount++;
         }
 
-        // Year extraction directly from DATUM field YYYY-MM-DD
+        // Year extraction YYYY
         const datumText = item.DATUM || '';
         const yearMatch = datumText.match(/\b(19\d\d|20\d\d)\b/);
         if (yearMatch) {
@@ -291,22 +337,51 @@
           yearsMap[year] = (yearsMap[year] || 0) + 1;
         }
 
-        // City statistics
+        // City
         if (isValid(item.MESTO)) {
           const city = item.MESTO.trim();
           citiesMap[city] = (citiesMap[city] || 0) + 1;
         }
 
-        // Country statistics
+        // Country
         if (isValid(item.STAT)) {
           const country = item.STAT.trim();
           countriesMap[country] = (countriesMap[country] || 0) + 1;
         }
 
-        // Venue statistics
+        // Venue
         if (isValid(item.VENUE)) {
           const venue = item.VENUE.trim();
           venuesMap[venue] = (venuesMap[venue] || 0) + 1;
+        }
+
+        // Contributor
+        if (isValid(item.CONTRIBUTOR)) {
+          const contrib = item.CONTRIBUTOR.trim();
+          contributorsMap[contrib] = (contributorsMap[contrib] || 0) + 1;
+        }
+
+        // Setlist Songs Count
+        if (isValid(item.SETLIST)) {
+          const songs = item.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
+          songs.forEach(song => {
+            // Clean up basic song names
+            if (song.length > 2 && song.length < 50) {
+              songsMap[song] = (songsMap[song] || 0) + 1;
+            }
+          });
+        }
+
+        // Musicians / Lineup
+        if (isValid(item.LINEUP)) {
+          const musicians = item.LINEUP.split(/[;/]/).map(m => m.trim()).filter(Boolean);
+          musicians.forEach(mus => {
+            // Extract just the name before parentheses, e.g., "Graham Maby (bass)" -> "Graham Maby"
+            const cleanName = mus.split('(')[0].trim();
+            if (cleanName.length > 3 && !cleanName.toLowerCase().includes('solo')) {
+              musiciansMap[cleanName] = (musiciansMap[cleanName] || 0) + 1;
+            }
+          });
         }
       });
 
@@ -316,32 +391,34 @@
       document.getElementById('statCities').textContent = Object.keys(citiesMap).length;
       document.getElementById('statVenues').textContent = Object.keys(venuesMap).length;
       document.getElementById('statCountries').textContent = Object.keys(countriesMap).length;
+      document.getElementById('statContributors').textContent = Object.keys(contributorsMap).length;
 
       // Render Charts
-      renderYearChart(yearsMap);
+      renderYearBarChart(yearsMap);
+      renderDoughnutChart('chartCategories', categoriesMap);
+      renderBarChart('chartContributors', contributorsMap, 10, '#c084fc');
+      renderBarChart('chartSongs', songsMap, 10, '#facc15');
+      renderBarChart('chartMusicians', musiciansMap, 10, '#4ade80');
       renderBarChart('chartCities', citiesMap, 10, '#38bdf8');
       renderBarChart('chartVenues', venuesMap, 10, '#f97316');
-      renderBarChart('chartCountries', countriesMap, 15, '#facc15');
+      renderBarChart('chartCountries', countriesMap, 15, '#eab308');
     }
 
-    function renderYearChart(yearsMap) {
+    // SLAUPCOVÝ GRAF PRO ROKY (BAR CHART)
+    function renderYearBarChart(yearsMap) {
       const sortedYears = Object.keys(yearsMap).sort();
       const counts = sortedYears.map(y => yearsMap[y]);
 
       new Chart(document.getElementById('chartYears'), {
-        type: 'line',
+        type: 'bar',
         data: {
           labels: sortedYears,
           datasets: [{
             label: 'Items Count',
             data: counts,
-            borderColor: '#facc15',
-            backgroundColor: 'rgba(250, 204, 21, 0.15)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.3,
-            pointRadius: 4,
-            pointBackgroundColor: '#facc15'
+            backgroundColor: '#facc15',
+            borderRadius: 4,
+            hoverBackgroundColor: '#fde047'
           }]
         },
         options: {
@@ -350,12 +427,43 @@
           plugins: { legend: { display: false } },
           scales: {
             y: { grid: { color: '#1f2937' }, beginAtZero: true },
-            x: { grid: { color: '#1f2937' } }
+            x: { grid: { display: false } }
           }
         }
       });
     }
 
+    // KOLÁČOVÝ / KROUŽKOVÝ GRAF KATEGORIÍ
+    function renderDoughnutChart(canvasId, dataMap) {
+      const labels = Object.keys(dataMap);
+      const values = Object.values(dataMap);
+      const colors = ['#facc15', '#38bdf8', '#f97316', '#4ade80', '#c084fc', '#ef4444', '#a855f7'];
+
+      new Chart(document.getElementById(canvasId), {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: colors.slice(0, labels.length),
+            borderWidth: 2,
+            borderColor: '#111827'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { boxWidth: 12, padding: 12 }
+            }
+          }
+        }
+      });
+    }
+
+    // HORIZONTÁLNÍ BAR CHART PRO VŠECHNY OSTATNÍ ŽEBŘÍČKY
     function renderBarChart(canvasId, dataMap, limit, color) {
       const sorted = Object.entries(dataMap)
         .sort((a, b) => b[1] - a[1])
@@ -371,7 +479,7 @@
           datasets: [{
             data: values,
             backgroundColor: color,
-            borderRadius: 6
+            borderRadius: 5
           }]
         },
         options: {
