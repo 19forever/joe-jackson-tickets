@@ -987,6 +987,7 @@
     async function autoFindSetlist() {
       const datumVal = document.getElementById('DATUM').value.trim();
       const cityVal = document.getElementById('MESTO').value.trim();
+      const venueVal = document.getElementById('VENUE').value.trim();
 
       if (!datumVal) {
         showStatus('Please enter a valid Date (YYYY-MM-DD) first.', 'red');
@@ -1001,8 +1002,9 @@
 
       const concertYear = parts[0];
       const apiFormattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // DD-MM-YYYY
+      const searchCityBase = cityVal.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-      showStatus(`Searching Setlist.fm for Joe Jackson show on ${apiFormattedDate}...`, 'blue');
+      showStatus(`Searching Setlist.fm archive for Joe Jackson show on ${apiFormattedDate}...`, 'blue');
 
       try {
         let foundShow = null;
@@ -1019,14 +1021,14 @@
           // Ignorujeme případné 404
         }
 
-        // 2. Pokud přímé datum selhalo, prohledáme ročník skrze STRÁNKOVÁNÍ (Pagination)
+        // 2. Pokud přímé datum selhalo, projdeme ročník skrze stránkování
         if (!foundShow) {
           let page = 1;
           let totalPages = 1;
 
           while (page <= totalPages && !foundShow) {
-            showStatus(`Searching Setlist.fm archive year ${concertYear} (Page ${page}/${totalPages})...`, 'blue');
-            await delay(1100); // pauza kvůli rate limitu API
+            showStatus(`Searching archive for ${concertYear} (Page ${page}/${totalPages})...`, 'blue');
+            await delay(1100);
 
             const fallbackApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?year=${concertYear}&p=${page}`;
             const fallbackData = await fetchSetlistApiSecure(fallbackApiUrl);
@@ -1034,16 +1036,19 @@
             if (fallbackData && fallbackData.setlist) {
               const list = Array.isArray(fallbackData.setlist) ? fallbackData.setlist : [fallbackData.setlist];
               
-              // Spočítáme celkový počet stránek ročníku
               const itemsPerPage = fallbackData.itemsPerPage || 20;
               const totalItems = fallbackData.total || list.length;
               totalPages = Math.ceil(totalItems / itemsPerPage);
 
               foundShow = list.find(s => {
                 if (s.eventDate === apiFormattedDate) return true;
-                if (cityVal && s.venue && s.venue.city) {
-                  return s.venue.city.name.toLowerCase().includes(cityVal.toLowerCase());
-                }
+
+                const sCity = s.venue && s.venue.city ? s.venue.city.name.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+                const sVenue = s.venue ? s.venue.name.toLowerCase() : '';
+
+                if (searchCityBase && sCity.includes(searchCityBase)) return true;
+                if (venueVal && sVenue.includes(venueVal.toLowerCase())) return true;
+
                 return false;
               });
             }
