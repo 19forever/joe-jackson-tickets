@@ -466,7 +466,7 @@
         </div>
       </div>
 
-      <!-- Setlist & Songs Panel (Grouped together) -->
+      <!-- Setlist & Songs Panel -->
       <div class="form-panel">
         <h3>Setlist & Songs</h3>
         
@@ -876,58 +876,64 @@
       }
     }
 
-    // Pomocná funkce pro vytažení ID ze Setlist.fm URL
-    function extractSetlistId(url) {
-      if (!url) return null;
-      const match = url.match(/-([a-f0-9]+)\.html/i) || url.match(/\/setlist\/[^\/]+\/[^\/]+\/([a-f0-9]+)/i);
+    // Pomocná funkce pro vytažení ID ze Setlist.fm URL nebo zadaného textu
+    function extractSetlistId(input) {
+      if (!input) return null;
+      const clean = input.trim();
+      if (/^[a-f0-9]{7,8}$/i.test(clean)) {
+        return clean;
+      }
+      const match = clean.match(/-([a-f0-9]{7,8})\.html/i) || clean.match(/\/([a-f0-9]{7,8})$/i);
       return match ? match[1] : null;
     }
 
-    // Funkce s podporou spolehlivějšího CORS proxy a fallbacku
+    // Odolný stahovač přes funkční CORS proxy s automatickým fallbackem
     async function fetchSetlistApiSecure(targetApiUrl) {
       const apiKey = SETLIST_API_KEY_DEFAULT;
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetApiUrl)}`;
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      // Seznam proxy serverů podporujících předávání x-api-key hlavičky
+      const proxyList = [
+        url => `https://thingproxy.freeboard.io/fetch/${url}`,
+        url => `https://corsproxy.org/?${encodeURIComponent(url)}`
+      ];
 
-      try {
-        const res = await fetch(proxyUrl, {
-          method: 'GET',
-          headers: {
-            'x-api-key': apiKey,
-            'Accept': 'application/json'
-          },
-          signal: controller.signal
-        });
+      let lastError = null;
 
-        clearTimeout(timeoutId);
+      for (const getProxyUrl of proxyList) {
+        const proxyUrl = getProxyUrl(targetApiUrl);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 7000);
 
-        if (!res.ok) {
-          if (res.status === 404) throw new Error('Concert or Setlist not found on Setlist.fm.');
-          if (res.status === 401 || res.status === 403) throw new Error('API key rejected by Setlist.fm.');
-          throw new Error(`HTTP Error ${res.status}`);
-        }
-
-        return await res.json();
-      } catch (err) {
-        clearTimeout(timeoutId);
-
-        // Záložní pokus přes corsproxy.io pokud allorigins selže
         try {
-          const backupProxy = `https://corsproxy.io/?url=${encodeURIComponent(targetApiUrl)}`;
-          const resBackup = await fetch(backupProxy, {
+          const res = await fetch(proxyUrl, {
+            method: 'GET',
             headers: {
               'x-api-key': apiKey,
               'Accept': 'application/json'
-            }
+            },
+            signal: controller.signal
           });
-          if (!resBackup.ok) throw new Error(`Backup proxy HTTP Error ${resBackup.status}`);
-          return await resBackup.json();
-        } catch (backupErr) {
-          throw new Error(`Connection failed: ${err.message}`);
+
+          clearTimeout(timeoutId);
+
+          if (res.ok) {
+            return await res.json();
+          }
+
+          if (res.status === 404) {
+            throw new Error('Concert or Setlist ID not found on Setlist.fm.');
+          }
+          if (res.status === 401 || res.status === 403) {
+            throw new Error('Setlist.fm API key was rejected.');
+          }
+        } catch (err) {
+          clearTimeout(timeoutId);
+          lastError = err;
+          // Vyzkoušíme další proxy v seznamu
         }
       }
+
+      throw new Error(lastError ? lastError.message : 'Could not fetch from Setlist.fm via proxy.');
     }
 
     async function autoFindSetlist() {
@@ -1001,7 +1007,7 @@
 
       const setlistId = extractSetlistId(urlInput);
       if (!setlistId) {
-        showStatus('Could not extract Setlist ID from URL. Ensure it ends with e.g. ...-33db1855.html', 'red');
+        showStatus('Could not extract Setlist ID from URL. Example format: ...-5bb283e4.html', 'red');
         return;
       }
 
@@ -1024,7 +1030,7 @@
         }
 
         if (songNames.length === 0) {
-          showStatus('Setlist found on Setlist.fm, but no songs are listed for this show.', 'red');
+          showStatus('Setlist record found on Setlist.fm, but no songs are listed for this show.', 'red');
           return;
         }
 
