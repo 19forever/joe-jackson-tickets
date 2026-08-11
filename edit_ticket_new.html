@@ -876,12 +876,20 @@
       }
     }
 
+    // Pomocná funkce pro vytažení ID ze Setlist.fm URL
+    function extractSetlistId(url) {
+      if (!url) return null;
+      const match = url.match(/-([a-f0-9]+)\.html/i) || url.match(/\/setlist\/[^\/]+\/[^\/]+\/([a-f0-9]+)/i);
+      return match ? match[1] : null;
+    }
+
+    // Funkce s podporou spolehlivějšího CORS proxy a fallbacku
     async function fetchSetlistApiSecure(targetApiUrl) {
       const apiKey = SETLIST_API_KEY_DEFAULT;
-      const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetApiUrl)}`;
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetApiUrl)}`;
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       try {
         const res = await fetch(proxyUrl, {
@@ -905,20 +913,20 @@
       } catch (err) {
         clearTimeout(timeoutId);
 
-        if (err.name === 'AbortError' || err.message.includes('Failed to fetch')) {
-          const backupProxy = `https://thingproxy.freeboard.io/fetch/${targetApiUrl}`;
+        // Záložní pokus přes corsproxy.io pokud allorigins selže
+        try {
+          const backupProxy = `https://corsproxy.io/?url=${encodeURIComponent(targetApiUrl)}`;
           const resBackup = await fetch(backupProxy, {
             headers: {
               'x-api-key': apiKey,
               'Accept': 'application/json'
             }
           });
-
           if (!resBackup.ok) throw new Error(`Backup proxy HTTP Error ${resBackup.status}`);
           return await resBackup.json();
+        } catch (backupErr) {
+          throw new Error(`Connection failed: ${err.message}`);
         }
-
-        throw err;
       }
     }
 
@@ -991,13 +999,12 @@
         return;
       }
 
-      const match = urlInput.match(/-([a-z0-9]+)\.html/i) || urlInput.match(/\/setlist\/[^\/]+\/[^\/]+\/([a-z0-9]+)/i);
-      if (!match) {
-        showStatus('Could not extract Setlist ID from URL.', 'red');
+      const setlistId = extractSetlistId(urlInput);
+      if (!setlistId) {
+        showStatus('Could not extract Setlist ID from URL. Ensure it ends with e.g. ...-33db1855.html', 'red');
         return;
       }
 
-      const setlistId = match[1];
       showStatus(`Fetching setlist ID '${setlistId}' from Setlist.fm...`, 'blue');
 
       const targetApiUrl = `https://api.setlist.fm/rest/1.0/setlist/${setlistId}`;
@@ -1017,7 +1024,7 @@
         }
 
         if (songNames.length === 0) {
-          showStatus('Setlist found on Setlist.fm, but no songs are listed.', 'blue');
+          showStatus('Setlist found on Setlist.fm, but no songs are listed for this show.', 'red');
           return;
         }
 
