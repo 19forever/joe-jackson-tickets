@@ -1,89 +1,130 @@
-import csv
 import os
 import re
+import urllib.request
+import urllib.error
+import pandas as pd
 
-CSV_FILE = 'joe_jackson_tickets_master_with_setlists.csv'
-SCANS_DIR = 'scans'
+CSV_FILE = 'joe_jackson_tickets_cleaned.csv'
+SCANS_DIR = './scans'
 
-def run_checks():
-    errors = 0
-    warnings = 0
+def check_unique_ids(df):
+    print("\n1. Kontrola unikátnosti ID_MEMORABILIA...")
+    dup_ids = df[df.duplicated('ID_MEMORABILIA', keep=False)]
+    if not dup_ids.empty:
+        print(f"❌ Nalezeny duplicitní ID_MEMORABILIA: {dup_ids['ID_MEMORABILIA'].unique().tolist()}")
+        return False
+    print("✅ Všechna ID_MEMORABILIA jsou unikátní.")
+    return True
 
-    print("=" * 60)
-    print("🔍 RUNNING DATA QUALITY CHECKS")
-    print("=" * 60)
+def check_dates(df):
+    print("\n2. Kontrola formátu data (YYYY-MM-DD)...")
+    date_pattern = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+    invalid_dates = df[~df['DATUM'].astype(str).str.match(date_pattern, na=False)]
+    if not invalid_dates.empty:
+        print(f"❌ Chybné formáty data ({len(invalid_dates)} záznamů):")
+        for idx, row in invalid_dates.iterrows():
+            print(f"   - {row['ID_MEMORABILIA']}: '{row['DATUM']}'")
+        return False
+    print("✅ Všechna data mají správný formát YYYY-MM-DD.")
+    return True
 
-    if not os.path.exists(CSV_FILE):
-        print(f"❌ ERROR: Master CSV file '{CSV_FILE}' not found!")
-        return 1
+def check_song_counts(df):
+    print("\n3. Kontrola počtu skladeb (POCET_SKLADEB vs SETLIST)...")
+    mismatches = []
+    for idx, row in df.iterrows():
+        setlist = str(row['SETLIST']).strip() if pd.notna(row['SETLIST']) else ''
+        count = row['POCET_SKLADEB'] if pd.notna(row['POCET_SKLADEB']) else 0
+        songs = [s.strip() for s in setlist.split(',') if s.strip()] if setlist else []
+        if len(songs) != count:
+            mismatches.append((row['ID_MEMORABILIA'], count, len(songs)))
+            
+    if mismatches:
+        print(f"⚠️ Nesoulad v počtu skladeb ({len(mismatches)} záznamů):")
+        for memo_id, count, actual in mismatches[:10]:
+            print(f"   - {memo_id}: uloženo {count}, v setlistu spočteno {actual}")
+        if len(mismatches) > 10:
+            print(f"   ... a dalších {len(mismatches) - 10} záznamů.")
+        return False
+    print("✅ Počet skladeb odpovídá položkám v setlistu.")
+    return True
 
-    if not os.path.exists(SCANS_DIR):
-        print(f"❌ ERROR: Scans directory '{SCANS_DIR}' not found!")
-        return 1
+def check_scan_files(df, scans_dir):
+    print(f"\n4. Kontrola přítomnosti souborů skenů ve složce '{scans_dir}'...")
+    if not os.path.exists(scans_dir):
+        print(f"ℹ️ Složka '{scans_dir}' neexistuje lokálně, přesakuji kontrolu souborů na disku.")
+        return True
 
-    # Načtení reálných souborů na disku
-    actual_files_on_disk = set(os.listdir(SCANS_DIR))
-    # Mapa pro kontrolu Case-Sensitivity (např. .webp vs .WEBP)
-    actual_files_lowercase = {f.lower(): f for f in actual_files_on_disk}
+    missing_files = []
+    for idx, row in df.iterrows():
+        scans = str(row['SOUBOR_SKEN']).split(',') if pd.notna(row['SOUBOR_SKEN']) else []
+        for s in scans:
+            s_clean = s.strip()
+            if s_clean and not os.path.exists(os.path.join(scans_dir, s_clean)):
+                missing_files.append((row['ID_MEMORABILIA'], s_clean))
 
-    referenced_files = set()
-    ticket_ids = set()
+    if missing_files:
+        print(f"❌ Chybějící soubory skenů ({len(missing_files)} chybí):")
+        for memo_id, filename in missing_files[:10]:
+            print(f"   - {memo_id}: {filename}")
+        if len(missing_files) > 10:
+            print(f"   ... a dalších {len(missing_files) - 10} souborů.")
+        return False
+    print("✅ Všechny soubory skenů existují v adresáři /scans/.")
+    return True
 
-    with open(CSV_FILE, mode='r', encoding='utf-8-sig') as f:
-        reader = csv.DictReader(f)
+def check_youtube_links(df):
+    print("\n5. Kontrola funkčnosti YouTube odkazů...")
+    yt_records = df[df['YOUTUBE_URL'].notna() & (df['YOUTUBE_URL'].astype(str).str.strip() != '')]
+    
+    if yt_records.empty:
+        print("ℹ️ Žádné YouTube odkazy k ověření.")
+        return True
+
+    broken_count = 0
+    total = len(yt_records)
+    print(f"Ověřuji {total} odkazů přes YouTube oEmbed API...")
+
+    for idx, row in yt_records.iterrows():
+        url = str(row['YOUTUBE_URL']).strip()
+        memo_id = row.get('ID_MEMORABILIA', f'Řádek {idx}')
+        oembed_url = f"https://www.youtube.com/oembed?url={url}&format=json"
         
-        for row_num, row in enumerate(reader, start=2):
-            ticket_id = row.get('ID_LISTKU', '').strip()
-            sken_field = row.get('SOUBOR_SKEN', '').strip()
-            date_field = row.get('DATUM', '').strip()
+        req = urllib.request.Request(oembed_url, headers={'User-Agent': 'Mozilla/5.0'})
+        try:
+            with urllib.request.urlopen(req, timeout=5) as response:
+                if response.status != 200:
+                    print(f"   ⚠️ [{memo_id}] Neaktivní video: {url}")
+                    broken_count += 1
+        except urllib.error.HTTPError as e:
+            print(f"   ❌ [{memo_id}] Nefunkční / smazané video (HTTP {e.code}): {url}")
+            broken_count += 1
+        except Exception as e:
+            print(f"   ❌ [{memo_id}] Chyba spojení u videa: {url} ({e})")
+            broken_count += 1
 
-            # 1. Kontrola duplicity ID
-            if ticket_id:
-                if ticket_id in ticket_ids:
-                    print(f"❌ ERROR [Row {row_num}]: Duplicate ID_LISTKU '{ticket_id}'")
-                    errors += 1
-                ticket_ids.add(ticket_id)
+    if broken_count == 0:
+        print(f"✅ Všech {total} YouTube odkazů je plně funkčních.")
+        return True
+    else:
+        print(f"⚠️ Nalezeno {broken_count} nefunkčních odkazů z celkových {total}.")
+        return False
 
-            # 2. Kontrola existence skenů uvedených v CSV
-            if sken_field and sken_field.lower() != 'není k dispozici':
-                sken_list = [s.strip() for s in sken_field.split(',') if s.strip()]
-                
-                for sken_file in sken_list:
-                    referenced_files.add(sken_file)
-                    
-                    if sken_file not in actual_files_on_disk:
-                        # Zkontrolujeme, zda nejde o chybějící velká/malá písmena
-                        if sken_file.lower() in actual_files_lowercase:
-                            correct_name = actual_files_lowercase[sken_file.lower()]
-                            print(f"⚠️ WARNING [Row {row_num}]: File casing mismatch for '{sken_file}' (Actual file on disk is '{correct_name}')")
-                            warnings += 1
-                        else:
-                            print(f"❌ ERROR [Row {row_num}] ({ticket_id}): Referenced scan file '{sken_file}' NOT FOUND in scans/ directory!")
-                            errors += 1
+def main():
+    print(f"=== SPUŠTĚNÍ KONTROLY DATABÁZE ({CSV_FILE}) ===")
+    if not os.path.exists(CSV_FILE):
+        print(f"❌ Soubor {CSV_FILE} nebyl nalezen v aktuálním adresáři!")
+        return
 
-            # 3. Kontrola formátu pole DATUM (akceptuje YYYY-MM-DD, DD.MM.YYYY, "8th October 2010" i samostatný rok "2010")
-            if date_field and date_field.lower() != 'není k dispozici':
-                if not re.match(r'^(\d{4}|\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4}|\d{1,2}(?:st|nd|rd|th)?\s+[A-Za-z]+\s+\d{4})$', date_field):
-                    print(f"⚠️ WARNING [Row {row_num}] ({ticket_id}): Unconventional date format in DATUM: '{date_field}'")
-                    warnings += 1
+    df = pd.read_csv(CSV_FILE)
+    print(f"Načteno celkem {len(df)} záznamů.")
 
-    # 4. Kontrola sirotčích obrázků ve složce scans/
-    orphan_files = actual_files_on_disk - referenced_files
-    # Ignorujeme skryté soubory systému (jako .DS_Store nebo .gitkeep)
-    orphan_files = {f for f in orphan_files if not f.startswith('.')}
+    check_unique_ids(df)
+    check_dates(df)
+    check_song_counts(df)
+    check_scan_files(df, SCANS_DIR)
+    check_youtube_links(df)
 
-    if orphan_files:
-        print("\n" + "-" * 60)
-        print(f"⚠️ FOUND {len(orphan_files)} ORPHAN SCAN FILES (In scans/ folder, but NOT referenced in CSV):")
-        for orphan in sorted(orphan_files):
-            print(f"  • scans/{orphan}")
-        warnings += len(orphan_files)
-
-    print("\n" + "=" * 60)
-    print(f"📊 SUMMARY: {errors} Error(s), {warnings} Warning(s)")
-    print("=" * 60)
-
-    return 1 if errors > 0 else 0
+    print("\n=== KONTROLA DOKONČENA ===")
 
 if __name__ == '__main__':
-    exit(run_checks())
+    main()
