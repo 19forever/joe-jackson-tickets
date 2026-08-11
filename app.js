@@ -9,6 +9,23 @@ let currentModalIndex = -1;
 let imageViewerInstance = null;
 let quickViewerInstance = null;
 
+// Funkce pro náhodné zamíchání pole (Fisher-Yates Shuffle)
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// Funkce pro ruční přemíchání databáze (Tlačítko Reshuffle)
+function reshuffleAndRender() {
+  shuffleArray(allTickets);
+  const sortSelect = document.getElementById('sortFilter');
+  if (sortSelect) sortSelect.value = 'random';
+  filterData();
+}
+
 function isValidValue(val) {
   if (!val) return false;
   const clean = String(val).trim().toLowerCase();
@@ -189,7 +206,7 @@ function checkOnThisDayAnniversary() {
   }
 }
 
-// Jediný a správný blok pro inicializaci po načtení DOMu
+// Inicializace po načtení DOMu
 window.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
@@ -198,7 +215,6 @@ window.addEventListener('DOMContentLoaded', () => {
         clearSearchInput();
       }
     });
-    // Navázání ukládání vyhledávání při psaní
     searchInput.addEventListener('input', handleSearchInput);
   }
 
@@ -211,7 +227,10 @@ window.addEventListener('DOMContentLoaded', () => {
         console.error("CSV file is empty or could not be loaded.");
         return;
       }
-      allTickets = results.data;
+      
+      // 🎲 ZAMÍCHÁNÍ DATABÁZE HNED PŘI NAČTENÍ STRÁNKY
+      allTickets = shuffleArray(results.data);
+
       updateYearBadge();
       populateFilters();
 
@@ -352,11 +371,13 @@ function filterData() {
     return getTicketCategory(t).toLowerCase() === currentCategory.toLowerCase();
   });
 
-  filteredTickets.sort((a, b) => {
-    const dateStrA = a.DATUM || '';
-    const dateStrB = b.DATUM || '';
-    return sort === 'newest' ? dateStrB.localeCompare(dateStrA) : dateStrA.localeCompare(dateStrB);
-  });
+  // Uplatnění řazení
+  if (sort === 'oldest') {
+    filteredTickets.sort((a, b) => (a.DATUM || '').localeCompare(b.DATUM || ''));
+  } else if (sort === 'newest') {
+    filteredTickets.sort((a, b) => (b.DATUM || '').localeCompare(a.DATUM || ''));
+  }
+  // Pokud je nastaveno 'random', pořadí zůstává tak, jak bylo zamícháno
 
   currentPage = 1;
   renderPaginated();
