@@ -116,7 +116,6 @@ function handleSearchInput() {
   const clearBtn = document.getElementById('searchClearBtn');
   const val = input.value;
   
-  // Průběžné ukládání dotazu do sessionStorage
   sessionStorage.setItem('jj_museum_search', val);
   
   if (clearBtn) {
@@ -234,7 +233,6 @@ window.addEventListener('DOMContentLoaded', () => {
       updateYearBadge();
       populateFilters();
 
-      // Obnovení hledaného výrazu ze sessionStorage po načtení dat
       const savedSearch = sessionStorage.getItem('jj_museum_search');
       if (savedSearch && searchInput) {
         searchInput.value = savedSearch;
@@ -302,15 +300,37 @@ function renderCategoryTabs(matchesBeforeCategoryFilter) {
   const tabsContainer = document.getElementById('categoryTabs');
   tabsContainer.innerHTML = '';
 
-  const counts = { 'Tickets': 0, 'Passes': 0, 'Programs': 0, 'Posters': 0, 'T-shirts': 0, 'Memorabilia': 0, 'ALL': matchesBeforeCategoryFilter.length };
+  const counts = { 
+    'Tickets': 0, 
+    'Passes': 0, 
+    'Programs': 0, 
+    'Posters': 0, 
+    'T-shirts': 0, 
+    'Memorabilia': 0, 
+    'Videos': 0,
+    'ALL': matchesBeforeCategoryFilter.length 
+  };
 
   matchesBeforeCategoryFilter.forEach(t => {
     const cat = getTicketCategory(t);
     if (counts[cat] !== undefined) counts[cat]++;
+    
+    if (isValidValue(t.YOUTUBE_URL)) {
+      counts['Videos']++;
+    }
   });
 
-  const categoryOrder = ['Tickets', 'Passes', 'Programs', 'Posters', 'T-shirts', 'Memorabilia', 'ALL'];
-  const categoryLabels = { 'Tickets': '🎫 Tickets', 'Passes': '🪪 Passes', 'Programs': '📖 Programs', 'Posters': '🖼️ Posters', 'T-shirts': '🎽 T-shirts', 'Memorabilia': '⭐ Memorabilia', 'ALL': '✨ All Records' };
+  const categoryOrder = ['Tickets', 'Passes', 'Programs', 'Posters', 'T-shirts', 'Memorabilia', 'Videos', 'ALL'];
+  const categoryLabels = { 
+    'Tickets': '🎫 Tickets', 
+    'Passes': '🪪 Passes', 
+    'Programs': '📖 Programs', 
+    'Posters': '🖼️ Posters', 
+    'T-shirts': '🎽 T-shirts', 
+    'Memorabilia': '⭐ Memorabilia', 
+    'Videos': '🎬 Videos',
+    'ALL': '✨ All Records' 
+  };
 
   categoryOrder.forEach(catKey => {
     const count = counts[catKey];
@@ -368,16 +388,15 @@ function filterData() {
 
   filteredTickets = matchesBase.filter(t => {
     if (currentCategory === 'ALL') return true;
+    if (currentCategory === 'Videos') return isValidValue(t.YOUTUBE_URL);
     return getTicketCategory(t).toLowerCase() === currentCategory.toLowerCase();
   });
 
-  // Uplatnění řazení
   if (sort === 'oldest') {
     filteredTickets.sort((a, b) => (a.DATUM || '').localeCompare(b.DATUM || ''));
   } else if (sort === 'newest') {
     filteredTickets.sort((a, b) => (b.DATUM || '').localeCompare(a.DATUM || ''));
   }
-  // Pokud je nastaveno 'random', pořadí zůstává tak, jak bylo zamícháno
 
   currentPage = 1;
   renderPaginated();
