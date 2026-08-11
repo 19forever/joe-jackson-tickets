@@ -1099,7 +1099,7 @@
       }
     }
 
-async function commitToGitHub() {
+    async function commitToGitHub() {
       let token = getStoredToken();
 
       if (!token) {
@@ -1114,7 +1114,6 @@ async function commitToGitHub() {
 
       if (currentRecordIndex === -1) return;
 
-      // Uložíme aktuální formulář do pole v paměti
       saveCurrentChangesToMemory();
 
       const repoOwner = '19forever';
@@ -1124,18 +1123,16 @@ async function commitToGitHub() {
       showStatus('Connecting to GitHub API...', 'blue');
 
       try {
-        // 1. Pokud je vybrán obrázek, nahrajeme ho
         if (selectedImageFile) {
           showStatus(`Uploading image ${selectedImageFile.name} to scans/ folder on GitHub...`, 'blue');
           await uploadImageToGitHub(token, repoOwner, repoName, selectedImageFile);
         }
 
-        // 2. VŽDY si přímo před zápisem vytáhneme aktuální SHA hash z GitHubu
         const getFileRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}?t=${Date.now()}`, {
           headers: { 
             'Authorization': `token ${token}`,
             'Accept': 'application/vnd.github.v3+json',
-            'Cache-Control': 'no-cache' // Zabráníme kešování starého SHA v prohlížeči
+            'Cache-Control': 'no-cache'
           }
         });
 
@@ -1144,9 +1141,8 @@ async function commitToGitHub() {
         }
 
         const fileData = await getFileRes.json();
-        const latestSha = fileData.sha; // Získali jsme garantovaně nejnovější SHA
+        const latestSha = fileData.sha;
 
-        // 3. Připravíme CSV data
         const csvString = Papa.unparse(fullCsvData);
         const contentEncoded = btoa(unescape(encodeURIComponent(csvString)));
 
@@ -1154,7 +1150,6 @@ async function commitToGitHub() {
           ? `Delete record ${lastDeletedId} via Web Editor`
           : `Update record ${fullCsvData[currentRecordIndex].ID_MEMORABILIA} via Web Editor`;
 
-        // 4. Zapíšeme s nejnovějším SHA hashem
         const updateRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
           method: 'PUT',
           headers: {
@@ -1165,7 +1160,7 @@ async function commitToGitHub() {
           body: JSON.stringify({
             message: commitMessage,
             content: contentEncoded,
-            sha: latestSha // Použijeme čerstvý SHA
+            sha: latestSha
           })
         });
 
@@ -1182,6 +1177,7 @@ async function commitToGitHub() {
         showStatus(`❌ ${err.message}`, 'red');
       }
     }
+
     async function uploadImageToGitHub(token, repoOwner, repoName, file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
