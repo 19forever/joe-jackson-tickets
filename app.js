@@ -8,7 +8,7 @@ let currentCategory = 'Tickets';
 let activeViewerInstance = null;
 let quickViewerInstance = null;
 
-// Dynamické přimíchání CSS pro efektní rozostření a ztmavení pozadí pod Viewer.js
+// Dynamické přimíchání CSS pro efektní rozostření pozadí a dvousloupcový video modal se setlistem
 (function injectViewerCustomStyles() {
   const style = document.createElement('style');
   style.textContent = `
@@ -24,6 +24,51 @@ let quickViewerInstance = null;
       font-weight: 600 !important;
       letter-spacing: 0.5px !important;
       text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
+    }
+    /* Styly pro video modal se setlistem napravo */
+    #videoModal .modal-content, 
+    #videoModal .video-modal-content {
+      display: flex !important;
+      flex-direction: row !important;
+      gap: 20px !important;
+      max-width: 950px !important;
+      width: 92% !important;
+      background-color: #111827 !important;
+      border: 1px solid #1f2937 !important;
+      border-radius: 12px !important;
+      padding: 20px !important;
+      align-items: flex-start !important;
+    }
+    .video-frame-container {
+      flex: 1 1 60% !important;
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+    .video-frame-container iframe {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      border: none;
+    }
+    .video-setlist-box {
+      flex: 1 1 40% !important;
+      background: #151c2b;
+      border: 1px solid #1f2937;
+      border-radius: 8px;
+      padding: 15px;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+    @media (max-width: 768px) {
+      #videoModal .modal-content, 
+      #videoModal .video-modal-content {
+        flex-direction: column !important;
+      }
+      .video-setlist-box {
+        width: 100%;
+        max-height: 250px;
+      }
     }
   `;
   document.head.appendChild(style);
@@ -83,16 +128,57 @@ function getYouTubeEmbedUrl(url) {
   return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}?autoplay=1` : null;
 }
 
-function openVideoModal(youtubeUrl) {
-  const embedUrl = getYouTubeEmbedUrl(youtubeUrl);
+// OTEVŘENÍ VIDEO MODALU SE SETLISTEM NAPRAVO
+function openVideoModal(ticketIndex) {
+  let t = (typeof ticketIndex === 'number') ? filteredTickets[ticketIndex] : null;
+  let rawUrl = t ? t.YOUTUBE_URL : ticketIndex;
+
+  const embedUrl = getYouTubeEmbedUrl(rawUrl);
   if (!embedUrl) {
-    window.open(youtubeUrl, '_blank');
+    if (rawUrl) window.open(rawUrl, '_blank');
     return;
   }
 
   const iframe = document.getElementById('youtubeIframe');
-  iframe.src = embedUrl;
-  document.getElementById('videoModal').classList.add('active');
+  if (iframe) iframe.src = embedUrl;
+
+  // Dynamická příprava kontejneru pro setlist vedle videa
+  let setlistContainer = document.getElementById('videoSetlistContainer');
+  if (!setlistContainer && iframe) {
+    const parentContent = iframe.closest('.modal-content') || iframe.parentElement;
+
+    // Obalíme iframe do levého flex kontejneru
+    if (!iframe.parentElement.classList.contains('video-frame-container')) {
+      const frameWrapper = document.createElement('div');
+      frameWrapper.className = 'video-frame-container';
+      iframe.parentNode.insertBefore(frameWrapper, iframe);
+      frameWrapper.appendChild(iframe);
+    }
+
+    setlistContainer = document.createElement('div');
+    setlistContainer.id = 'videoSetlistContainer';
+    setlistContainer.className = 'video-setlist-box';
+    parentContent.appendChild(setlistContainer);
+  }
+
+  if (setlistContainer) {
+    if (t && isValidValue(t.SETLIST)) {
+      const songs = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
+      setlistContainer.innerHTML = `
+        <h4 style="color: #facc15; margin-bottom: 10px; font-size: 0.95rem;">🎵 Setlist (${songs.length} songs)</h4>
+        <ol style="padding-left: 18px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">
+          ${songs.map(s => `<li>${s}</li>`).join('')}
+        </ol>
+      `;
+      setlistContainer.style.display = 'block';
+    } else {
+      setlistContainer.innerHTML = `<p style="color: #9ca3af; font-size: 0.85rem;">No setlist details available for this video show.</p>`;
+      setlistContainer.style.display = 'block';
+    }
+  }
+
+  const modal = document.getElementById('videoModal');
+  if (modal) modal.classList.add('active');
 }
 
 function closeVideoModal() {
@@ -525,7 +611,7 @@ function renderTickets(tickets) {
 
     if (isValidValue(t.YOUTUBE_URL)) {
       iconsHTML += `
-        <button class="icon-btn" title="YouTube video" onclick="event.stopPropagation(); openVideoModal('${t.YOUTUBE_URL}');">
+        <button class="icon-btn" title="YouTube video" onclick="event.stopPropagation(); openVideoModal(${globalIndex});">
           🎬
         </button>`;
     }
