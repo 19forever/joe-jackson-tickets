@@ -19,6 +19,7 @@
       --text-muted: #9ca3af;
       --accent-yellow: #facc15;
       --accent-blue: #38bdf8;
+      --accent-red: #ef4444;
       --border-color: #1f2937;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
@@ -130,6 +131,20 @@
     }
 
     .btn-dup:hover { background-color: #7dd3fc; }
+
+    .btn-del {
+      background-color: var(--accent-red);
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-del:hover { background-color: #f87171; }
 
     .record-counter { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
@@ -376,6 +391,7 @@
     <div style="display: flex; gap: 8px; align-items: center;">
       <button class="btn-add-new" onclick="addNewRecord()" title="Add empty new record">➕ Add</button>
       <button class="btn-dup" onclick="duplicateCurrentRecord()" title="Duplicate current record with prefilled details">📋 Dup</button>
+      <button class="btn-del" onclick="deleteCurrentRecord()" title="Delete current record">🗑️ Del</button>
     </div>
   </div>
 
@@ -662,6 +678,31 @@
       showStatus(`📋 Duplicated record from ${currentRecord.ID_MEMORABILIA || currentRecord.ID_LISTKU} to new ID: ${newId}.`, 'blue');
     }
 
+    function deleteCurrentRecord() {
+      if (currentRecordIndex < 0 || currentRecordIndex >= fullCsvData.length) return;
+
+      const currentId = fullCsvData[currentRecordIndex].ID_MEMORABILIA || fullCsvData[currentRecordIndex].ID_LISTKU || 'current record';
+
+      if (!confirm(`Are you sure you want to delete record ${currentId}?`)) {
+        return;
+      }
+
+      fullCsvData.splice(currentRecordIndex, 1);
+
+      if (fullCsvData.length === 0) {
+        addNewRecord();
+        showStatus('Deleted last record. A new empty record was created.', 'blue');
+        return;
+      }
+
+      if (currentRecordIndex >= fullCsvData.length) {
+        currentRecordIndex = fullCsvData.length - 1;
+      }
+
+      loadRecord(currentRecordIndex);
+      showStatus(`🗑️ Record ${currentId} removed. Click 'Save to GitHub' to apply changes permanently.`, 'blue');
+    }
+
     function checkDataQuality() {
       const currentId = document.getElementById('ID_MEMORABILIA').value;
       const dateVal = document.getElementById('DATUM').value.trim().toLowerCase();
@@ -904,20 +945,17 @@
     async function autoFindSetlist() {
       const datumVal = document.getElementById('DATUM').value.trim();
       if (!datumVal) {
-        showStatus('Please enter a valid Date in YYYY-MM-DD format first.', 'red');
+        showStatus('Please enter a valid Date (YYYY-MM-DD) first.', 'red');
         return;
       }
 
-      let d = new Date(datumVal);
-      if (isNaN(d.getTime())) {
-        showStatus(`Could not parse date '${datumVal}' into a valid Date object.`, 'red');
+      const parts = datumVal.split('-');
+      if (parts.length !== 3 || parts[0].length !== 4) {
+        showStatus(`Invalid date format '${datumVal}'. Expected YYYY-MM-DD.`, 'red');
         return;
       }
 
-      const day = String(d.getDate()).padStart(2, '0');
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const year = d.getFullYear();
-      const apiFormattedDate = `${day}-${month}-${year}`;
+      const apiFormattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
 
       showStatus(`Searching Setlist.fm for Joe Jackson show on ${apiFormattedDate}...`, 'blue');
 
@@ -926,7 +964,7 @@
       try {
         const data = await fetchSetlistApiSecure(targetApiUrl);
         
-        if (!data.setlist || data.setlist.length === 0) {
+        if (!data || !data.setlist || !Array.isArray(data.setlist) || data.setlist.length === 0) {
           showStatus(`No show recorded on Setlist.fm for date ${apiFormattedDate}.`, 'red');
           return;
         }
