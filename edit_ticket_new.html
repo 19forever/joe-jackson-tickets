@@ -493,8 +493,8 @@
             <label for="SETLIST_URL">Setlist.fm Link (SETLIST_URL)</label>
             <div class="input-with-btn">
               <input type="url" id="SETLIST_URL" placeholder="https://www.setlist.fm/setlist/...">
-              <button type="button" class="btn-fetch-setlist" onclick="autoFindSetlist()" title="Search Setlist.fm automatically using concert date">🤖 Auto-Find by Date</button>
-              <button type="button" class="btn-fetch-setlist btn-fetch-secondary" onclick="fetchSetlistFromApi()" title="Fetch using direct URL from field">🔗 From URL</button>
+              <button type="button" class="btn-fetch-setlist" onclick="openSetlistUrl()" title="Open Setlist.fm link in a new tab">↗ Open Link</button>
+              <button type="button" class="btn-fetch-setlist btn-fetch-secondary" onclick="fetchSetlistFromApi()" title="Fetch songs using direct URL from field">🔗 From URL</button>
             </div>
           </div>
           <div class="form-group">
@@ -544,8 +544,6 @@
   <script>
     const CSV_FILENAME = 'joe_jackson_tickets_cleaned.csv';
     const WORKER_PROXY_URL = 'https://jj-setlist-proxy.marek-kraus.workers.dev';
-    const JOE_JACKSON_MBID = '81561021-d707-427d-94d7-0624a0d9f48f';
-    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     let fullCsvData = [];
     let currentRecordIndex = -1;
@@ -952,6 +950,15 @@
       return match ? match[1] : null;
     }
 
+    function openSetlistUrl() {
+      const url = document.getElementById('SETLIST_URL').value.trim();
+      if (url && url.startsWith('http')) {
+        window.open(url, '_blank');
+      } else {
+        showStatus('Please enter a valid Setlist.fm URL first.', 'red');
+      }
+    }
+
     async function fetchSetlistApiSecure(targetApiUrl) {
       const proxyUrl = `${WORKER_PROXY_URL}?url=${encodeURIComponent(targetApiUrl)}`;
 
@@ -959,7 +966,6 @@
         const res = await fetch(proxyUrl);
         if (!res.ok) {
           if (res.status === 404) throw new Error('NOT_FOUND');
-          if (res.status === 429) throw new Error('RATE_LIMIT');
           throw new Error(`HTTP Error ${res.status}`);
         }
         return await res.json();
@@ -982,109 +988,6 @@
         });
       }
       return songNames;
-    }
-
-    async function autoFindSetlist() {
-      const datumVal = document.getElementById('DATUM').value.trim();
-      const cityVal = document.getElementById('MESTO').value.trim();
-      const venueVal = document.getElementById('VENUE').value.trim();
-
-      if (!datumVal) {
-        showStatus('Please enter a valid Date (YYYY-MM-DD) first.', 'red');
-        return;
-      }
-
-      const parts = datumVal.split('-');
-      if (parts.length !== 3 || parts[0].length !== 4) {
-        showStatus(`Invalid date format '${datumVal}'. Expected YYYY-MM-DD.`, 'red');
-        return;
-      }
-
-      const concertYear = parts[0];
-      const apiFormattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; // DD-MM-YYYY
-      const searchCityBase = cityVal.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-      showStatus(`Searching Setlist.fm archive for Joe Jackson show on ${apiFormattedDate}...`, 'blue');
-
-      try {
-        let foundShow = null;
-
-        // 1. Zkusíme přímý dotaz na datum
-        const primaryApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?date=${apiFormattedDate}`;
-        try {
-          const primaryData = await fetchSetlistApiSecure(primaryApiUrl);
-          if (primaryData && primaryData.setlist) {
-            const list = Array.isArray(primaryData.setlist) ? primaryData.setlist : [primaryData.setlist];
-            if (list.length > 0) foundShow = list[0];
-          }
-        } catch (e) {
-          // Ignorujeme případné 404
-        }
-
-        // 2. Pokud přímé datum selhalo, projdeme ročník skrze stránkování
-        if (!foundShow) {
-          let page = 1;
-          let totalPages = 1;
-
-          while (page <= totalPages && !foundShow) {
-            showStatus(`Searching archive for ${concertYear} (Page ${page}/${totalPages})...`, 'blue');
-            await delay(1100);
-
-            const fallbackApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?year=${concertYear}&p=${page}`;
-            const fallbackData = await fetchSetlistApiSecure(fallbackApiUrl);
-
-            if (fallbackData && fallbackData.setlist) {
-              const list = Array.isArray(fallbackData.setlist) ? fallbackData.setlist : [fallbackData.setlist];
-              
-              const itemsPerPage = fallbackData.itemsPerPage || 20;
-              const totalItems = fallbackData.total || list.length;
-              totalPages = Math.ceil(totalItems / itemsPerPage);
-
-              foundShow = list.find(s => {
-                if (s.eventDate === apiFormattedDate) return true;
-
-                const sCity = s.venue && s.venue.city ? s.venue.city.name.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
-                const sVenue = s.venue ? s.venue.name.toLowerCase() : '';
-
-                if (searchCityBase && sCity.includes(searchCityBase)) return true;
-                if (venueVal && sVenue.includes(venueVal.toLowerCase())) return true;
-
-                return false;
-              });
-            }
-
-            page++;
-          }
-        }
-
-        if (!foundShow) {
-          showStatus(`No show recorded on Setlist.fm for date ${apiFormattedDate}${cityVal ? ' in ' + cityVal : ''}.`, 'red');
-          return;
-        }
-
-        if (foundShow.url) {
-          document.getElementById('SETLIST_URL').value = foundShow.url;
-        }
-
-        const songNames = parseSongsFromShow(foundShow);
-
-        if (songNames.length === 0) {
-          showStatus(`Found concert on Setlist.fm (${foundShow.url}), but no songs are logged for this show. Direct URL saved!`, 'blue');
-          return;
-        }
-
-        document.getElementById('SETLIST').value = songNames.join(', ');
-        recalculateSongCount();
-
-        showStatus(`✅ Successfully loaded ${songNames.length} songs and updated URL from Setlist.fm!`, 'green');
-
-      } catch (err) {
-        if (err.message === 'RATE_LIMIT') {
-          showStatus(`❌ Setlist.fm Rate Limit reached. Please wait 5 seconds and click Auto-Find again.`, 'red');
-        } else {
-          showStatus(`❌ ${err.message === 'NOT_FOUND' ? 'No show recorded on Setlist.fm for date ' + apiFormattedDate : err.message}`, 'red');
-        }
-      }
     }
 
     async function fetchSetlistFromApi() {
