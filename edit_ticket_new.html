@@ -118,7 +118,7 @@
     label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
     label span { color: var(--accent-orange); }
 
-    input[type="text"], input[type="date"], select, textarea {
+    input[type="text"], input[type="date"], select, textarea, input[type="file"] {
       background-color: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-main);
@@ -129,6 +129,28 @@
     }
 
     input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); }
+
+    /* Styly pro náhled skenu */
+    .scan-preview-box {
+      margin-top: 10px;
+      padding: 12px;
+      background: var(--bg-main);
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 150px;
+    }
+
+    .scan-preview-box img {
+      max-width: 100%;
+      max-height: 250px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
 
     .setlist-import-box {
       display: flex;
@@ -202,7 +224,7 @@
 
     <form id="editForm" class="form-grid" onsubmit="handleFormSubmit(event)">
       
-      <!-- ID Memorabilia (Hidden or Readonly) -->
+      <!-- ID Memorabilia (Readonly) -->
       <div class="form-group">
         <label for="id_memorabilia">ID Memorabilia <span>*</span></label>
         <input type="text" id="id_memorabilia" name="ID_MEMORABILIA" readonly required style="opacity: 0.7;">
@@ -284,10 +306,27 @@
         <input type="text" id="pocet_skladeb" name="POCET_SKLADEB" readonly style="opacity: 0.7;">
       </div>
 
-      <!-- Scan File Name -->
+      <!-- Setlist.fm URL -->
       <div class="form-group">
-        <label for="soubor_sken">Scan File Name(s)</label>
-        <input type="text" id="soubor_sken" name="SOUBOR_SKEN" placeholder="TICKET_0126.jpg">
+        <label for="setlist_fm_url">Setlist.fm Record URL</label>
+        <input type="text" id="setlist_fm_url" name="SETLIST_FM_URL" placeholder="https://www.setlist.fm/setlist/...">
+      </div>
+
+      <!-- Scan File Name Field -->
+      <div class="form-group full-width">
+        <label for="soubor_sken">Scan File Name(s) <span>*</span></label>
+        <input type="text" id="soubor_sken" name="SOUBOR_SKEN" placeholder="TICKET_0126.jpg" oninput="updateScanPreviewFromInput()">
+      </div>
+
+      <!-- Upload New Image File & Preview Section -->
+      <div class="form-group full-width">
+        <label for="fileUpload">Upload New Scan Image:</label>
+        <input type="file" id="fileUpload" accept="image/*" onchange="handleFileSelect(event)">
+        
+        <div class="scan-preview-box" id="scanPreviewBox">
+          <p style="color: var(--text-muted); font-size: 0.85rem;" id="previewPlaceholder">No scan image loaded</p>
+          <img id="scanPreviewImg" src="" alt="Scan Preview" style="display: none;">
+        </div>
       </div>
 
       <!-- YouTube URL -->
@@ -315,18 +354,18 @@
     const REPO_OWNER = '19forever';
     const REPO_NAME = 'joe-jackson-tickets';
     const CSV_PATH = 'joe_jackson_tickets_cleaned.csv';
-    const WORKER_PROXY_URL = 'https://jj-setlist-proxy.19forever.workers.dev'; // Váš Cloudflare Worker Proxy
+    const WORKER_PROXY_URL = 'https://jj-setlist-proxy.19forever.workers.dev';
 
     let fullCsvData = [];
     let currentSha = '';
     let recordIdToEdit = null;
+    let selectedFileBase64 = null;
+    let selectedFileName = null;
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Načtení uloženého GitHub tokenu
       const savedToken = localStorage.getItem('jj_gh_token');
       if (savedToken) document.getElementById('ghToken').value = savedToken;
 
-      // Získání ID záznamu z URL parametrů (?id=TICKET_0126)
       const urlParams = new URLSearchParams(window.location.search);
       recordIdToEdit = urlParams.get('id');
 
@@ -345,7 +384,6 @@
       el.style.display = 'block';
     }
 
-    // Načtení master CSV přímo z GitHub API (včetně SHA kódu souboru)
     async function fetchMasterCsvFromGitHub() {
       try {
         const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${CSV_PATH}`);
@@ -354,7 +392,6 @@
         const json = await res.json();
         currentSha = json.sha;
 
-        // Dekódování UTF-8 obsahu z base64
         const csvContent = decodeURIComponent(escape(atob(json.content)));
         
         Papa.parse(csvContent, {
@@ -386,6 +423,56 @@
         document.getElementById('id_memorabilia').value = newId;
       }
       updateSongCount();
+      updateScanPreviewFromInput();
+    }
+
+    // Živý náhled skenu podle zadaného názvu v poli SOUBOR_SKEN
+    function updateScanPreviewFromInput() {
+      const filename = document.getElementById('soubor_sken').value.trim();
+      const previewImg = document.getElementById('scanPreviewImg');
+      const placeholder = document.getElementById('previewPlaceholder');
+
+      if (filename && !selectedFileBase64) {
+        const firstFile = filename.split(',')[0].trim();
+        previewImg.src = `./scans/${firstFile}`;
+        previewImg.style.display = 'block';
+        placeholder.style.display = 'none';
+        
+        previewImg.onerror = () => {
+          previewImg.style.display = 'none';
+          placeholder.textContent = `Image '${firstFile}' not found in ./scans/ folder`;
+          placeholder.style.display = 'block';
+        };
+      } else if (!selectedFileBase64) {
+        previewImg.style.display = 'none';
+        placeholder.textContent = "No scan image loaded";
+        placeholder.style.display = 'block';
+      }
+    }
+
+    // Správa výběru nového obrázkového souboru z disku
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      selectedFileName = file.name;
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        selectedFileBase64 = e.target.result.split(',')[1];
+        
+        // Aktualizujeme název v políčku SOUBOR_SKEN
+        document.getElementById('soubor_sken').value = selectedFileName;
+
+        // Zobrazíme náhled nahraného souboru
+        const previewImg = document.getElementById('scanPreviewImg');
+        const placeholder = document.getElementById('previewPlaceholder');
+        previewImg.src = e.target.result;
+        previewImg.style.display = 'block';
+        placeholder.style.display = 'none';
+      };
+
+      reader.readAsDataURL(file);
     }
 
     function updateSongCount() {
@@ -395,12 +482,10 @@
         return;
       }
       const songs = setlistText.split(',').map(s => s.trim()).filter(Boolean);
-      // Nepočítáme hlavičky přídavků [Encore X] jako samostatné písničky
-      const actualSongs = songs.filter(s => !s.startsWith('[Encore'));
+      const actualSongs = songs.filter(s => !s.startsWith('[Encore') && !s.startsWith('[Set'));
       document.getElementById('pocet_skladeb').value = actualSongs.length;
     }
 
-    // NAČÍTÁNÍ SETLISTU SE ZAPOČÍTÁNÍM ENCORE, INFO A COVER POZNÁMEK
     async function importSetlistFm() {
       const urlInput = document.getElementById('setlistFmUrl').value.trim();
       if (!urlInput) {
@@ -408,7 +493,6 @@
         return;
       }
 
-      // Extrakce ID setlistu z URL adresy (např. ...-3bd61890.html -> 3bd61890)
       const match = urlInput.match(/-([a-z0-9]+)\.html$/i);
       if (!match) {
         alert("Invalid Setlist.fm URL format.");
@@ -416,6 +500,7 @@
       }
 
       const setlistId = match[1];
+      document.getElementById('setlist_fm_url').value = urlInput;
       showStatus("Fetching setlist details from Setlist.fm...", 'success');
 
       try {
@@ -427,33 +512,21 @@
 
         if (data.sets && data.sets.set) {
           data.sets.set.forEach((setItem, index) => {
-            // 1. Zpracování přídavků (Encore)
             if (setItem.encore) {
               formattedSongs.push(`[Encore ${setItem.encore}]`);
             } else if (index > 0 && data.sets.set.length > 1) {
               formattedSongs.push(`[Set ${index + 1}]`);
             }
 
-            // 2. Zpracování jednotlivých písní
             if (setItem.song) {
               setItem.song.forEach(song => {
                 let songTitle = song.name;
                 let extraNotes = [];
 
-                // Dodatečné info (např. á cappella, acoustic, solo piano)
-                if (song.info) {
-                  extraNotes.push(song.info);
-                }
+                if (song.info) extraNotes.push(song.info);
+                if (song.cover && song.cover.name) extraNotes.push(`cover of ${song.cover.name}`);
 
-                // Převzaté skladby (Cover versions)
-                if (song.cover && song.cover.name) {
-                  extraNotes.push(`cover of ${song.cover.name}`);
-                }
-
-                if (extraNotes.length > 0) {
-                  songTitle += ` (${extraNotes.join(', ')})`;
-                }
-
+                if (extraNotes.length > 0) songTitle += ` (${extraNotes.join(', ')})`;
                 formattedSongs.push(songTitle);
               });
             }
@@ -463,7 +536,7 @@
         if (formattedSongs.length > 0) {
           document.getElementById('setlist').value = formattedSongs.join(', ');
           updateSongCount();
-          showStatus("Setlist imported successfully including Encore & Notes!", 'success');
+          showStatus("Setlist imported successfully!", 'success');
         } else {
           showStatus("Setlist on Setlist.fm is empty.", 'error');
         }
@@ -473,7 +546,6 @@
       }
     }
 
-    // Uložení zpět do GitHub Master CSV přes GitHub REST API
     async function handleFormSubmit(e) {
       e.preventDefault();
 
@@ -483,13 +555,47 @@
         return;
       }
 
+      // 1. Nahrání nového obrázku do složky ./scans/ na GitHubu (pokud byl vybrán nový soubor)
+      if (selectedFileBase64 && selectedFileName) {
+        showStatus(`Uploading image '${selectedFileName}' to GitHub scans/ folder...`, 'success');
+        try {
+          // Zjistíme, zda už soubor ve složce scans/ existuje (pro získání jeho SHA)
+          let imgSha = '';
+          const checkImg = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/scans/${selectedFileName}`, {
+            headers: { 'Authorization': `token ${token}` }
+          });
+          if (checkImg.ok) {
+            const imgJson = await checkImg.json();
+            imgSha = imgJson.sha;
+          }
+
+          const imgUploadRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/scans/${selectedFileName}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: `Upload scan image ${selectedFileName} via Web Editor`,
+              content: selectedFileBase64,
+              sha: imgSha || undefined
+            })
+          });
+
+          if (!imgUploadRes.ok) throw new Error("Failed to upload scan image to GitHub.");
+        } catch (imgErr) {
+          showStatus("Error uploading image: " + imgErr.message, 'error');
+          return;
+        }
+      }
+
+      // 2. Aktualizace záznamu v Master CSV
       const formData = new FormData(e.target);
       const updatedRecord = {};
       formData.forEach((val, key) => {
-        updatedRecord[key.toUpperCase()] = val;
+        if (key !== 'fileUpload') updatedRecord[key.toUpperCase()] = val;
       });
 
-      // Aktualizujeme nebo přidáme záznam do paměťového pole
       const existingIdx = fullCsvData.findIndex(r => r.ID_MEMORABILIA === updatedRecord.ID_MEMORABILIA);
       if (existingIdx !== -1) {
         fullCsvData[existingIdx] = updatedRecord;
@@ -497,13 +603,10 @@
         fullCsvData.push(updatedRecord);
       }
 
-      // Převedeme data zpět do tvaru CSV
       const newCsvString = Papa.unparse(fullCsvData);
-      
-      // Kódování do Base64 (s ošetřením UTF-8 znaků)
       const encodedContent = btoa(unescape(encodeURIComponent(newCsvString)));
 
-      showStatus("Saving changes directly to GitHub repository...", 'success');
+      showStatus("Saving CSV changes directly to GitHub repository...", 'success');
 
       try {
         const commitRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${CSV_PATH}`, {
@@ -527,7 +630,7 @@
         const commitJson = await commitRes.json();
         currentSha = commitJson.content.sha;
 
-        showStatus(`🎉 Record ${updatedRecord.ID_MEMORABILIA} successfully saved to GitHub! Redirecting...`, 'success');
+        showStatus(`🎉 Record ${updatedRecord.ID_MEMORABILIA} saved to GitHub! Redirecting...`, 'success');
         setTimeout(() => {
           window.location.href = 'index_short.html';
         }, 1500);
