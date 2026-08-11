@@ -4,9 +4,8 @@ let currentLayout = 'grid';
 let currentPage = 1;
 let pageSize = 50;
 let currentCategory = 'Tickets';
-let currentModalIndex = -1;
 
-let imageViewerInstance = null;
+let activeViewerInstance = null;
 let quickViewerInstance = null;
 
 // Funkce pro náhodné zamíchání pole (Fisher-Yates Shuffle)
@@ -78,8 +77,8 @@ function openVideoModal(youtubeUrl) {
 function closeVideoModal() {
   const modal = document.getElementById('videoModal');
   const iframe = document.getElementById('youtubeIframe');
-  iframe.src = '';
-  modal.classList.remove('active');
+  if (iframe) iframe.src = '';
+  if (modal) modal.classList.remove('active');
 }
 
 function closeVideoModalOnOverlay(e) {
@@ -135,11 +134,11 @@ function clearSearchInput() {
 
 function openSurpriseTicket() {
   if (!filteredTickets || filteredTickets.length === 0) {
-    alert("No tickets available to pick from!");
+    alert("No items available to pick from!");
     return;
   }
   const randomIndex = Math.floor(Math.random() * filteredTickets.length);
-  openModal(randomIndex);
+  openDirectImagePreview(randomIndex);
 }
 
 function getRelatedItems(currentRecord) {
@@ -174,6 +173,8 @@ function checkOnThisDayAnniversary() {
     const titleEl = document.getElementById('otdTitle');
     const btn = document.getElementById('otdBtn');
 
+    if (!banner || !titleEl || !btn) return;
+
     let locationText = formatLocationText(selected);
     let text = `<strong>${yearsAgo} years ago</strong> (${formatDisplayDate(selected.DATUM)}): Joe Jackson played in ${locationText}`;
     if (anniversaries.length > 1) {
@@ -186,7 +187,7 @@ function checkOnThisDayAnniversary() {
     btn.onclick = () => {
       const targetIndex = filteredTickets.indexOf(selected);
       if (targetIndex !== -1) {
-        openModal(targetIndex);
+        openDirectImagePreview(targetIndex);
       } else {
         document.getElementById('searchInput').value = '';
         sessionStorage.removeItem('jj_museum_search');
@@ -198,11 +199,83 @@ function checkOnThisDayAnniversary() {
         currentCategory = 'ALL';
         filterData();
         setTimeout(() => {
-          openModal(filteredTickets.indexOf(selected));
+          openDirectImagePreview(filteredTickets.indexOf(selected));
         }, 100);
       }
     };
   }
+}
+
+// PAŘÍM SOUBOR VIEWER.JS ROVNOU Z KARTY NA 1-KLIK
+function openDirectImagePreview(ticketIndex) {
+  const t = filteredTickets[ticketIndex];
+  if (!t || !t.SOUBOR_SKEN) return;
+
+  const skenFiles = t.SOUBOR_SKEN.split(',').map(s => s.trim()).filter(Boolean);
+  if (skenFiles.length === 0) return;
+
+  if (activeViewerInstance) {
+    activeViewerInstance.destroy();
+    activeViewerInstance = null;
+  }
+
+  // Vytvoříme dynamickou galerii obrázků v paměti pro Viewer.js
+  const container = document.createElement('div');
+  container.style.display = 'none';
+
+  skenFiles.forEach((file) => {
+    const img = document.createElement('img');
+    img.src = `./scans/${file}`;
+    img.alt = `${formatDisplayDate(t.DATUM)} - ${formatLocationText(t)}`;
+    container.appendChild(img);
+  });
+
+  document.body.appendChild(container);
+
+  activeViewerInstance = new Viewer(container, {
+    hidden: function() {
+      activeViewerInstance.destroy();
+      activeViewerInstance = null;
+      document.body.removeChild(container);
+    },
+    title: function() {
+      return `${formatDisplayDate(t.DATUM)} | ${formatLocationText(t)} (${t.KATEGORIE || 'Ticket'})`;
+    },
+    toolbar: {
+      zoomIn: 1,
+      zoomOut: 1,
+      oneToOne: 1,
+      reset: 1,
+      prev: skenFiles.length > 1 ? 1 : 0,
+      next: skenFiles.length > 1 ? 1 : 0,
+      rotateLeft: 1,
+      rotateRight: 1,
+    }
+  });
+
+  activeViewerInstance.show();
+}
+
+function openQuickImageModal(scanFileName) {
+  if (!scanFileName) return;
+
+  const firstFile = scanFileName.split(',')[0].trim();
+  const quickImg = document.createElement('img');
+  quickImg.src = `./scans/${firstFile}`;
+
+  if (quickViewerInstance) {
+    quickViewerInstance.destroy();
+    quickViewerInstance = null;
+  }
+
+  quickViewerInstance = new Viewer(quickImg, {
+    hidden: function() {
+      quickViewerInstance.destroy();
+      quickViewerInstance = null;
+    }
+  });
+
+  quickViewerInstance.show();
 }
 
 // Inicializace po načtení DOMu
@@ -210,9 +283,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        clearSearchInput();
-      }
+      if (e.key === 'Escape') clearSearchInput();
     });
     searchInput.addEventListener('input', handleSearchInput);
   }
@@ -227,7 +298,6 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
       }
       
-      // Zamíchání databáze při prvním načtení
       allTickets = shuffleArray(results.data);
 
       updateYearBadge();
@@ -256,12 +326,14 @@ function updateYearBadge() {
   if (years.length > 0) {
     const minYear = Math.min(...years);
     const maxYear = Math.max(...years);
-    document.getElementById('yearBadge').textContent = `${minYear} – ${maxYear}`;
+    const badge = document.getElementById('yearBadge');
+    if (badge) badge.textContent = `${minYear} – ${maxYear}`;
   }
 }
 
 function populateFilters() {
   const yearSelect = document.getElementById('yearFilter');
+  if (!yearSelect) return;
   const yearsSet = new Set();
 
   allTickets.forEach(t => {
@@ -280,6 +352,7 @@ function populateFilters() {
   });
 
   const citySelect = document.getElementById('cityFilter');
+  if (!citySelect) return;
   const citySet = new Set();
 
   allTickets.forEach(t => {
@@ -298,38 +371,25 @@ function populateFilters() {
 
 function renderCategoryTabs(matchesBeforeCategoryFilter) {
   const tabsContainer = document.getElementById('categoryTabs');
+  if (!tabsContainer) return;
   tabsContainer.innerHTML = '';
 
   const counts = { 
-    'Tickets': 0, 
-    'Passes': 0, 
-    'Programs': 0, 
-    'Posters': 0, 
-    'T-shirts': 0, 
-    'Memorabilia': 0, 
-    'Videos': 0,
-    'ALL': matchesBeforeCategoryFilter.length 
+    'Tickets': 0, 'Passes': 0, 'Programs': 0, 'Posters': 0, 
+    'T-shirts': 0, 'Memorabilia': 0, 'Videos': 0, 'ALL': matchesBeforeCategoryFilter.length 
   };
 
   matchesBeforeCategoryFilter.forEach(t => {
     const cat = getTicketCategory(t);
     if (counts[cat] !== undefined) counts[cat]++;
-    
-    if (isValidValue(t.YOUTUBE_URL)) {
-      counts['Videos']++;
-    }
+    if (isValidValue(t.YOUTUBE_URL)) counts['Videos']++;
   });
 
   const categoryOrder = ['Tickets', 'Passes', 'Programs', 'Posters', 'T-shirts', 'Memorabilia', 'Videos', 'ALL'];
   const categoryLabels = { 
-    'Tickets': '🎫 Tickets', 
-    'Passes': '🪪 Passes', 
-    'Programs': '📖 Programs', 
-    'Posters': '🖼️ Posters', 
-    'T-shirts': '🎽 T-shirts', 
-    'Memorabilia': '⭐ Memorabilia', 
-    'Videos': '🎬 Videos',
-    'ALL': '✨ All Records' 
+    'Tickets': '🎫 Tickets', 'Passes': '🪪 Passes', 'Programs': '📖 Programs', 
+    'Posters': '🖼️ Posters', 'T-shirts': '🎽 T-shirts', 'Memorabilia': '⭐ Memorabilia', 
+    'Videos': '🎬 Videos', 'ALL': '✨ All Records' 
   };
 
   categoryOrder.forEach(catKey => {
@@ -360,10 +420,10 @@ function changePageSize() {
 }
 
 function filterData() {
-  const query = document.getElementById('searchInput').value.toLowerCase();
-  const selectedYear = document.getElementById('yearFilter').value;
-  const selectedCity = document.getElementById('cityFilter').value;
-  const sort = document.getElementById('sortFilter').value;
+  const query = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const selectedYear = document.getElementById('yearFilter')?.value || '';
+  const selectedCity = document.getElementById('cityFilter')?.value || '';
+  const sort = document.getElementById('sortFilter')?.value || 'random';
 
   const matchesBase = allTickets.filter(t => {
     const locationText = formatLocationText(t).toLowerCase();
@@ -408,27 +468,6 @@ function renderPaginated() {
   renderPaginationControls();
 }
 
-function openQuickImageModal(scanFileName) {
-  if (!scanFileName) return;
-
-  const firstFile = scanFileName.split(',')[0].trim();
-  const quickImg = document.getElementById('quickViewerImg');
-  quickImg.src = `./scans/${firstFile}`;
-
-  if (quickViewerInstance) {
-    quickViewerInstance.destroy();
-  }
-
-  quickViewerInstance = new Viewer(quickImg, {
-    hidden: function() {
-      quickViewerInstance.destroy();
-      quickViewerInstance = null;
-    }
-  });
-
-  quickViewerInstance.show();
-}
-
 function renderTickets(tickets) {
   const container = document.getElementById('ticketsContainer');
   container.innerHTML = '';
@@ -442,9 +481,11 @@ function renderTickets(tickets) {
     const globalIndex = filteredTickets.indexOf(t);
     const card = document.createElement('div');
     card.className = 'ticket-card';
+    
+    // Kliknutí na kartu otevírá rovnou Viewer.js
     card.onclick = (e) => {
       if (e.target.closest('.icon-btn')) return;
-      openModal(globalIndex);
+      openDirectImagePreview(globalIndex);
     };
 
     const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -453,6 +494,14 @@ function renderTickets(tickets) {
     const locationText = formatLocationText(t);
 
     let iconsHTML = '';
+
+    // Tlačítko pro rychlou editaci přímo na kartě
+    if (isValidValue(t.ID_MEMORABILIA)) {
+      iconsHTML += `
+        <button class="icon-btn" title="Edit Record" onclick="event.stopPropagation(); window.location.href='edit_ticket_new.html?id=${encodeURIComponent(t.ID_MEMORABILIA)}';">
+          ✏️
+        </button>`;
+    }
 
     if (isValidValue(t.YOUTUBE_URL)) {
       iconsHTML += `
@@ -501,7 +550,6 @@ function renderTickets(tickets) {
       collapsibleHTML += `<div class="collapsible-content" id="setlist-${globalIndex}"><ol>${songs.map(s => `<li>${s}</li>`).join('')}</ol></div>`;
     }
     if (hasLineup) {
-      // PODPORA STŘEDNÍKU AJ LOMÍTKA /
       const members = t.LINEUP.split(/[;/]/).map(m => m.trim()).filter(Boolean);
       collapsibleHTML += `<div class="collapsible-content" id="lineup-${globalIndex}"><ul>${members.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
     }
@@ -528,6 +576,7 @@ function renderTickets(tickets) {
 
 function renderPaginationControls() {
   const container = document.getElementById('paginationContainer');
+  if (!container) return;
   container.innerHTML = '';
   if (pageSize === 'ALL' || filteredTickets.length <= pageSize) return;
 
@@ -563,146 +612,4 @@ function renderPaginationControls() {
 function toggleCollapsible(id) {
   const el = document.getElementById(id);
   if (el) el.classList.toggle('open');
-}
-
-function openModal(index) {
-  if (index < 0 || index >= filteredTickets.length) return;
-  currentModalIndex = index;
-  const t = filteredTickets[currentModalIndex];
-
-  if (imageViewerInstance) { imageViewerInstance.destroy(); imageViewerInstance = null; }
-
-  const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
-  const modalImg = document.getElementById('modalImg');
-  const thumbContainer = document.getElementById('modalThumbnails');
-  thumbContainer.innerHTML = '';
-
-  if (skenFiles.length > 0) {
-    modalImg.src = `./scans/${skenFiles[0]}`;
-    if (skenFiles.length > 1) {
-      skenFiles.forEach((file, idx) => {
-        const thumb = document.createElement('img');
-        thumb.className = `modal-thumb ${idx === 0 ? 'active' : ''}`;
-        thumb.src = `./scans/${file}`;
-        thumb.onclick = () => {
-          modalImg.src = `./scans/${file}`;
-          document.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
-          thumb.classList.add('active');
-        };
-        thumbContainer.appendChild(thumb);
-      });
-    }
-  } else { modalImg.src = ''; }
-
-  setTimeout(() => {
-    imageViewerInstance = new Viewer(modalImg, { toolbar: true, navbar: false, title: false });
-  }, 100);
-
-  document.getElementById('modalDate').textContent = formatDisplayDate(t.DATUM) || '';
-  document.getElementById('modalInfo').textContent = formatLocationText(t);
-
-  const editLink = document.getElementById('modalEditLink');
-  if (editLink) {
-    editLink.href = `edit_ticket_new.html?id=${encodeURIComponent(t.ID_MEMORABILIA || '')}`;
-  }
-
-  const modalGrid = document.getElementById('modalGrid');
-  const supportGroup = document.getElementById('modalSupportGroup');
-  const seatGroup = document.getElementById('modalSeatGroup');
-  
-  let hasGridItems = false;
-
-  if (isValidValue(t.SUPPORTING_ACT)) {
-    document.getElementById('modalSupport').textContent = t.SUPPORTING_ACT.trim();
-    supportGroup.style.display = 'block';
-    hasGridItems = true;
-  } else { supportGroup.style.display = 'none'; }
-
-  seatGroup.style.display = 'none';
-
-  modalGrid.style.display = hasGridItems ? 'grid' : 'none';
-
-  const modalColsSec = document.getElementById('modalColumnsSection');
-  let colsHTML = '';
-
-  const lineupStr = t.LINEUP || '';
-  const setlistStr = t.SETLIST || '';
-  const songCount = parseInt(t.POCET_SKLADEB, 10) || 0;
-
-  const hasLineup = isValidValue(lineupStr);
-  const hasSetlist = setlistStr && isValidValue(setlistStr) && songCount > 0;
-
-  if (hasLineup) {
-    // PODPORA STŘEDNÍKU AJ LOMÍTKA /
-    const members = lineupStr.split(/[;/]/).map(m => m.trim()).filter(Boolean);
-    const memberItems = members.map(m => `<li>${m}</li>`).join('');
-    colsHTML += `
-      <div class="flashcard-col-box">
-        <h4 style="color: var(--accent-blue);">👥 Band Line-up</h4>
-        <ul style="padding-left: 20px; color: var(--text-main); font-size: 0.85rem; line-height: 1.6;">${memberItems}</ul>
-      </div>`;
-  }
-
-  if (hasSetlist) {
-    const songs = setlistStr.split(',').map(s => s.trim());
-    const listItems = songs.map(s => `<li>${s}</li>`).join('');
-    colsHTML += `
-      <div class="flashcard-col-box">
-        <h4 style="color: var(--accent-yellow);">🎵 Full Setlist (${songCount} songs)</h4>
-        <ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">${listItems}</ol>
-      </div>`;
-  }
-
-  modalColsSec.innerHTML = colsHTML;
-
-  const mediaContainer = document.getElementById('modalMediaContainer');
-  let mediaHTML = '';
-
-  if (isValidValue(t.YOUTUBE_URL)) {
-    mediaHTML += `
-      <div class="media-embed-box">
-        <h4>🎬 Concert Video / Bootleg</h4>
-        <div style="margin-bottom: 8px;">
-          <button class="media-link-btn" onclick="openVideoModal('${t.YOUTUBE_URL}')">▶ Play Video</button>
-        </div>
-      </div>`;
-  }
-
-  if (isValidValue(t.REVIEW_URL)) {
-    mediaHTML += `
-      <div class="media-embed-box">
-        <h4>📰 Press & Archive Review</h4>
-        <iframe src="${t.REVIEW_URL}" width="100%" height="250" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen style="border-radius:6px; background:#000;"></iframe>
-      </div>`;
-  }
-
-  if (isValidValue(t.SETLIST_URL)) {
-    mediaHTML += `
-      <div class="media-links-bar">
-        <a href="${t.SETLIST_URL}" target="_blank" class="media-link-btn">📊 View Show Details on Setlist.fm ↗</a>
-      </div>`;
-  }
-
-  mediaContainer.innerHTML = mediaHTML;
-
-  document.getElementById('modalCounter').textContent = `${currentModalIndex + 1} / ${filteredTickets.length}`;
-  document.getElementById('modalPrevBtn').disabled = currentModalIndex === 0;
-  document.getElementById('modalNextBtn').disabled = currentModalIndex === filteredTickets.length - 1;
-
-  document.getElementById('detailModal').classList.add('active');
-}
-
-function navigateModal(direction) {
-  const newIndex = currentModalIndex + direction;
-  if (newIndex >= 0 && newIndex < filteredTickets.length) openModal(newIndex);
-}
-
-function closeModal() {
-  document.getElementById('detailModal').classList.remove('active');
-  if (imageViewerInstance) { imageViewerInstance.destroy(); imageViewerInstance = null; }
-  currentModalIndex = -1;
-}
-
-function closeModalOnOverlay(e) {
-  if (e.target.id === 'detailModal') closeModal();
 }
