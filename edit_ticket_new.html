@@ -72,6 +72,7 @@
       border-radius: 6px;
       text-decoration: none;
       font-size: 0.85rem;
+      cursor: pointer;
     }
 
     .btn-back:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
@@ -375,7 +376,7 @@
     <h1>✏️ Edit Record: <span id="recordIdTitle">...</span></h1>
     <div class="header-actions">
       <button class="btn-token" onclick="manageToken()">🔑 PAT Settings</button>
-      <a href="index_short.html" class="btn-back">◄ Back to Museum</a>
+      <button type="button" class="btn-back" onclick="if (document.referrer) { history.back(); } else { window.location.href='index_short.html'; }">◄ Back to Museum</button>
     </div>
   </header>
 
@@ -964,8 +965,26 @@
       }
     }
 
+    function parseSongsFromShow(foundShow) {
+      let songNames = [];
+      if (foundShow && foundShow.sets && foundShow.sets.set) {
+        let setListArray = Array.isArray(foundShow.sets.set) ? foundShow.sets.set : [foundShow.sets.set];
+        setListArray.forEach(setObj => {
+          if (setObj.song) {
+            let songArray = Array.isArray(setObj.song) ? setObj.song : [setObj.song];
+            songArray.forEach(song => {
+              if (song.name) songNames.push(song.name.trim());
+            });
+          }
+        });
+      }
+      return songNames;
+    }
+
     async function autoFindSetlist() {
       const datumVal = document.getElementById('DATUM').value.trim();
+      const cityVal = document.getElementById('MESTO').value.trim();
+
       if (!datumVal) {
         showStatus('Please enter a valid Date (YYYY-MM-DD) first.', 'red');
         return;
@@ -978,38 +997,52 @@
       }
 
       const apiFormattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      const concertYear = parts[0];
 
       showStatus(`Searching Setlist.fm for Joe Jackson show on ${apiFormattedDate}...`, 'blue');
 
-      const targetApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?date=${apiFormattedDate}`;
-
       try {
-        const data = await fetchSetlistApiSecure(targetApiUrl);
-        
-        if (!data || !data.setlist || !Array.isArray(data.setlist) || data.setlist.length === 0) {
-          showStatus(`No show recorded on Setlist.fm for date ${apiFormattedDate}.`, 'red');
-          return;
+        let foundShow = null;
+
+        // 1. Primární vyhledání podle přesného data
+        const primaryApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?date=${apiFormattedDate}`;
+        const primaryData = await fetchSetlistApiSecure(primaryApiUrl).catch(() => null);
+
+        if (primaryData && primaryData.setlist) {
+          const list = Array.isArray(primaryData.setlist) ? primaryData.setlist : [primaryData.setlist];
+          if (list.length > 0) {
+            foundShow = list[0];
+          }
         }
 
-        const foundShow = data.setlist[0];
+        // 2. Náhradní vyhledávání podle roku a města, pokud přesné datum selže
+        if (!foundShow && cityVal) {
+          showStatus(`Exact date not found. Searching Setlist.fm by year ${concertYear} and city '${cityVal}'...`, 'blue');
+          const fallbackApiUrl = `https://api.setlist.fm/rest/1.0/artist/${JOE_JACKSON_MBID}/setlists?year=${concertYear}`;
+          const fallbackData = await fetchSetlistApiSecure(fallbackApiUrl).catch(() => null);
+
+          if (fallbackData && fallbackData.setlist) {
+            const list = Array.isArray(fallbackData.setlist) ? fallbackData.setlist : [fallbackData.setlist];
+            foundShow = list.find(s => {
+              const showCity = s.venue && s.venue.city ? s.venue.city.name.toLowerCase() : '';
+              return showCity.includes(cityVal.toLowerCase());
+            });
+          }
+        }
+
+        if (!foundShow) {
+          showStatus(`No show recorded on Setlist.fm for date ${apiFormattedDate}${cityVal ? ' in ' + cityVal : ''}.`, 'red');
+          return;
+        }
 
         if (foundShow.url) {
           document.getElementById('SETLIST_URL').value = foundShow.url;
         }
 
-        let songNames = [];
-        if (foundShow.sets && foundShow.sets.set && Array.isArray(foundShow.sets.set)) {
-          foundShow.sets.set.forEach(setObj => {
-            if (setObj.song && Array.isArray(setObj.song)) {
-              setObj.song.forEach(song => {
-                if (song.name) songNames.push(song.name.trim());
-              });
-            }
-          });
-        }
+        const songNames = parseSongsFromShow(foundShow);
 
         if (songNames.length === 0) {
-          showStatus(`Found concert on Setlist.fm (${foundShow.url}), but no song list is logged. Direct URL saved!`, 'blue');
+          showStatus(`Found concert on Setlist.fm (${foundShow.url}), but no songs are logged for this show. Direct URL saved!`, 'blue');
           return;
         }
 
@@ -1042,17 +1075,7 @@
 
       try {
         const data = await fetchSetlistApiSecure(targetApiUrl);
-        
-        let songNames = [];
-        if (data.sets && data.sets.set && Array.isArray(data.sets.set)) {
-          data.sets.set.forEach(setObj => {
-            if (setObj.song && Array.isArray(setObj.song)) {
-              setObj.song.forEach(song => {
-                if (song.name) songNames.push(song.name.trim());
-              });
-            }
-          });
-        }
+        const songNames = parseSongsFromShow(data);
 
         if (songNames.length === 0) {
           showStatus('Setlist record found on Setlist.fm, but no songs are listed for this show.', 'red');
