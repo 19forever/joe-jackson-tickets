@@ -371,103 +371,88 @@ function renderTickets(tickets) {
     const card = document.createElement('div');
     card.className = 'ticket-card';
     card.onclick = (e) => {
-      if (e.target.closest('.setlist-toggle-btn') || e.target.closest('.lineup-toggle-btn') || e.target.closest('.external-link-icon-btn') || e.target.closest('.related-btn')) return;
+      if (e.target.closest('.icon-btn')) return;
       openModal(globalIndex);
     };
 
     const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
     const firstImgFile = skenFiles[0] || '';
     const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
-
     const locationText = formatLocationText(t);
 
-    const relatedItems = getRelatedItems(t);
-    let relatedHTML = '';
+    // 1. Příprava tlačítek ikon
+    let iconsHTML = '';
 
-    if (relatedItems.length > 0) {
-      relatedHTML += '<div class="related-items-bar">';
-      relatedItems.forEach(rel => {
-        const relCat = getTicketCategory(rel);
-        let icon = '🖼️';
-        let label = 'Poster';
-
-        if (relCat === 'Tickets') { icon = '🎫'; label = 'Ticket'; }
-        else if (relCat === 'Passes') { icon = '🪪'; label = 'Pass'; }
-        else if (relCat === 'Programs') { icon = '📖'; label = 'Program'; }
-
-        const relFile = (rel.SOUBOR_SKEN || '').split(',')[0].trim();
-
-        relatedHTML += `
-          <button class="related-btn" title="Click to view image" onclick="event.stopPropagation(); openQuickImageModal('${relFile}')">
-            ${icon} View ${label}
-          </button>
-        `;
-      });
-      relatedHTML += '</div>';
+    // YouTube ikona
+    if (isValidValue(t.YOUTUBE_URL)) {
+      iconsHTML += `
+        <button class="icon-btn" title="YouTube video" onclick="event.stopPropagation(); openVideoModal('${t.YOUTUBE_URL}');">
+          🎬
+        </button>`;
     }
 
-    let collapsibleGroupHTML = '';
-    const setlistStr = t.SETLIST || '';
+    // Setlist ikona s počtem skladeb
     const songCount = parseInt(t.POCET_SKLADEB, 10) || 0;
-    const setlistUrl = t.SETLIST_URL || '';
-    const youtubeUrl = t.YOUTUBE_URL || '';
-    const lineupStr = t.LINEUP || '';
-
-    const hasSetlist = setlistStr && isValidValue(setlistStr) && songCount > 0;
-    const hasLineup = lineupStr && isValidValue(lineupStr);
-    const hasYoutube = youtubeUrl && isValidValue(youtubeUrl);
-
-    if (hasSetlist || hasLineup || setlistUrl || hasYoutube) {
-      collapsibleGroupHTML += '<div class="collapsible-group">';
-      
-      if (setlistUrl && isValidValue(setlistUrl)) {
-        collapsibleGroupHTML += `
-          <a href="${setlistUrl}" target="_blank" class="external-link-icon-btn" title="Open directly on Setlist.fm ↗" onclick="event.stopPropagation();">🔗</a>
-        `;
-      }
-
-      if (hasYoutube) {
-        collapsibleGroupHTML += `
-          <button class="external-link-icon-btn" title="Watch Video" onclick="event.stopPropagation(); openVideoModal('${youtubeUrl}');">🎬 Video</button>
-        `;
-      }
-
-      if (hasSetlist) {
-        collapsibleGroupHTML += `
-          <button class="setlist-toggle-btn has-setlist" onclick="event.stopPropagation(); toggleCollapsible('setlist-${globalIndex}')">🎵 Setlist (${songCount})</button>
-        `;
-      }
-
-      if (hasLineup) {
-        collapsibleGroupHTML += `
-          <button class="lineup-toggle-btn has-lineup" onclick="event.stopPropagation(); toggleCollapsible('lineup-${globalIndex}')">👥 Line-up</button>
-        `;
-      }
-
-      collapsibleGroupHTML += '</div>';
-
-      if (hasSetlist) {
-        const songs = setlistStr.split(',').map(s => s.trim());
-        const listItems = songs.map(s => `<li>${s}</li>`).join('');
-        collapsibleGroupHTML += `<div class="collapsible-content" id="setlist-${globalIndex}"><ol>${listItems}</ol></div>`;
-      }
-
-      if (hasLineup) {
-        const members = lineupStr.split(';').map(m => m.trim());
-        const memberItems = members.map(m => `<li>${m}</li>`).join('');
-        collapsibleGroupHTML += `<div class="collapsible-content" id="lineup-${globalIndex}"><ul>${memberItems}</ul></div>`;
-      }
+    const hasSetlist = isValidValue(t.SETLIST) && songCount > 0;
+    if (hasSetlist) {
+      iconsHTML += `
+        <button class="icon-btn badge-setlist" title="Setlist (${songCount} songs)" onclick="event.stopPropagation(); toggleCollapsible('setlist-${globalIndex}');">
+          🎵 ${songCount}
+        </button>`;
     }
 
+    // Line-up ikona
+    const hasLineup = isValidValue(t.LINEUP);
+    if (hasLineup) {
+      iconsHTML += `
+        <button class="icon-btn" title="Band Line-up" onclick="event.stopPropagation(); toggleCollapsible('lineup-${globalIndex}');">
+          👥
+        </button>`;
+    }
+
+    // Související předměty (Postery, Passy, Lístky)
+    const relatedItems = getRelatedItems(t);
+    relatedItems.forEach(rel => {
+      const relCat = getTicketCategory(rel);
+      let icon = '🖼️';
+      let title = 'Related Poster';
+
+      if (relCat === 'Tickets') { icon = '🎫'; title = 'Related Ticket'; }
+      else if (relCat === 'Passes') { icon = '🪪'; title = 'Related Pass'; }
+      else if (relCat === 'Programs') { icon = '📖'; title = 'Related Program'; }
+
+      const relFile = (rel.SOUBOR_SKEN || '').split(',')[0].trim();
+      iconsHTML += `
+        <button class="icon-btn" title="${title}" onclick="event.stopPropagation(); openQuickImageModal('${relFile}');">
+          ${icon}
+        </button>`;
+    });
+
+    // 2. Skryté rozbalovací seznamy (Setlist / Line-up)
+    let collapsibleHTML = '';
+    if (hasSetlist) {
+      const songs = t.SETLIST.split(',').map(s => s.trim());
+      collapsibleHTML += `<div class="collapsible-content" id="setlist-${globalIndex}"><ol>${songs.map(s => `<li>${s}</li>`).join('')}</ol></div>`;
+    }
+    if (hasLineup) {
+      const members = t.LINEUP.split(';').map(m => m.trim());
+      collapsibleHTML += `<div class="collapsible-content" id="lineup-${globalIndex}"><ul>${members.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+    }
+
+    // 3. Sestavení výsledného HTML karty
     card.innerHTML = `
       <div class="card-img-wrapper">
-        ${imgSrc ? `<img src="${imgSrc}" alt="Ticket Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IxMDAlIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMzMzMiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+='">` : ''}
+        ${imgSrc ? `<img src="${imgSrc}" alt="Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IxMDAlIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMzMzMiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+='">` : ''}
       </div>
       <div class="card-content">
-        ${t.DATUM ? `<div class="card-date">${formatDisplayDate(t.DATUM)}</div>` : ''}
-        <div class="info-text">${locationText}</div>
-        ${relatedHTML}
-        ${collapsibleGroupHTML}
+        <div class="card-main-row">
+          <div class="card-info-left">
+            ${t.DATUM ? `<div class="card-date">${formatDisplayDate(t.DATUM)}</div>` : ''}
+            <div class="info-text">${locationText}</div>
+          </div>
+          ${iconsHTML ? `<div class="card-icon-col">${iconsHTML}</div>` : ''}
+        </div>
+        ${collapsibleHTML}
       </div>
     `;
     
