@@ -1,5 +1,3 @@
----
-
 # 🗺️ Joe Jackson Memorabilia Museum – Development Roadmap
 
 Archiv koncertních lístků, plakátů, programů a memorabilií Joe Jacksona na doméně **`joejackson.band`**.
