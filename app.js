@@ -8,6 +8,35 @@ let currentCategory = 'Tickets';
 let activeViewerInstance = null;
 let quickViewerInstance = null;
 
+// Náhradní vektorový lístek (WANTED / MISSING ITEM) v barvách muzea
+const MISSING_TICKET_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <defs>
+    <style>
+      .ticket-bg { fill: #161e2e; stroke: #2a364f; stroke-width: 2; }
+      .stub-line { stroke: #2a364f; stroke-width: 2; stroke-dasharray: 6 6; }
+      .ticket-header { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; fill: #6b7280; font-weight: 600; letter-spacing: 2px; text-anchor: middle; }
+      .wanted-text { font-family: 'Impact', 'Arial Black', sans-serif; font-size: 38px; fill: #d97706; text-anchor: middle; letter-spacing: 3px; }
+      .sub-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; fill: #9ca3af; text-anchor: middle; font-weight: 500; }
+      .cta-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #4b5563; text-anchor: middle; }
+      .notch { fill: #0a0f1c; }
+    </style>
+  </defs>
+  <rect width="600" height="400" fill="#0a0f1c"/>
+  <rect x="50" y="40" width="500" height="320" rx="10" class="ticket-bg"/>
+  <circle cx="50" cy="200" r="16" class="notch"/>
+  <circle cx="550" cy="200" r="16" class="notch"/>
+  <line x1="430" y1="40" x2="430" y2="360" class="stub-line"/>
+  <text x="240" y="110" class="ticket-header">CONCERT MEMORABILIA</text>
+  <text x="240" y="170" class="wanted-text">MISSING ITEM</text>
+  <text x="240" y="215" class="sub-text">No scan available for this show yet</text>
+  <text x="240" y="290" class="cta-text">Have a ticket, pass or poster? Click "Contribute" above!</text>
+  <text x="490" y="140" font-family="-apple-system, sans-serif" font-size="11" fill="#4b5563" text-anchor="middle" font-weight="bold" letter-spacing="1">ADMIT ONE</text>
+  <text x="490" y="200" font-family="'Courier New', monospace" font-size="22" fill="#374151" text-anchor="middle" font-weight="bold">#0000</text>
+  <text x="490" y="260" font-family="-apple-system, sans-serif" font-size="11" fill="#4b5563" text-anchor="middle">WANTED</text>
+</svg>
+`)}`;
+
 // Dynamické přimíchání CSS pro moderní 3-sloupcový layout videa
 (function injectViewerCustomStyles() {
   const style = document.createElement('style');
@@ -137,7 +166,7 @@ function reshuffleAndRender() {
 function isValidValue(val) {
   if (!val) return false;
   const clean = String(val).trim().toLowerCase();
-  return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'undefined' && clean !== 'null';
+  return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'undefined' && clean !== 'null' && clean !== 'missing';
 }
 
 function formatDisplayDate(dateStr) {
@@ -386,10 +415,10 @@ function checkOnThisDayAnniversary() {
 
 function openDirectImagePreview(ticketIndex) {
   const t = filteredTickets[ticketIndex];
-  if (!t || !t.SOUBOR_SKEN) return;
+  if (!t) return;
 
-  const skenFiles = t.SOUBOR_SKEN.split(',').map(s => s.trim()).filter(Boolean);
-  if (skenFiles.length === 0) return;
+  const rawSken = (t.SOUBOR_SKEN && isValidValue(t.SOUBOR_SKEN)) ? t.SOUBOR_SKEN : '';
+  const skenFiles = rawSken.split(',').map(s => s.trim()).filter(Boolean);
 
   if (activeViewerInstance) {
     activeViewerInstance.destroy();
@@ -399,12 +428,20 @@ function openDirectImagePreview(ticketIndex) {
   const container = document.createElement('div');
   container.style.display = 'none';
 
-  skenFiles.forEach((file) => {
+  if (skenFiles.length > 0) {
+    skenFiles.forEach((file) => {
+      const img = document.createElement('img');
+      img.src = `./scans/${file}`;
+      img.alt = `${formatDisplayDate(t.DATUM)} - ${formatLocationText(t)}`;
+      img.onerror = function() { this.src = MISSING_TICKET_SVG; };
+      container.appendChild(img);
+    });
+  } else {
     const img = document.createElement('img');
-    img.src = `./scans/${file}`;
-    img.alt = `${formatDisplayDate(t.DATUM)} - ${formatLocationText(t)}`;
+    img.src = MISSING_TICKET_SVG;
+    img.alt = `Missing scan for ${formatDisplayDate(t.DATUM)} - ${formatLocationText(t)}`;
     container.appendChild(img);
-  });
+  }
 
   document.body.appendChild(container);
 
@@ -438,7 +475,8 @@ function openQuickImageModal(scanFileName) {
 
   const firstFile = scanFileName.split(',')[0].trim();
   const quickImg = document.createElement('img');
-  quickImg.src = `./scans/${firstFile}`;
+  quickImg.src = isValidValue(firstFile) ? `./scans/${firstFile}` : MISSING_TICKET_SVG;
+  quickImg.onerror = function() { this.src = MISSING_TICKET_SVG; };
 
   if (quickViewerInstance) {
     quickViewerInstance.destroy();
@@ -666,7 +704,7 @@ function renderTickets(tickets) {
 
     const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
     const firstImgFile = skenFiles[0] || '';
-    const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
+    const imgSrc = isValidValue(firstImgFile) ? `./scans/${firstImgFile}` : MISSING_TICKET_SVG;
     const locationText = formatLocationText(t);
 
     let iconsHTML = '';
@@ -746,7 +784,7 @@ function renderTickets(tickets) {
 
     card.innerHTML = `
       <div class="card-img-wrapper">
-        ${imgSrc ? `<img src="${imgSrc}" alt="Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IxMDAlIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMzMzMiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+='">` : ''}
+        <img src="${imgSrc}" alt="Scan" onerror="this.onerror=null; this.src='${MISSING_TICKET_SVG}';">
       </div>
       <div class="card-content">
         <div class="card-main-row">
