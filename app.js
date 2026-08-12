@@ -207,7 +207,7 @@ function openVideoModal(ticketIndex) {
     lineupHTML += `<p style="color: #9ca3af; font-size: 0.85rem;">No line-up details available for this show.</p>`;
   }
 
-// 2. Příprava obsahu pro Setlist (vpravo)
+  // 2. Příprava obsahu pro Setlist (vpravo)
   let setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist</h4>`;
   if (t && isValidValue(t.SETLIST)) {
     const rawItems = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
@@ -218,10 +218,10 @@ function openVideoModal(ticketIndex) {
     rawItems.forEach(item => {
       if (item.startsWith('[Encore') || item.startsWith('[Set')) {
         // Hlavička sekce / přídavku (nečíslovaná)
-        const title = item.replace(/^\[|\]$/g, ''); // Odstraní hranaté závorky
+        const title = item.replace(/^\[|\]$/g, '');
         listItemsHTML += `<li style="list-style-type: none; font-weight: 700; color: #38bdf8; margin-top: 10px; margin-left: -18px;">${title}</li>`;
       } else {
-        // Běžná skladba (s číslem)
+        // Běžná skladba (s vlastním číslováním)
         songCount++;
         listItemsHTML += `<li value="${songCount}">${item}</li>`;
       }
@@ -721,8 +721,23 @@ function renderTickets(tickets) {
 
     let collapsibleHTML = '';
     if (hasSetlist) {
-      const songs = t.SETLIST.split(',').map(s => s.trim());
-      collapsibleHTML += `<div class="collapsible-content" id="setlist-${globalIndex}"><ol>${songs.map(s => `<li>${s}</li>`).join('')}</ol></div>`;
+      const rawItems = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
+      let cardSongCount = 0;
+      let listItemsHTML = '';
+
+      rawItems.forEach(item => {
+        if (item.startsWith('[Encore') || item.startsWith('[Set')) {
+          const title = item.replace(/^\[|\]$/g, '');
+          listItemsHTML += `<li style="list-style-type: none; font-weight: 700; color: #38bdf8; margin-top: 8px; margin-left: -15px;">${title}</li>`;
+        } else {
+          cardSongCount++;
+          listItemsHTML += `<li value="${cardSongCount}">${item}</li>`;
+        }
+      });
+
+      collapsibleHTML += `<div class="collapsible-content" id="setlist-${globalIndex}">
+                           <ol style="padding-left: 20px;">${listItemsHTML}</ol>
+                         </div>`;
     }
     if (hasLineup) {
       const members = t.LINEUP.split(/[;/]/).map(m => m.trim()).filter(Boolean);
