@@ -6,61 +6,15 @@
   <title>Joe Jackson´s Memorabilia Museum</title>
 
   <!-- Favicon (JJ Icon) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDY0IDY0Ij4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxMiIgZmlsbD0iI2Y5NzMxNiIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAnU2Vnb2UgVUknLCBSb2JvdG8sIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGxldHRlci1zcGFjaW5nPSItMiI+Sko8L3RleHQ+Cjwvc3ZnPg==">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDY0IDY0Ij4KICA8cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxMiIgZmlsbD0iI2Y5NzMxOiIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAnU2Vnb2UgVUknLCBSb2JvdG8sIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGxldHRlci1zcGFjaW5nPSItMiI+Sko8L3RleHQ+Cjwvc3ZnPg==">
 
   <!-- External Stylesheet -->
   <link rel="stylesheet" href="styles.css">
 
+  <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
-  <!-- Viewer.js (Image Zoom & Inspection) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
-
-  <style>
-    /* Styling pro tlačítko Contribute v hlavičce */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-    }
-
-    .btn-contribute {
-      background-color: var(--bg-card, #151c2b);
-      border: 1px solid var(--border-color, #1f2937);
-      color: var(--text-main, #f3f4f6);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .btn-contribute:hover {
-      border-color: var(--accent-yellow, #facc15);
-      color: var(--accent-yellow, #facc15);
-      background-color: var(--bg-panel, #111827);
-      transform: translateY(-1px);
-    }
-
-    @media (max-width: 600px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-      .btn-contribute {
-        font-size: 0.8rem;
-        padding: 6px 12px;
-      }
-    }
-  </style>
 </head>
 <body>
 
@@ -74,13 +28,12 @@
         </div>
       </div>
 
-      <!-- Tlačítko pro přispění do musea -->
       <a href="ticket_form.html" class="btn-contribute" title="Share your concert ticket, pass, or poster with us">
         ➕ Contribute your item to Museum
       </a>
     </header>
 
-    <!-- On This Day in History Banner -->
+    <!-- On This Day Banner -->
     <div class="on-this-day-banner" id="otdBanner">
       <div class="otd-left">
         <div class="otd-icon">📅</div>
@@ -96,29 +49,29 @@
 
     <div class="controls">
       <div class="search-input-wrapper">
-        <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, date..." onkeyup="handleSearchInput()">
-        <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearchInput()" title="Clear search">✕</button>
+        <input type="text" id="searchInput" placeholder="🔍 Search by city, venue, date...">
+        <button class="search-clear-btn" id="searchClearBtn" title="Clear search">✕</button>
       </div>
 
-      <button class="surprise-btn" onclick="reshuffleAndRender()" title="Reshuffle all records">🎲 Reshuffle</button>
-      <button class="surprise-btn" onclick="openSurpriseTicket()" title="Open a random memorabilia record">✨ Surprise Me!</button>
+      <button class="surprise-btn" id="reshuffleBtn" title="Reshuffle all records">🎲 Reshuffle</button>
+      <button class="surprise-btn" id="surpriseBtn" title="Open a random memorabilia record">✨ Surprise Me!</button>
 
-      <select id="yearFilter" onchange="filterData()"><option value="">All Years</option></select>
-      <select id="cityFilter" onchange="filterData()"><option value="">All Cities</option></select>
-      <select id="sortFilter" onchange="filterData()">
+      <select id="yearFilter"><option value="">All Years</option></select>
+      <select id="cityFilter"><option value="">All Cities</option></select>
+      <select id="sortFilter">
         <option value="random">🎲 Random / Shuffled</option>
         <option value="oldest">Date (Oldest First)</option>
         <option value="newest">Date (Newest First)</option>
       </select>
-      <select id="pageSizeFilter" onchange="changePageSize()">
+      <select id="pageSizeFilter">
         <option value="25">25 / page</option>
         <option value="50" selected>50 / page</option>
         <option value="100">100 / page</option>
         <option value="ALL">ALL</option>
       </select>
       <div class="layout-toggles">
-        <button class="toggle-btn active" id="btnGrid" onclick="setLayout('grid')">⊞</button>
-        <button class="toggle-btn" id="btnList" onclick="setLayout('list')">≡</button>
+        <button class="toggle-btn active" id="btnGrid">⊞</button>
+        <button class="toggle-btn" id="btnList">≡</button>
       </div>
     </div>
   </div>
@@ -126,76 +79,27 @@
   <div id="ticketsContainer" class="tickets-container grid-view"></div>
   <div id="paginationContainer" class="pagination-container"></div>
 
-  <!-- Detail Modal Window (Flashcard) -->
-  <div class="modal-overlay" id="detailModal" onclick="closeModalOnOverlay(event)">
-    <div class="modal-card">
-      <div class="modal-nav-bar">
-        <button class="modal-nav-btn" id="modalPrevBtn" onclick="navigateModal(-1)">◄ Previous</button>
-        <div class="modal-counter" id="modalCounter">0 / 0</div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <a href="#" id="modalEditLink" class="modal-edit-btn" title="Edit this record">✏️ Edit</a>
-          <button class="modal-nav-btn" id="modalNextBtn" onclick="navigateModal(1)">Next ►</button>
-          <button class="modal-close" onclick="closeModal()">✕</button>
+  <!-- Video Modal Layout -->
+  <div id="videoModal">
+    <div class="video-modal-container">
+      <button class="jj-close-btn" id="videoModalCloseBtn">✕</button>
+      
+      <!-- Left: Lineup -->
+      <div class="jj-video-side-col" id="videoLineupCol"></div>
+
+      <!-- Center: Video Frame -->
+      <div class="jj-video-center">
+        <div class="jj-video-frame-wrapper">
+          <iframe id="videoIframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
       </div>
 
-      <div class="modal-img-container">
-        <div id="modalViewerWrapper">
-          <img id="modalImg" src="" alt="Ticket Full View">
-        </div>
-        <div class="modal-thumbnails" id="modalThumbnails"></div>
-      </div>
-
-      <div class="modal-body">
-        <div class="modal-date" id="modalDate"></div>
-        <div class="modal-title" id="modalInfo"></div>
-        
-        <div class="modal-grid" id="modalGrid">
-          <div class="modal-grid-item" id="modalSupportGroup">
-            <span>Supporting Act</span>
-            <strong id="modalSupport"></strong>
-          </div>
-          <div class="modal-grid-item" id="modalSeatGroup">
-            <span>Seating / Section</span>
-            <strong id="modalSeat"></strong>
-          </div>
-        </div>
-
-        <!-- 2-Column Flashcard Section: Line-up & Setlist -->
-        <div class="flashcard-columns" id="modalColumnsSection"></div>
-
-        <!-- External Media Links & Embeds -->
-        <div id="modalMediaContainer"></div>
-      </div>
+      <!-- Right: Setlist -->
+      <div class="jj-video-side-col" id="videoSetlistCol"></div>
     </div>
   </div>
 
-  <!-- Skrytý prvek pro spuštění Lupy (Viewer.js) nad souvisejícími obrázky -->
-  <!-- <img id="quickViewerImg" src="" style="display: none;" alt="Quick Viewer">
-
-  <!-- External Application Logic -->
+  <!-- Main Application Script -->
   <script src="app.js"></script>
-  
-  <!-- Video Modal s Line-upem vlevo a Setlistem vpravo -->
-  <div id="videoModal" class="modal" onclick="closeVideoModalOnOverlay(event)">
-    <div class="video-modal-content">
-      <button class="modal-close-btn" onclick="closeVideoModal()">✕</button>
-      
-      <!-- Levý sloupec: Lineup -->
-      <div id="videoLineupContainer" class="video-side-box">
-        <!-- Lineup se načte přes app.js -->
-      </div>
-
-      <!-- Střední sloupec: Video -->
-      <div class="video-frame-container">
-        <iframe id="youtubeIframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-      </div>
-      
-      <!-- Pravý sloupec: Setlist -->
-      <div id="videoSetlistContainer" class="video-side-box">
-        <!-- Setlist se načte přes app.js -->
-      </div>
-    </div>
-  </div>
 </body>
 </html>

@@ -5,77 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Joe Jackson Museum - Contribute Memorabilia</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎫</text></svg>">
+  <link rel="stylesheet" href="styles.css">
 
   <style>
-    :root {
-      --bg-main: #0a0f1c;
-      --bg-panel: #111827;
-      --bg-card: #151c2b;
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --accent-yellow: #facc15;
-      --accent-blue: #38bdf8;
-      --accent-orange: #f97316;
-      --accent-green: #4ade80;
-      --accent-red: #ef4444;
-      --border-color: #1f2937;
-      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: var(--font-family);
-      background-color: var(--bg-main);
-      color: var(--text-main);
-      padding: 30px;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 30px;
     }
-
-    header {
-      width: 100%;
-      max-width: 750px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .header-left { display: flex; align-items: center; gap: 15px; }
-
-    .logo {
-      background-color: var(--accent-orange);
-      color: #000;
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 1.5rem;
-    }
-
-    .title-area h1 { font-size: 1.4rem; font-weight: 700; }
-    .title-area p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
-
-    .btn-back {
-      background-color: var(--bg-panel);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 10px 18px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-    .btn-back:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
 
     .form-container {
       width: 100%;
@@ -145,7 +83,6 @@
     .btn-submit:hover { background-color: #fde047; transform: translateY(-1px); }
     .btn-submit:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
-    /* Stylování stavové zprávy */
     #statusMessage {
       margin-top: 20px;
       padding: 16px;
@@ -157,13 +94,13 @@
     }
     #statusMessage.success {
       background: rgba(74, 222, 128, 0.15);
-      border: 1px solid var(--accent-green);
-      color: var(--accent-green);
+      border: 1px solid #4ade80;
+      color: #4ade80;
     }
     #statusMessage.error {
       background: rgba(239, 68, 68, 0.15);
-      border: 1px solid var(--accent-red);
-      color: var(--accent-red);
+      border: 1px solid #ef4444;
+      color: #ef4444;
     }
 
     @media (max-width: 600px) {
@@ -174,7 +111,7 @@
 </head>
 <body>
 
-  <header>
+  <header style="max-width: 750px;">
     <div class="header-left">
       <div class="logo">JJ</div>
       <div class="title-area">
@@ -182,7 +119,7 @@
         <p>Share your Joe Jackson concert tickets, passes, or posters</p>
       </div>
     </div>
-    <a href="index_short.html" class="btn-back">◄ Back to Museum</a>
+    <a href="index_short.html" class="btn-contribute">◄ Back to Museum</a>
   </header>
 
   <div class="form-container">
@@ -192,13 +129,10 @@
     </p>
 
     <form id="contribForm" action="https://formsubmit.co/marekkraus@gmail.com" method="POST" enctype="multipart/form-data" class="form-grid">
-      
-      <!-- Nastavení pro FormSubmit -->
       <input type="hidden" name="_subject" value="JJMM - addition">
       <input type="hidden" name="_captcha" value="false">
       <input type="hidden" name="_template" value="table">
 
-      <!-- Category -->
       <div class="form-group">
         <label for="category">Category <span>*</span></label>
         <select id="category" name="Category" required>
@@ -211,65 +145,54 @@
         </select>
       </div>
 
-      <!-- Concert Date -->
       <div class="form-group">
         <label for="date">Concert Date <span>*</span></label>
         <input type="date" id="date" name="Concert Date" required>
       </div>
 
-      <!-- City -->
       <div class="form-group">
         <label for="city">City <span>*</span></label>
         <input type="text" id="city" name="City" placeholder="e.g. London, New York" required>
       </div>
 
-      <!-- Country -->
       <div class="form-group">
         <label for="country">Country</label>
         <input type="text" id="country" name="Country" placeholder="e.g. UK, USA, Germany">
       </div>
 
-      <!-- Venue -->
       <div class="form-group full-width">
         <label for="venue">Venue / Club / Hall</label>
         <input type="text" id="venue" name="Venue" placeholder="e.g. Royal Albert Hall, The Bottom Line">
       </div>
 
-      <!-- Supporting Act -->
       <div class="form-group full-width">
         <label for="supporting_act">Supporting Act / Special Guest</label>
         <input type="text" id="supporting_act" name="Supporting Act" placeholder="e.g. The Members, Lincoln Durham">
       </div>
 
-      <!-- Contributor Name -->
       <div class="form-group">
         <label for="contributor">Your Name / Credit <span>*</span></label>
         <input type="text" id="contributor" name="Contributor Credit" placeholder="How you want to be listed" required>
       </div>
 
-      <!-- Contributor Email -->
       <div class="form-group">
         <label for="email">Your Email (Private)</label>
         <input type="email" id="email" name="email" placeholder="For verification only (optional)">
       </div>
 
-      <!-- File Upload -->
       <div class="form-group full-width">
         <label for="scan_file">Upload Image Scan / Photo <span>*</span></label>
         <input type="file" id="scan_file" name="Attachment" accept="image/*" required>
       </div>
 
-      <!-- Additional Notes -->
       <div class="form-group full-width">
         <label for="notes">Additional Information / Notes</label>
         <textarea id="notes" name="Notes" rows="3" placeholder="Setlist details, story behind the ticket, or personal memories..."></textarea>
       </div>
 
-      <!-- Submit Button -->
       <div class="form-group full-width">
         <button type="submit" id="submitBtn" class="btn-submit">🚀 Submit Memorabilia to Archive</button>
       </div>
-
     </form>
 
     <div id="statusMessage"></div>
@@ -293,9 +216,7 @@
         const response = await fetch(form.action, {
           method: 'POST',
           body: formData,
-          headers: {
-            'Accept': 'application/json'
-          }
+          headers: { 'Accept': 'application/json' }
         });
 
         if (response.ok) {

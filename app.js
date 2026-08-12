@@ -8,7 +8,7 @@ let currentCategory = 'Tickets';
 let activeViewerInstance = null;
 let quickViewerInstance = null;
 
-// Náhradní vektorový lístek (WANTED / MISSING ITEM) v barvách muzea
+// Missing ticket placeholder (SVG)
 const MISSING_TICKET_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
 <svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
   <defs>
@@ -37,116 +37,69 @@ const MISSING_TICKET_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
 </svg>
 `)}`;
 
-// Dynamické přimíchání CSS pro moderní 3-sloupcový layout videa
-(function injectViewerCustomStyles() {
-  const style = document.createElement('style');
-  style.textContent = `
-    .viewer-backdrop {
-      background-color: rgba(5, 8, 16, 0.88) !important;
-      backdrop-filter: blur(10px) !important;
-      -webkit-backdrop-filter: blur(10px) !important;
-    }
-    .viewer-title {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-      font-size: 1rem !important;
-      color: #facc15 !important;
-      font-weight: 600 !important;
-      letter-spacing: 0.5px !important;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
-    }
+// Initialization
+window.addEventListener('DOMContentLoaded', () => {
+  setupEventListeners();
 
-    /* Třísloupcový video player modal */
-    #jjDynamicVideoModal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: rgba(5, 8, 16, 0.9);
-      backdrop-filter: blur(10px);
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    #jjDynamicVideoModal.active {
-      display: flex;
-    }
-    #jjDynamicVideoModal .video-modal-container {
-      position: relative;
-      display: flex;
-      flex-direction: row;
-      gap: 20px;
-      max-width: 1280px;
-      width: 98%;
-      background-color: #111827;
-      border: 1px solid #1f2937;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      align-items: stretch;
-    }
-    .jj-close-btn {
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      background: none;
-      border: none;
-      color: #9ca3af;
-      font-size: 1.4rem;
-      cursor: pointer;
-      z-index: 10;
-      line-height: 1;
-    }
-    .jj-close-btn:hover { color: #facc15; }
-    
-    .jj-video-center {
-      flex: 1 1 50%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .jj-video-frame-wrapper {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid #1f2937;
-    }
-    .jj-video-frame-wrapper iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .jj-video-side-col {
-      flex: 1 1 25%;
-      background: #151c2b;
-      border: 1px solid #1f2937;
-      border-radius: 8px;
-      padding: 18px;
-      max-height: 440px;
-      overflow-y: auto;
-    }
-    .jj-video-side-col h4 {
-      margin-bottom: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
+  Papa.parse('joe_jackson_tickets_cleaned.csv', {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      if (!results.data || results.data.length === 0) {
+        console.error("CSV file is empty or could not be loaded.");
+        return;
+      }
+      
+      allTickets = shuffleArray(results.data);
+      updateYearBadge();
+      populateFilters();
 
-    @media (max-width: 992px) {
-      #jjDynamicVideoModal .video-modal-container {
-        flex-direction: column;
-        max-height: 90vh;
-        overflow-y: auto;
+      const savedSearch = sessionStorage.getItem('jj_museum_search');
+      const searchInput = document.getElementById('searchInput');
+      if (savedSearch && searchInput) {
+        searchInput.value = savedSearch;
+        const clearBtn = document.getElementById('searchClearBtn');
+        if (clearBtn) clearBtn.style.display = 'block';
       }
-      .jj-video-side-col {
-        width: 100%;
-        max-height: 200px;
-      }
+
+      filterData();
+      checkOnThisDayAnniversary();
+    },
+    error: function(err) {
+      console.error("Error loading CSV file:", err);
     }
-  `;
-  document.head.appendChild(style);
-})();
+  });
+});
+
+function setupEventListeners() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') clearSearchInput();
+    });
+    searchInput.addEventListener('input', handleSearchInput);
+  }
+
+  document.getElementById('searchClearBtn')?.addEventListener('click', clearSearchInput);
+  document.getElementById('reshuffleBtn')?.addEventListener('click', reshuffleAndRender);
+  document.getElementById('surpriseBtn')?.addEventListener('click', openSurpriseTicket);
+  document.getElementById('yearFilter')?.addEventListener('change', filterData);
+  document.getElementById('cityFilter')?.addEventListener('change', filterData);
+  document.getElementById('sortFilter')?.addEventListener('change', filterData);
+  document.getElementById('pageSizeFilter')?.addEventListener('change', changePageSize);
+  
+  document.getElementById('btnGrid')?.addEventListener('click', () => setLayout('grid'));
+  document.getElementById('btnList')?.addEventListener('click', () => setLayout('list'));
+
+  const videoModal = document.getElementById('videoModal');
+  document.getElementById('videoModalCloseBtn')?.addEventListener('click', closeVideoModal);
+  if (videoModal) {
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) closeVideoModal();
+    });
+  }
+}
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -212,7 +165,7 @@ function formatLocationText(t) {
   return locStr;
 }
 
-// GARANTOVANÉ TŘÍSLOUPCOVÉ OKNO VIDEA (VYTVOŘENÉ DYNAMICKY)
+// Video Modal Management
 function openVideoModal(ticketIndex) {
   let t = (typeof ticketIndex === 'number') ? filteredTickets[ticketIndex] : null;
   let rawUrl = t ? t.YOUTUBE_URL : ticketIndex;
@@ -223,85 +176,58 @@ function openVideoModal(ticketIndex) {
     return;
   }
 
-  // Odstraníme staré dynamické okno, pokud existuje
-  let modal = document.getElementById('jjDynamicVideoModal');
-  if (modal) modal.remove();
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('videoIframe');
+  const lineupCol = document.getElementById('videoLineupCol');
+  const setlistCol = document.getElementById('videoSetlistCol');
 
-  // 1. Příprava obsahu pro Lineup (vlevo)
-  let lineupHTML = `<h4 style="color: #38bdf8;">👥 Band Line-up</h4>`;
+  if (!modal || !iframe || !lineupCol || !setlistCol) return;
+
+  // Lineup HTML
+  let lineupHTML = `<h4 style="color: var(--accent-blue);">👥 Band Line-up</h4>`;
   if (t && isValidValue(t.LINEUP)) {
     const members = t.LINEUP.split(/[;/]/).map(m => m.trim()).filter(Boolean);
-    lineupHTML += `<ul style="padding-left: 18px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">${members.map(m => `<li>${m}</li>`).join('')}</ul>`;
+    lineupHTML += `<ul style="padding-left: 18px; color: var(--text-main); font-size: 0.85rem; line-height: 1.6;">${members.map(m => `<li>${m}</li>`).join('')}</ul>`;
   } else {
-    lineupHTML += `<p style="color: #9ca3af; font-size: 0.85rem;">No line-up details available for this show.</p>`;
+    lineupHTML += `<p style="color: var(--text-muted); font-size: 0.85rem;">No line-up details available for this show.</p>`;
   }
+  lineupCol.innerHTML = lineupHTML;
 
-  // 2. Příprava obsahu pro Setlist (vpravo)
-  let setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist</h4>`;
+  // Setlist HTML
+  let setlistHTML = `<h4 style="color: var(--accent-yellow);">🎵 Setlist</h4>`;
   if (t && isValidValue(t.SETLIST)) {
     const rawItems = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
-    
     let songCount = 0;
     let listItemsHTML = '';
     
     rawItems.forEach(item => {
       if (item.startsWith('[Encore') || item.startsWith('[Set')) {
-        // Hlavička sekce / přídavku (nečíslovaná)
         const title = item.replace(/^\[|\]$/g, '');
-        listItemsHTML += `<li style="list-style-type: none; font-weight: 700; color: #38bdf8; margin-top: 10px; margin-left: -18px;">${title}</li>`;
+        listItemsHTML += `<li style="list-style-type: none; font-weight: 700; color: var(--accent-blue); margin-top: 10px; margin-left: -18px;">${title}</li>`;
       } else {
-        // Běžná skladba (s vlastním číslováním)
         songCount++;
         listItemsHTML += `<li value="${songCount}">${item}</li>`;
       }
     });
 
-    setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist (${songCount} songs)</h4>
-                   <ol style="padding-left: 20px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">
+    setlistHTML = `<h4 style="color: var(--accent-yellow);">🎵 Setlist (${songCount} songs)</h4>
+                   <ol style="padding-left: 20px; color: var(--text-main); font-size: 0.85rem; line-height: 1.6;">
                      ${listItemsHTML}
                    </ol>`;
   } else {
-    setlistHTML += `<p style="color: #9ca3af; font-size: 0.85rem;">No setlist details available for this show.</p>`;
+    setlistHTML += `<p style="color: var(--text-muted); font-size: 0.85rem;">No setlist details available for this show.</p>`;
   }
-  
-  // 3. Vytvoření kompletního 3-sloupcového modalu v DOMu
-  modal = document.createElement('div');
-  modal.id = 'jjDynamicVideoModal';
-  modal.onclick = (e) => { if (e.target === modal) closeVideoModal(); };
+  setlistCol.innerHTML = setlistHTML;
 
-  modal.innerHTML = `
-    <div class="video-modal-container">
-      <button class="jj-close-btn" onclick="closeVideoModal()">✕</button>
-      
-      <!-- Sloupec 1: Lineup (Vlevo) -->
-      <div class="jj-video-side-col">
-        ${lineupHTML}
-      </div>
-
-      <!-- Sloupec 2: Video (Uprostřed) -->
-      <div class="jj-video-center">
-        <div class="jj-video-frame-wrapper">
-          <iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-      </div>
-
-      <!-- Sloupec 3: Setlist (Vpravo) -->
-      <div class="jj-video-side-col">
-        ${setlistHTML}
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(modal);
-  setTimeout(() => modal.classList.add('active'), 10);
+  iframe.src = embedUrl;
+  modal.classList.add('active');
 }
 
 function closeVideoModal() {
-  const modal = document.getElementById('jjDynamicVideoModal');
-  if (modal) {
-    modal.classList.remove('active');
-    setTimeout(() => modal.remove(), 200);
-  }
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('videoIframe');
+  if (modal) modal.classList.remove('active');
+  if (iframe) iframe.src = '';
 }
 
 function getTicketCategory(t) {
@@ -323,17 +249,14 @@ function handleSearchInput() {
   const val = input.value;
   
   sessionStorage.setItem('jj_museum_search', val);
-  
-  if (clearBtn) {
-    clearBtn.style.display = val.trim().length > 0 ? 'block' : 'none';
-  }
+  if (clearBtn) clearBtn.style.display = val.trim().length > 0 ? 'block' : 'none';
   filterData();
 }
 
 function clearSearchInput() {
   const input = document.getElementById('searchInput');
   const clearBtn = document.getElementById('searchClearBtn');
-  input.value = '';
+  if (input) input.value = '';
   sessionStorage.removeItem('jj_museum_search');
   if (clearBtn) clearBtn.style.display = 'none';
   filterData();
@@ -350,7 +273,6 @@ function openSurpriseTicket() {
 
 function getRelatedItems(currentRecord) {
   if (!isValidValue(currentRecord.SHOW_ID)) return [];
-
   return allTickets.filter(item => {
     if (item.ID_MEMORABILIA === currentRecord.ID_MEMORABILIA) return false;
     return item.SHOW_ID === currentRecord.SHOW_ID;
@@ -396,11 +318,7 @@ function checkOnThisDayAnniversary() {
       if (targetIndex !== -1) {
         openDirectImagePreview(targetIndex);
       } else {
-        document.getElementById('searchInput').value = '';
-        sessionStorage.removeItem('jj_museum_search');
-        if (document.getElementById('searchClearBtn')) {
-          document.getElementById('searchClearBtn').style.display = 'none';
-        }
+        clearSearchInput();
         document.getElementById('yearFilter').value = '';
         document.getElementById('cityFilter').value = '';
         currentCategory = 'ALL';
@@ -456,14 +374,10 @@ function openDirectImagePreview(ticketIndex) {
       return `${formatDisplayDate(t.DATUM)} | ${formatLocationText(t)} (${t.KATEGORIE || 'Ticket'})`;
     },
     toolbar: {
-      zoomIn: 1,
-      zoomOut: 1,
-      oneToOne: 1,
-      reset: 1,
+      zoomIn: 1, zoomOut: 1, oneToOne: 1, reset: 1,
       prev: skenFiles.length > 1 ? 1 : 0,
       next: skenFiles.length > 1 ? 1 : 0,
-      rotateLeft: 1,
-      rotateRight: 1,
+      rotateLeft: 1, rotateRight: 1,
     }
   });
 
@@ -494,46 +408,6 @@ function openQuickImageModal(scanFileName) {
   quickViewerInstance.show();
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') clearSearchInput();
-    });
-    searchInput.addEventListener('input', handleSearchInput);
-  }
-
-  Papa.parse('joe_jackson_tickets_cleaned.csv', {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      if (!results.data || results.data.length === 0) {
-        console.error("CSV file is empty or could not be loaded.");
-        return;
-      }
-      
-      allTickets = shuffleArray(results.data);
-
-      updateYearBadge();
-      populateFilters();
-
-      const savedSearch = sessionStorage.getItem('jj_museum_search');
-      if (savedSearch && searchInput) {
-        searchInput.value = savedSearch;
-        const clearBtn = document.getElementById('searchClearBtn');
-        if (clearBtn) clearBtn.style.display = 'block';
-      }
-
-      filterData();
-      checkOnThisDayAnniversary();
-    },
-    error: function(err) {
-      console.error("Error loading CSV file:", err);
-    }
-  });
-});
-
 function updateYearBadge() {
   const years = allTickets
     .map(t => (t.DATUM && t.DATUM.length >= 4) ? parseInt(t.DATUM.substring(0, 4), 10) : 0)
@@ -548,40 +422,33 @@ function updateYearBadge() {
 
 function populateFilters() {
   const yearSelect = document.getElementById('yearFilter');
-  if (!yearSelect) return;
-  const yearsSet = new Set();
-
-  allTickets.forEach(t => {
-    if (t.DATUM && t.DATUM.length >= 4) {
-      const y = parseInt(t.DATUM.substring(0, 4), 10);
-      if (y > 1900) yearsSet.add(y);
-    }
-  });
-
-  const sortedYears = [...yearsSet].sort((a, b) => b - a);
-  sortedYears.forEach(year => {
-    const opt = document.createElement('option');
-    opt.value = year;
-    opt.textContent = year;
-    yearSelect.appendChild(opt);
-  });
+  if (yearSelect) {
+    const yearsSet = new Set();
+    allTickets.forEach(t => {
+      if (t.DATUM && t.DATUM.length >= 4) {
+        const y = parseInt(t.DATUM.substring(0, 4), 10);
+        if (y > 1900) yearsSet.add(y);
+      }
+    });
+    [...yearsSet].sort((a, b) => b - a).forEach(year => {
+      const opt = document.createElement('option');
+      opt.value = year; opt.textContent = year;
+      yearSelect.appendChild(opt);
+    });
+  }
 
   const citySelect = document.getElementById('cityFilter');
-  if (!citySelect) return;
-  const citySet = new Set();
-
-  allTickets.forEach(t => {
-    if (isValidValue(t.MESTO)) citySet.add(t.MESTO.trim());
-  });
-
-  const uniqueCities = [...citySet].sort((a, b) => a.localeCompare(b));
-  
-  uniqueCities.forEach(city => {
-    const opt = document.createElement('option');
-    opt.value = city; 
-    opt.textContent = city;
-    citySelect.appendChild(opt);
-  });
+  if (citySelect) {
+    const citySet = new Set();
+    allTickets.forEach(t => {
+      if (isValidValue(t.MESTO)) citySet.add(t.MESTO.trim());
+    });
+    [...citySet].sort((a, b) => a.localeCompare(b)).forEach(city => {
+      const opt = document.createElement('option');
+      opt.value = city; opt.textContent = city;
+      citySelect.appendChild(opt);
+    });
+  }
 }
 
 function renderCategoryTabs(matchesBeforeCategoryFilter) {
@@ -766,7 +633,7 @@ function renderTickets(tickets) {
       rawItems.forEach(item => {
         if (item.startsWith('[Encore') || item.startsWith('[Set')) {
           const title = item.replace(/^\[|\]$/g, '');
-          listItemsHTML += `<li style="list-style-type: none; font-weight: 700; color: #38bdf8; margin-top: 8px; margin-left: -15px;">${title}</li>`;
+          listItemsHTML += `<li style="list-style-type: none; font-weight: 700; color: var(--accent-blue); margin-top: 8px; margin-left: -15px;">${title}</li>`;
         } else {
           cardSongCount++;
           listItemsHTML += `<li value="${cardSongCount}">${item}</li>`;
@@ -811,7 +678,8 @@ function renderPaginationControls() {
   const totalPages = Math.ceil(filteredTickets.length / pageSize);
 
   const prevBtn = document.createElement('button');
-  prevBtn.className = 'page-btn'; prevBtn.textContent = '◄ Prev';
+  prevBtn.className = 'page-btn'; 
+  prevBtn.textContent = '◄ Prev';
   prevBtn.disabled = currentPage === 1;
   prevBtn.onclick = () => { currentPage--; renderPaginated(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   container.appendChild(prevBtn);
@@ -819,19 +687,23 @@ function renderPaginationControls() {
   for (let i = 1; i <= totalPages; i++) {
     if (totalPages > 10 && Math.abs(i - currentPage) > 3 && i !== 1 && i !== totalPages) {
       if (i === 2 || i === totalPages - 1) {
-        const dots = document.createElement('span'); dots.textContent = '...'; dots.style.color = 'var(--text-muted)';
+        const dots = document.createElement('span'); 
+        dots.textContent = '...'; 
+        dots.style.color = 'var(--text-muted)';
         container.appendChild(dots);
       }
       continue;
     }
     const pageBtn = document.createElement('button');
-    pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`; pageBtn.textContent = i;
+    pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`; 
+    pageBtn.textContent = i;
     pageBtn.onclick = () => { currentPage = i; renderPaginated(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
     container.appendChild(pageBtn);
   }
 
   const nextBtn = document.createElement('button');
-  nextBtn.className = 'page-btn'; nextBtn.textContent = 'Next ►';
+  nextBtn.className = 'page-btn'; 
+  nextBtn.textContent = 'Next ►';
   nextBtn.disabled = currentPage === totalPages;
   nextBtn.onclick = () => { currentPage++; renderPaginated(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   container.appendChild(nextBtn);
