@@ -16,6 +16,51 @@
   <!-- Viewer.js (Image Zoom & Inspection) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
+
+  <style>
+    /* Styling pro tlačítko Contribute v hlavičce */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .btn-contribute {
+      background-color: var(--bg-card, #151c2b);
+      border: 1px solid var(--border-color, #1f2937);
+      color: var(--text-main, #f3f4f6);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-contribute:hover {
+      border-color: var(--accent-yellow, #facc15);
+      color: var(--accent-yellow, #facc15);
+      background-color: var(--bg-panel, #111827);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .btn-contribute {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -28,6 +73,11 @@
           <p>Historical archive of Joe Jackson´s concert tickets, venues & memorabilia</p>
         </div>
       </div>
+
+      <!-- Tlačítko pro přispění do musea -->
+      <a href="ticket_form.html" class="btn-contribute" title="Share your concert ticket, pass, or poster with us">
+        ➕ Contribute your item to Museum
+      </a>
     </header>
 
     <!-- On This Day in History Banner -->
@@ -126,26 +176,26 @@
   <!-- External Application Logic -->
   <script src="app.js"></script>
   
-<!-- Video Modal s Line-upem vlevo a Setlistem vpravo -->
-<div id="videoModal" class="modal" onclick="closeVideoModalOnOverlay(event)">
-  <div class="video-modal-content">
-    <button class="modal-close-btn" onclick="closeVideoModal()">✕</button>
-    
-    <!-- Levý sloupec: Lineup -->
-    <div id="videoLineupContainer" class="video-side-box">
-      <!-- Lineup se načte přes app.js -->
-    </div>
+  <!-- Video Modal s Line-upem vlevo a Setlistem vpravo -->
+  <div id="videoModal" class="modal" onclick="closeVideoModalOnOverlay(event)">
+    <div class="video-modal-content">
+      <button class="modal-close-btn" onclick="closeVideoModal()">✕</button>
+      
+      <!-- Levý sloupec: Lineup -->
+      <div id="videoLineupContainer" class="video-side-box">
+        <!-- Lineup se načte přes app.js -->
+      </div>
 
-    <!-- Střední sloupec: Video -->
-    <div class="video-frame-container">
-      <iframe id="youtubeIframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
-    
-    <!-- Pravý sloupec: Setlist -->
-    <div id="videoSetlistContainer" class="video-side-box">
-      <!-- Setlist se načte přes app.js -->
+      <!-- Střední sloupec: Video -->
+      <div class="video-frame-container">
+        <iframe id="youtubeIframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+      
+      <!-- Pravý sloupec: Setlist -->
+      <div id="videoSetlistContainer" class="video-side-box">
+        <!-- Setlist se načte přes app.js -->
+      </div>
     </div>
   </div>
-</div>
 </body>
 </html>
