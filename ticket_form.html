@@ -177,7 +177,7 @@
       <strong>Help us grow the archive!</strong> Please submit <strong>one concert per form</strong> (you can attach multiple photos if they belong to the same show).
     </p>
 
-    <form id="contribForm" action="https://formspree.io/f/xqpzbzpa" method="POST" class="form-grid">
+    <form id="contribForm" action="https://formspree.io/f/xqpzbzpa" method="POST" enctype="multipart/form-data" class="form-grid">
       
       <!-- Skrytý předmět pro Formspree -->
       <input type="hidden" name="_subject" value="JJMM - addition">
@@ -233,14 +233,14 @@
 
       <!-- Contributor Email -->
       <div class="form-group">
-        <label for="_replyto">Your Email (Private)</label>
-        <input type="email" id="_replyto" name="_replyto" placeholder="For verification only (optional)">
+        <label for="email">Your Email (Private)</label>
+        <input type="email" id="email" name="email" placeholder="For verification only (optional)">
       </div>
 
       <!-- File Upload (Multiple) -->
       <div class="form-group full-width">
         <label for="scan_file">Upload Image Scan(s) / Photo(s) <span>*</span></label>
-        <input type="file" id="scan_file" accept="image/*" multiple required>
+        <input type="file" id="scan_file" name="attachment" accept="image/*" multiple required>
         <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">
           ⚡ Images are auto-optimized before sending. You can select multiple files for this show.
         </small>
@@ -314,6 +314,7 @@
     document.getElementById('contribForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
+      const form = this;
       const submitBtn = document.getElementById('submitBtn');
       const statusMsg = document.getElementById('statusMessage');
       const fileInput = document.getElementById('scan_file');
@@ -328,19 +329,22 @@
       statusMsg.style.display = 'none';
 
       try {
-        const formData = new FormData(this);
+        const formData = new FormData(form);
+        formData.delete('attachment'); // Odstraníme původní velké soubory
 
-        // Komprese všech nahraných fotek na pozadí
+        // Zkomprimujeme soubory a přidáme je do FormData pod správnými klíči
         for (let i = 0; i < fileInput.files.length; i++) {
           const originalFile = fileInput.files[i];
-          const optimizedBlob = await resizeAndCompressImage(originalFile, 1600, 0.8);
-          formData.append('attachment', optimizedBlob, optimizedBlob.name);
+          const optimizedFile = await resizeAndCompressImage(originalFile, 1600, 0.8);
+          formData.append('attachment', optimizedFile, optimizedFile.name);
         }
 
-        const response = await fetch(this.action, {
+        const response = await fetch(form.action, {
           method: 'POST',
           body: formData,
-          headers: { 'Accept': 'application/json' }
+          headers: {
+            'Accept': 'application/json'
+          }
         });
 
         if (response.ok) {
@@ -349,9 +353,10 @@
           statusMsg.style.border = '1px solid #4ade80';
           statusMsg.style.color = '#4ade80';
           statusMsg.textContent = '🎉 Thank you! Your contribution has been submitted successfully.';
-          this.reset();
+          form.reset();
         } else {
-          throw new Error('Form submission failed');
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || `HTTP error ${response.status}`);
         }
 
       } catch (err) {
@@ -359,7 +364,7 @@
         statusMsg.style.background = 'rgba(239, 68, 68, 0.15)';
         statusMsg.style.border = '1px solid #ef4444';
         statusMsg.style.color = '#f87171';
-        statusMsg.textContent = '❌ Error submitting form. Please try again.';
+        statusMsg.textContent = '❌ Error submitting form: ' + err.message;
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '🚀 Submit Memorabilia to Archive';
