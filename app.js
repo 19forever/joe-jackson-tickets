@@ -1,805 +1,646 @@
-let allTickets = [];
-let filteredTickets = [];
-let currentLayout = 'grid';
+/* ==========================================================================
+   Joe Jackson Memorabilia Museum - Core Application Logic
+   ========================================================================== */
+
+// Konfigurace a globální stav
+const CSV_FILE = 'joe_jackson_tickets_cleaned.csv';
+const PLACEHOLDER_IMG = 'scans/missing_ticket.svg';
+
+let allData = [];
+let filteredData = [];
+let currentLayout = 'grid'; // 'grid' nebo 'list'
 let currentPage = 1;
-let pageSize = 50;
-let currentCategory = 'Tickets';
+let pageSize = 50; // defaultní velikost stránky
 
-let activeViewerInstance = null;
-let quickViewerInstance = null;
+let modalViewer = null; // Instance Viewer.js pro zoomování
+let currentModalIndex = -1;
 
-// Dynamické přimíchání CSS pro moderní 3-sloupcový layout videa
-(function injectViewerCustomStyles() {
-  const style = document.createElement('style');
-  style.textContent = `
-    .viewer-backdrop {
-      background-color: rgba(5, 8, 16, 0.88) !important;
-      backdrop-filter: blur(10px) !important;
-      -webkit-backdrop-filter: blur(10px) !important;
-    }
-    .viewer-title {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-      font-size: 1rem !important;
-      color: #facc15 !important;
-      font-weight: 600 !important;
-      letter-spacing: 0.5px !important;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
-    }
+/* --------------------------------------------------------------------------
+   Pomocné funkce pro prázdné nebo chybějící obrázky
+   -------------------------------------------------------------------------- */
+function getTileImageUrl(fileName) {
+  if (!fileName || fileName.trim() === '' || fileName.trim().toLowerCase() === 'missing') {
+    return PLACEHOLDER_IMG;
+  }
+  return `scans/${fileName.trim()}`;
+}
 
-    /* Třísloupcový video player modal */
-    #jjDynamicVideoModal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: rgba(5, 8, 16, 0.9);
-      backdrop-filter: blur(10px);
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    #jjDynamicVideoModal.active {
-      display: flex;
-    }
-    #jjDynamicVideoModal .video-modal-container {
-      position: relative;
-      display: flex;
-      flex-direction: row;
-      gap: 20px;
-      max-width: 1280px;
-      width: 98%;
-      background-color: #111827;
-      border: 1px solid #1f2937;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      align-items: stretch;
-    }
-    .jj-close-btn {
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      background: none;
-      border: none;
-      color: #9ca3af;
-      font-size: 1.4rem;
-      cursor: pointer;
-      z-index: 10;
-      line-height: 1;
-    }
-    .jj-close-btn:hover { color: #facc15; }
-    
-    .jj-video-center {
-      flex: 1 1 50%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .jj-video-frame-wrapper {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid #1f2937;
-    }
-    .jj-video-frame-wrapper iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .jj-video-side-col {
-      flex: 1 1 25%;
-      background: #151c2b;
-      border: 1px solid #1f2937;
-      border-radius: 8px;
-      padding: 18px;
-      max-height: 440px;
-      overflow-y: auto;
-    }
-    .jj-video-side-col h4 {
-      margin-bottom: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
+/* --------------------------------------------------------------------------
+   Inicializace po načtení DOM
+   -------------------------------------------------------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  loadCSVData();
+});
 
-    @media (max-width: 992px) {
-      #jjDynamicVideoModal .video-modal-container {
-        flex-direction: column;
-        max-height: 90vh;
-        overflow-y: auto;
-      }
-      .jj-video-side-col {
-        width: 100%;
-        max-height: 200px;
+// Načtení a zpracování CSV souboru přes PapaParse
+function loadCSVData() {
+  Papa.parse(CSV_FILE, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function (results) {
+      // Očištění dat od prázdných řádků
+      allData = results.data.filter(row => row.CONCERT_DATE && row.CONCERT_DATE.trim() !== '');
+      
+      // Výchozí promíchání při načtení
+      shuffleArray(allData);
+      filteredData = [...allData];
+
+      // Inicializace filtrů a UI prvků
+      populateFilters();
+      setupCategories();
+      checkOnThisDayBanner();
+      
+      // Vykreslení dat
+      renderData();
+    },
+    error: function (err) {
+      console.error("Chyba při načítání CSV:", err);
+      const container = document.getElementById('ticketsContainer');
+      if (container) {
+        container.innerHTML = `<div style="color: #ef4444; padding: 40px; text-align: center;">❌ Failed to load archive data (${err}).</div>`;
       }
     }
-  `;
-  document.head.appendChild(style);
-})();
+  });
+}
 
+/* --------------------------------------------------------------------------
+   Algoritmus pro náhodné promíchání (Fisher-Yates Shuffle)
+   -------------------------------------------------------------------------- */
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
-  return array;
 }
 
 function reshuffleAndRender() {
-  shuffleArray(allTickets);
-  const sortSelect = document.getElementById('sortFilter');
-  if (sortSelect) sortSelect.value = 'random';
+  document.getElementById('sortFilter').value = 'random';
+  shuffleArray(filteredData);
+  currentPage = 1;
+  renderData();
+}
+
+/* --------------------------------------------------------------------------
+   Populace filtrů (Roky, Města, Kategorie)
+   -------------------------------------------------------------------------- */
+function populateFilters() {
+  const yearFilter = document.getElementById('yearFilter');
+  const cityFilter = document.getElementById('cityFilter');
+  const yearBadge = document.getElementById('yearBadge');
+
+  const years = new Set();
+  const cities = new Set();
+
+  allData.forEach(item => {
+    if (item.CONCERT_DATE) {
+      const year = item.CONCERT_DATE.substring(0, 4);
+      if (year && !isNaN(year)) years.add(year);
+    }
+    if (item.CITY && item.CITY.trim() !== '') {
+      cities.add(item.CITY.trim());
+    }
+  });
+
+  // Aktualizace odznaku s počtem záznamů v hlavičce
+  if (yearBadge) {
+    yearBadge.textContent = `${allData.length} items`;
+  }
+
+  // Seřazení a vložení let do selectu
+  const sortedYears = Array.from(years).sort((a, b) => b - a);
+  yearFilter.innerHTML = '<option value="">All Years</option>';
+  sortedYears.forEach(y => {
+    yearFilter.innerHTML += `<option value="${y}">${y}</option>`;
+  });
+
+  // Seřazení a vložení měst do selectu
+  const sortedCities = Array.from(cities).sort();
+  cityFilter.innerHTML = '<option value="">All Cities</option>';
+  sortedCities.forEach(c => {
+    cityFilter.innerHTML += `<option value="${c}">${c}</option>`;
+  });
+}
+
+function setupCategories() {
+  const categoryTabs = document.getElementById('categoryTabs');
+  if (!categoryTabs) return;
+
+  const categories = ['ALL', 'Tickets', 'Passes', 'Posters', 'Programs', 'T-shirts', 'Memorabilia'];
+  
+  categoryTabs.innerHTML = categories.map(cat => `
+    <button class="category-tab ${cat === 'ALL' ? 'active' : ''}" onclick="filterByCategory('${cat}', this)">
+      ${cat}
+    </button>
+  `).join('');
+}
+
+let selectedCategory = 'ALL';
+
+function filterByCategory(category, btnElement) {
+  selectedCategory = category;
+  document.querySelectorAll('.category-tab').forEach(btn => btn.classList.remove('active'));
+  btnElement.classList.add('active');
   filterData();
 }
 
-function isValidValue(val) {
-  if (!val) return false;
-  const clean = String(val).trim().toLowerCase();
-  return clean !== '' && clean !== 'není k dispozici' && clean !== 'n/a' && clean !== 'undefined' && clean !== 'null';
-}
+/* --------------------------------------------------------------------------
+   Filtrování a Řazení dat
+   -------------------------------------------------------------------------- */
+function filterData() {
+  const searchInput = document.getElementById('searchInput').value.toLowerCase().trim();
+  const yearVal = document.getElementById('yearFilter').value;
+  const cityVal = document.getElementById('cityFilter').value;
+  const sortVal = document.getElementById('sortFilter').value;
 
-function formatDisplayDate(dateStr) {
-  if (!dateStr || typeof dateStr !== 'string') return '';
-  const parts = dateStr.trim().split('-');
-  if (parts.length !== 3) return dateStr;
+  filteredData = allData.filter(item => {
+    // Kategoriální filtr
+    if (selectedCategory !== 'ALL') {
+      const itemCat = (item.CATEGORY || 'Tickets').trim();
+      if (itemCat.toLowerCase() !== selectedCategory.toLowerCase()) return false;
+    }
 
-  const year = parts[0];
-  const monthIdx = parseInt(parts[1], 10) - 1;
-  const day = parseInt(parts[2], 10);
+    // Rok
+    if (yearVal && (!item.CONCERT_DATE || !item.CONCERT_DATE.startsWith(yearVal))) {
+      return false;
+    }
 
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+    // Město
+    if (cityVal && item.CITY !== cityVal) {
+      return false;
+    }
 
-  if (isNaN(day) || monthIdx < 0 || monthIdx > 11) return dateStr;
+    // Vyhledávací pole (hledá ve městech, halách, datu, poznámkách i line-upu)
+    if (searchInput !== '') {
+      const matchCity = item.CITY && item.CITY.toLowerCase().includes(searchInput);
+      const matchVenue = item.VENUE && item.VENUE.toLowerCase().includes(searchInput);
+      const matchDate = item.CONCERT_DATE && item.CONCERT_DATE.includes(searchInput);
+      const matchNotes = item.NOTES && item.NOTES.toLowerCase().includes(searchInput);
+      const matchLineup = item.BAND_LINEUP && item.BAND_LINEUP.toLowerCase().includes(searchInput);
+      const matchSupport = item.SUPPORTING_ACT && item.SUPPORTING_ACT.toLowerCase().includes(searchInput);
 
-  let suffix = "th";
-  if (day % 10 === 1 && day !== 11) suffix = "st";
-  else if (day % 10 === 2 && day !== 12) suffix = "nd";
-  else if (day % 10 === 3 && day !== 13) suffix = "rd";
-
-  return `${day}${suffix} ${months[monthIdx]} ${year}`;
-}
-
-function getYouTubeEmbedUrl(url) {
-  if (!url || typeof url !== 'string') return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}?autoplay=1` : null;
-}
-
-function formatLocationText(t) {
-  let locationParts = [];
-  if (isValidValue(t.MESTO)) locationParts.push(t.MESTO);
-  if (isValidValue(t.STAT)) locationParts.push(t.STAT);
-  
-  let locStr = locationParts.join(', ');
-  if (isValidValue(t.VENUE)) {
-    locStr += locStr ? ` - ${t.VENUE}` : t.VENUE;
-  }
-  return locStr;
-}
-
-// GARANTOVANÉ TŘÍSLOUPCOVÉ OKNO VIDEA (VYTVOŘENÉ DYNAMICKY)
-function openVideoModal(ticketIndex) {
-  let t = (typeof ticketIndex === 'number') ? filteredTickets[ticketIndex] : null;
-  let rawUrl = t ? t.YOUTUBE_URL : ticketIndex;
-
-  const embedUrl = getYouTubeEmbedUrl(rawUrl);
-  if (!embedUrl) {
-    if (rawUrl) window.open(rawUrl, '_blank');
-    return;
-  }
-
-  // Odstraníme staré dynamické okno, pokud existuje
-  let modal = document.getElementById('jjDynamicVideoModal');
-  if (modal) modal.remove();
-
-  // 1. Příprava obsahu pro Lineup (vlevo)
-  let lineupHTML = `<h4 style="color: #38bdf8;">👥 Band Line-up</h4>`;
-  if (t && isValidValue(t.LINEUP)) {
-    const members = t.LINEUP.split(/[;/]/).map(m => m.trim()).filter(Boolean);
-    lineupHTML += `<ul style="padding-left: 18px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">${members.map(m => `<li>${m}</li>`).join('')}</ul>`;
-  } else {
-    lineupHTML += `<p style="color: #9ca3af; font-size: 0.85rem;">No line-up details available for this show.</p>`;
-  }
-
-  // 2. Příprava obsahu pro Setlist (vpravo)
-  let setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist</h4>`;
-  if (t && isValidValue(t.SETLIST)) {
-    const rawItems = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
-    
-    let songCount = 0;
-    let listItemsHTML = '';
-    
-    rawItems.forEach(item => {
-      if (item.startsWith('[Encore') || item.startsWith('[Set')) {
-        // Hlavička sekce / přídavku (nečíslovaná)
-        const title = item.replace(/^\[|\]$/g, '');
-        listItemsHTML += `<li style="list-style-type: none; font-weight: 700; color: #38bdf8; margin-top: 10px; margin-left: -18px;">${title}</li>`;
-      } else {
-        // Běžná skladba (s vlastním číslováním)
-        songCount++;
-        listItemsHTML += `<li value="${songCount}">${item}</li>`;
+      if (!matchCity && !matchVenue && !matchDate && !matchNotes && !matchLineup && !matchSupport) {
+        return false;
       }
-    });
+    }
 
-    setlistHTML = `<h4 style="color: #facc15;">🎵 Setlist (${songCount} songs)</h4>
-                   <ol style="padding-left: 20px; color: #f3f4f6; font-size: 0.85rem; line-height: 1.6;">
-                     ${listItemsHTML}
-                   </ol>`;
-  } else {
-    setlistHTML += `<p style="color: #9ca3af; font-size: 0.85rem;">No setlist details available for this show.</p>`;
+    return true;
+  });
+
+  // Řazení
+  if (sortVal === 'oldest') {
+    filteredData.sort((a, b) => (a.CONCERT_DATE || '').localeCompare(b.CONCERT_DATE || ''));
+  } else if (sortVal === 'newest') {
+    filteredData.sort((a, b) => (b.CONCERT_DATE || '').localeCompare(a.CONCERT_DATE || ''));
+  } else if (sortVal === 'random') {
+    // Ponechává náhodné pořadí
   }
-  
-  // 3. Vytvoření kompletního 3-sloupcového modalu v DOMu
-  modal = document.createElement('div');
-  modal.id = 'jjDynamicVideoModal';
-  modal.onclick = (e) => { if (e.target === modal) closeVideoModal(); };
 
-  modal.innerHTML = `
-    <div class="video-modal-container">
-      <button class="jj-close-btn" onclick="closeVideoModal()">✕</button>
-      
-      <!-- Sloupec 1: Lineup (Vlevo) -->
-      <div class="jj-video-side-col">
-        ${lineupHTML}
-      </div>
-
-      <!-- Sloupec 2: Video (Uprostřed) -->
-      <div class="jj-video-center">
-        <div class="jj-video-frame-wrapper">
-          <iframe src="${embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-      </div>
-
-      <!-- Sloupec 3: Setlist (Vpravo) -->
-      <div class="jj-video-side-col">
-        ${setlistHTML}
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(modal);
-  setTimeout(() => modal.classList.add('active'), 10);
-}
-
-function closeVideoModal() {
-  const modal = document.getElementById('jjDynamicVideoModal');
-  if (modal) {
-    modal.classList.remove('active');
-    setTimeout(() => modal.remove(), 200);
-  }
-}
-
-function getTicketCategory(t) {
-  if (t.KATEGORIE && t.KATEGORIE.trim()) {
-    const cat = t.KATEGORIE.trim().toLowerCase();
-    if (cat.includes('pass')) return 'Passes';
-    if (cat.includes('program')) return 'Programs';
-    if (cat.includes('poster')) return 'Posters';
-    if (cat.includes('shirt') || cat.includes('t-shirt') || cat.includes('tričko')) return 'T-shirts';
-    if (cat.includes('memo')) return 'Memorabilia';
-    if (cat.includes('ticket')) return 'Tickets';
-  }
-  return 'Tickets';
+  currentPage = 1;
+  renderData();
 }
 
 function handleSearchInput() {
-  const input = document.getElementById('searchInput');
   const clearBtn = document.getElementById('searchClearBtn');
-  const val = input.value;
-  
-  sessionStorage.setItem('jj_museum_search', val);
-  
+  const val = document.getElementById('searchInput').value;
   if (clearBtn) {
-    clearBtn.style.display = val.trim().length > 0 ? 'block' : 'none';
+    clearBtn.style.display = val.length > 0 ? 'block' : 'none';
   }
   filterData();
 }
 
 function clearSearchInput() {
-  const input = document.getElementById('searchInput');
-  const clearBtn = document.getElementById('searchClearBtn');
-  input.value = '';
-  sessionStorage.removeItem('jj_museum_search');
-  if (clearBtn) clearBtn.style.display = 'none';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClearBtn').style.display = 'none';
   filterData();
 }
 
-function openSurpriseTicket() {
-  if (!filteredTickets || filteredTickets.length === 0) {
-    alert("No items available to pick from!");
+function changePageSize() {
+  const val = document.getElementById('pageSizeFilter').value;
+  pageSize = val === 'ALL' ? filteredData.length : parseInt(val, 10);
+  currentPage = 1;
+  renderData();
+}
+
+function setLayout(layout) {
+  currentLayout = layout;
+  document.getElementById('btnGrid').classList.toggle('active', layout === 'grid');
+  document.getElementById('btnList').classList.toggle('active', layout === 'list');
+  renderData();
+}
+
+/* --------------------------------------------------------------------------
+   Vykreslování karet a stránkování
+   -------------------------------------------------------------------------- */
+function renderData() {
+  const container = document.getElementById('ticketsContainer');
+  container.className = `tickets-container ${currentLayout}-view`;
+
+  if (filteredData.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+        <p style="font-size: 1.5rem; margin-bottom: 10px;">🔍 No memorabilia items found matching your criteria.</p>
+        <button class="surprise-btn" onclick="clearAllFilters()">Reset All Filters</button>
+      </div>
+    `;
+    document.getElementById('paginationContainer').innerHTML = '';
     return;
   }
-  const randomIndex = Math.floor(Math.random() * filteredTickets.length);
-  openDirectImagePreview(randomIndex);
+
+  // Výpočet stránkování
+  const effectivePageSize = pageSize === 'ALL' ? filteredData.length : pageSize;
+  const startIndex = (currentPage - 1) * effectivePageSize;
+  const pageItems = filteredData.slice(startIndex, startIndex + effectivePageSize);
+
+  container.innerHTML = pageItems.map((item, index) => {
+    const globalIndex = startIndex + index;
+    const imgUrl = getTileImageUrl(item.FILE_NAME);
+    const category = item.CATEGORY || 'Ticket';
+    const hasMedia = (item.YOUTUBE_URL && item.YOUTUBE_URL.trim() !== '') || (item.SETLIST && item.SETLIST.trim() !== '');
+
+    return `
+      <div class="ticket-card" onclick="openModal(${globalIndex})">
+        <div class="card-img-wrapper">
+          <img src="${imgUrl}" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}';" alt="${category} scan" loading="lazy">
+          <span class="card-badge badge-${category.toLowerCase()}">${category}</span>
+          ${hasMedia ? '<span class="media-indicator-badge" title="Has media or setlist">🎵 Video/Setlist</span>' : ''}
+        </div>
+        <div class="card-content">
+          <div class="card-date">${item.CONCERT_DATE || 'Unknown Date'}</div>
+          <div class="card-title">${item.CITY || 'Unknown City'}, ${item.COUNTRY || ''}</div>
+          <div class="card-venue">${item.VENUE || ''}</div>
+          ${item.SUPPORTING_ACT ? `<div class="card-support">w/ ${item.SUPPORTING_ACT}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  renderPagination();
 }
 
-function getRelatedItems(currentRecord) {
-  if (!isValidValue(currentRecord.SHOW_ID)) return [];
-
-  return allTickets.filter(item => {
-    if (item.ID_MEMORABILIA === currentRecord.ID_MEMORABILIA) return false;
-    return item.SHOW_ID === currentRecord.SHOW_ID;
-  });
+function clearAllFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('yearFilter').value = '';
+  document.getElementById('cityFilter').value = '';
+  document.getElementById('sortFilter').value = 'random';
+  selectedCategory = 'ALL';
+  setupCategories();
+  filterData();
 }
 
-function checkOnThisDayAnniversary() {
-  const today = new Date();
-  const currentDay = today.getDate();
-  const currentMonth = today.getMonth();
+function renderPagination() {
+  const container = document.getElementById('paginationContainer');
+  if (!container || pageSize === 'ALL') {
+    if (container) container.innerHTML = '';
+    return;
+  }
 
-  const anniversaries = allTickets.filter(t => {
-    if (!isValidValue(t.DATUM)) return false;
-    const parts = t.DATUM.split('-');
-    if (parts.length !== 3) return false;
-    const m = parseInt(parts[1], 10) - 1;
-    const d = parseInt(parts[2], 10);
-    return d === currentDay && m === currentMonth;
-  });
+  const totalPages = Math.ceil(filteredData.length / pageSize);
+  if (totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
 
-  if (anniversaries.length > 0) {
-    const selected = anniversaries[0];
-    const concertYear = parseInt(selected.DATUM.split('-')[0], 10);
-    const yearsAgo = today.getFullYear() - concertYear;
-
-    const banner = document.getElementById('otdBanner');
-    const titleEl = document.getElementById('otdTitle');
-    const btn = document.getElementById('otdBtn');
-
-    if (!banner || !titleEl || !btn) return;
-
-    let locationText = formatLocationText(selected);
-    let text = `<strong>${yearsAgo} years ago</strong> (${formatDisplayDate(selected.DATUM)}): Joe Jackson played in ${locationText}`;
-    if (anniversaries.length > 1) {
-      text += ` <em>(+${anniversaries.length - 1} more show today)</em>`;
+  let html = `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})">◄ Prev</button>`;
+  
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+    } else if (i === currentPage - 3 || i === currentPage + 3) {
+      html += `<span style="color: var(--text-muted); padding: 0 4px;">...</span>`;
     }
+  }
 
-    titleEl.innerHTML = text;
-    banner.classList.add('active');
+  html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})">Next ►</button>`;
+  container.innerHTML = html;
+}
 
+function goToPage(page) {
+  currentPage = page;
+  renderData();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* --------------------------------------------------------------------------
+   On This Day In History Banner
+   -------------------------------------------------------------------------- */
+function checkOnThisDayBanner() {
+  const banner = document.getElementById('otdBanner');
+  const title = document.getElementById('otdTitle');
+  const btn = document.getElementById('otdBtn');
+  if (!banner || !title || !btn) return;
+
+  const today = new Date();
+  const currentMonthDay = today.toISOString().substring(5, 10); // "MM-DD"
+
+  const anniversaryShows = allData.filter(item => {
+    return item.CONCERT_DATE && item.CONCERT_DATE.substring(5, 10) === currentMonthDay;
+  });
+
+  if (anniversaryShows.length > 0) {
+    const show = anniversaryShows[Math.floor(Math.random() * anniversaryShows.length)];
+    const year = show.CONCERT_DATE.substring(0, 4);
+    
+    title.innerHTML = `On this day in <strong>${year}</strong>: Joe Jackson played at <strong>${show.VENUE || show.CITY}</strong> (${show.CITY}).`;
+    
     btn.onclick = () => {
-      const targetIndex = filteredTickets.indexOf(selected);
-      if (targetIndex !== -1) {
-        openDirectImagePreview(targetIndex);
+      const globalIdx = filteredData.indexOf(show);
+      if (globalIdx !== -1) {
+        openModal(globalIdx);
       } else {
-        document.getElementById('searchInput').value = '';
-        sessionStorage.removeItem('jj_museum_search');
-        if (document.getElementById('searchClearBtn')) {
-          document.getElementById('searchClearBtn').style.display = 'none';
-        }
-        document.getElementById('yearFilter').value = '';
-        document.getElementById('cityFilter').value = '';
-        currentCategory = 'ALL';
-        filterData();
-        setTimeout(() => {
-          openDirectImagePreview(filteredTickets.indexOf(selected));
-        }, 100);
+        clearAllFilters();
+        const newIdx = filteredData.indexOf(show);
+        if (newIdx !== -1) openModal(newIdx);
       }
     };
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
   }
 }
 
-function openDirectImagePreview(ticketIndex) {
-  const t = filteredTickets[ticketIndex];
-  if (!t || !t.SOUBOR_SKEN) return;
+/* --------------------------------------------------------------------------
+   Surprise Me! (Náhodný záznam)
+   -------------------------------------------------------------------------- */
+function openSurpriseTicket() {
+  if (filteredData.length === 0) return;
+  const randomIdx = Math.floor(Math.random() * filteredData.length);
+  openModal(randomIdx);
+}
 
-  const skenFiles = t.SOUBOR_SKEN.split(',').map(s => s.trim()).filter(Boolean);
-  if (skenFiles.length === 0) return;
+/* --------------------------------------------------------------------------
+   Detail Modal Window (Flashcard + Viewer.js Zoom)
+   -------------------------------------------------------------------------- */
+function openModal(index) {
+  currentModalIndex = index;
+  const item = filteredData[index];
+  if (!item) return;
 
-  if (activeViewerInstance) {
-    activeViewerInstance.destroy();
-    activeViewerInstance = null;
+  const modal = document.getElementById('detailModal');
+  const modalImg = document.getElementById('modalImg');
+  const modalDate = document.getElementById('modalDate');
+  const modalInfo = document.getElementById('modalInfo');
+  const modalCounter = document.getElementById('modalCounter');
+  const modalEditLink = document.getElementById('modalEditLink');
+
+  // Počítadlo v modálu
+  modalCounter.textContent = `${index + 1} / ${filteredData.length}`;
+
+  // Odkaz na editační rozhraní
+  if (modalEditLink) {
+    modalEditLink.href = `edit_ticket_new.html?id=${encodeURIComponent(item.SHOW_ID || item.CONCERT_DATE)}`;
   }
 
-  const container = document.createElement('div');
-  container.style.display = 'none';
+  // Základní texty
+  modalDate.textContent = item.CONCERT_DATE || 'Unknown Date';
+  modalInfo.textContent = `${item.CITY || 'Unknown City'}${item.COUNTRY ? ', ' + item.COUNTRY : ''} — ${item.VENUE || ''}`;
 
-  skenFiles.forEach((file) => {
-    const img = document.createElement('img');
-    img.src = `./scans/${file}`;
-    img.alt = `${formatDisplayDate(t.DATUM)} - ${formatLocationText(t)}`;
-    container.appendChild(img);
-  });
+  // Podpora a Seating
+  document.getElementById('modalSupport').textContent = item.SUPPORTING_ACT || 'N/A';
+  document.getElementById('modalSeat').textContent = item.SEATING || 'N/A';
 
-  document.body.appendChild(container);
+  // Načtení obrázku
+  const imgUrl = getTileImageUrl(item.FILE_NAME);
+  modalImg.src = imgUrl;
+  modalImg.onerror = function() {
+    this.onerror = null;
+    this.src = PLACEHOLDER_IMG;
+  };
 
-  activeViewerInstance = new Viewer(container, {
-    backdrop: 'static',
-    hidden: function() {
-      activeViewerInstance.destroy();
-      activeViewerInstance = null;
-      document.body.removeChild(container);
-    },
-    title: function() {
-      return `${formatDisplayDate(t.DATUM)} | ${formatLocationText(t)} (${t.KATEGORIE || 'Ticket'})`;
-    },
+  // Inicializace / Aktualizace Lupy (Viewer.js)
+  if (modalViewer) {
+    modalViewer.destroy();
+  }
+  modalViewer = new Viewer(document.getElementById('modalViewerWrapper'), {
+    inline: false,
     toolbar: {
       zoomIn: 1,
       zoomOut: 1,
       oneToOne: 1,
       reset: 1,
-      prev: skenFiles.length > 1 ? 1 : 0,
-      next: skenFiles.length > 1 ? 1 : 0,
       rotateLeft: 1,
       rotateRight: 1,
-    }
-  });
-
-  activeViewerInstance.show();
-}
-
-function openQuickImageModal(scanFileName) {
-  if (!scanFileName) return;
-
-  const firstFile = scanFileName.split(',')[0].trim();
-  const quickImg = document.createElement('img');
-  quickImg.src = `./scans/${firstFile}`;
-
-  if (quickViewerInstance) {
-    quickViewerInstance.destroy();
-    quickViewerInstance = null;
-  }
-
-  quickViewerInstance = new Viewer(quickImg, {
-    backdrop: 'static',
-    hidden: function() {
-      quickViewerInstance.destroy();
-      quickViewerInstance = null;
-    }
-  });
-
-  quickViewerInstance.show();
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') clearSearchInput();
-    });
-    searchInput.addEventListener('input', handleSearchInput);
-  }
-
-  Papa.parse('joe_jackson_tickets_cleaned.csv', {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      if (!results.data || results.data.length === 0) {
-        console.error("CSV file is empty or could not be loaded.");
-        return;
-      }
-      
-      allTickets = shuffleArray(results.data);
-
-      updateYearBadge();
-      populateFilters();
-
-      const savedSearch = sessionStorage.getItem('jj_museum_search');
-      if (savedSearch && searchInput) {
-        searchInput.value = savedSearch;
-        const clearBtn = document.getElementById('searchClearBtn');
-        if (clearBtn) clearBtn.style.display = 'block';
-      }
-
-      filterData();
-      checkOnThisDayAnniversary();
+      flipHorizontal: 1,
+      flipVertical: 1,
     },
-    error: function(err) {
-      console.error("Error loading CSV file:", err);
-    }
+    title: false
   });
-});
 
-function updateYearBadge() {
-  const years = allTickets
-    .map(t => (t.DATUM && t.DATUM.length >= 4) ? parseInt(t.DATUM.substring(0, 4), 10) : 0)
-    .filter(y => y > 1900);
-  if (years.length > 0) {
-    const minYear = Math.min(...years);
-    const maxYear = Math.max(...years);
-    const badge = document.getElementById('yearBadge');
-    if (badge) badge.textContent = `${minYear} – ${maxYear}`;
-  }
+  // Náhledové miniatury pro související předměty stejného SHOW_ID
+  renderModalThumbnails(item);
+
+  // Vykreslení dvousloupcové sekce (Line-up a Setlist)
+  renderFlashcardColumns(item);
+
+  // Vykreslení Média / Video tlačítka
+  renderMediaSection(item);
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
 }
 
-function populateFilters() {
-  const yearSelect = document.getElementById('yearFilter');
-  if (!yearSelect) return;
-  const yearsSet = new Set();
+function renderModalThumbnails(currentItem) {
+  const container = document.getElementById('modalThumbnails');
+  if (!container) return;
 
-  allTickets.forEach(t => {
-    if (t.DATUM && t.DATUM.length >= 4) {
-      const y = parseInt(t.DATUM.substring(0, 4), 10);
-      if (y > 1900) yearsSet.add(y);
-    }
-  });
-
-  const sortedYears = [...yearsSet].sort((a, b) => b - a);
-  sortedYears.forEach(year => {
-    const opt = document.createElement('option');
-    opt.value = year;
-    opt.textContent = year;
-    yearSelect.appendChild(opt);
-  });
-
-  const citySelect = document.getElementById('cityFilter');
-  if (!citySelect) return;
-  const citySet = new Set();
-
-  allTickets.forEach(t => {
-    if (isValidValue(t.MESTO)) citySet.add(t.MESTO.trim());
-  });
-
-  const uniqueCities = [...citySet].sort((a, b) => a.localeCompare(b));
-  
-  uniqueCities.forEach(city => {
-    const opt = document.createElement('option');
-    opt.value = city; 
-    opt.textContent = city;
-    citySelect.appendChild(opt);
-  });
-}
-
-function renderCategoryTabs(matchesBeforeCategoryFilter) {
-  const tabsContainer = document.getElementById('categoryTabs');
-  if (!tabsContainer) return;
-  tabsContainer.innerHTML = '';
-
-  const counts = { 
-    'Tickets': 0, 'Passes': 0, 'Programs': 0, 'Posters': 0, 
-    'T-shirts': 0, 'Memorabilia': 0, 'Videos': 0, 'ALL': matchesBeforeCategoryFilter.length 
-  };
-
-  matchesBeforeCategoryFilter.forEach(t => {
-    const cat = getTicketCategory(t);
-    if (counts[cat] !== undefined) counts[cat]++;
-    if (isValidValue(t.YOUTUBE_URL)) counts['Videos']++;
-  });
-
-  const categoryOrder = ['Tickets', 'Passes', 'Programs', 'Posters', 'T-shirts', 'Memorabilia', 'Videos', 'ALL'];
-  const categoryLabels = { 
-    'Tickets': '🎫 Tickets', 'Passes': '🪪 Passes', 'Programs': '📖 Programs', 
-    'Posters': '🖼️ Posters', 'T-shirts': '🎽 T-shirts', 'Memorabilia': '⭐ Memorabilia', 
-    'Videos': '🎬 Videos', 'ALL': '✨ All Records' 
-  };
-
-  categoryOrder.forEach(catKey => {
-    const count = counts[catKey];
-    if (count > 0 || catKey === 'ALL' || catKey === 'Tickets') {
-      const btn = document.createElement('button');
-      btn.className = `tab-btn ${currentCategory === catKey ? 'active' : ''}`;
-      btn.innerHTML = `${categoryLabels[catKey]} <span style="opacity: 0.75; font-size: 0.8em;">(${count})</span>`;
-      btn.onclick = () => { currentCategory = catKey; filterData(); };
-      tabsContainer.appendChild(btn);
-    }
-  });
-}
-
-function setLayout(layout) {
-  currentLayout = layout;
-  document.getElementById('btnGrid').className = `toggle-btn ${layout === 'grid' ? 'active' : ''}`;
-  document.getElementById('btnList').className = `toggle-btn ${layout === 'list' ? 'active' : ''}`;
-  document.getElementById('ticketsContainer').className = `tickets-container ${layout}-view`;
-  renderPaginated();
-}
-
-function changePageSize() {
-  const val = document.getElementById('pageSizeFilter').value;
-  pageSize = val === 'ALL' ? 'ALL' : parseInt(val, 10);
-  currentPage = 1;
-  renderPaginated();
-}
-
-function filterData() {
-  const query = (document.getElementById('searchInput')?.value || '').toLowerCase();
-  const selectedYear = document.getElementById('yearFilter')?.value || '';
-  const selectedCity = document.getElementById('cityFilter')?.value || '';
-  const sort = document.getElementById('sortFilter')?.value || 'random';
-
-  const matchesBase = allTickets.filter(t => {
-    const locationText = formatLocationText(t).toLowerCase();
-    const itemYear = (t.DATUM && t.DATUM.length >= 4) ? t.DATUM.substring(0, 4) : '';
-    const rawDate = (t.DATUM || '').toLowerCase();
-    const formattedDate = formatDisplayDate(t.DATUM).toLowerCase();
-
-    const qMatch = !query || 
-      locationText.includes(query) ||
-      rawDate.includes(query) ||
-      formattedDate.includes(query) ||
-      (t.SUPPORTING_ACT || '').toLowerCase().includes(query) ||
-      (t.LINEUP || '').toLowerCase().includes(query) ||
-      (t.SETLIST || '').toLowerCase().includes(query);
-      
-    const yMatch = !selectedYear || String(itemYear) === String(selectedYear);
-    const cMatch = !selectedCity || (t.MESTO || '').toLowerCase() === selectedCity.toLowerCase();
-    return qMatch && yMatch && cMatch;
-  });
-
-  renderCategoryTabs(matchesBase);
-
-  filteredTickets = matchesBase.filter(t => {
-    if (currentCategory === 'ALL') return true;
-    if (currentCategory === 'Videos') return isValidValue(t.YOUTUBE_URL);
-    return getTicketCategory(t).toLowerCase() === currentCategory.toLowerCase();
-  });
-
-  if (sort === 'oldest') {
-    filteredTickets.sort((a, b) => (a.DATUM || '').localeCompare(b.DATUM || ''));
-  } else if (sort === 'newest') {
-    filteredTickets.sort((a, b) => (b.DATUM || '').localeCompare(a.DATUM || ''));
-  }
-
-  currentPage = 1;
-  renderPaginated();
-}
-
-function renderPaginated() {
-  let pageData = pageSize === 'ALL' ? filteredTickets : filteredTickets.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  renderTickets(pageData);
-  renderPaginationControls();
-}
-
-function renderTickets(tickets) {
-  const container = document.getElementById('ticketsContainer');
-  container.innerHTML = '';
-
-  if (tickets.length === 0) {
-    container.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 40px;">No items found matching your criteria.</p>';
+  if (!currentItem.SHOW_ID || currentItem.SHOW_ID.trim() === '') {
+    container.style.display = 'none';
     return;
   }
 
-  tickets.forEach((t) => {
-    const globalIndex = filteredTickets.indexOf(t);
-    const card = document.createElement('div');
-    card.className = 'ticket-card';
-    
-    card.onclick = (e) => {
-      if (e.target.closest('.icon-btn')) return;
-      openDirectImagePreview(globalIndex);
-    };
-
-    const skenFiles = (t.SOUBOR_SKEN || '').split(',').map(s => s.trim()).filter(Boolean);
-    const firstImgFile = skenFiles[0] || '';
-    const imgSrc = firstImgFile ? `./scans/${firstImgFile}` : '';
-    const locationText = formatLocationText(t);
-
-    let iconsHTML = '';
-
-    if (isValidValue(t.ID_MEMORABILIA)) {
-      iconsHTML += `
-        <button class="icon-btn" title="Edit Record" onclick="event.stopPropagation(); window.location.href='edit_ticket_new.html?id=${encodeURIComponent(t.ID_MEMORABILIA)}';">
-          ✏️
-        </button>`;
-    }
-
-    if (isValidValue(t.YOUTUBE_URL)) {
-      iconsHTML += `
-        <button class="icon-btn" title="YouTube video" onclick="event.stopPropagation(); openVideoModal(${globalIndex});">
-          🎬
-        </button>`;
-    }
-
-    const songCount = parseInt(t.POCET_SKLADEB, 10) || 0;
-    const hasSetlist = isValidValue(t.SETLIST) && songCount > 0;
-    if (hasSetlist) {
-      iconsHTML += `
-        <button class="icon-btn badge-setlist" title="Setlist (${songCount} songs)" onclick="event.stopPropagation(); toggleCollapsible('setlist-${globalIndex}');">
-          🎵 ${songCount}
-        </button>`;
-    }
-
-    const hasLineup = isValidValue(t.LINEUP);
-    if (hasLineup) {
-      iconsHTML += `
-        <button class="icon-btn" title="Band Line-up" onclick="event.stopPropagation(); toggleCollapsible('lineup-${globalIndex}');">
-          👥
-        </button>`;
-    }
-
-    const relatedItems = getRelatedItems(t);
-    relatedItems.forEach(rel => {
-      const relCat = getTicketCategory(rel);
-      let icon = '🖼️';
-      let title = 'Related Poster';
-
-      if (relCat === 'Tickets') { icon = '🎫'; title = 'Related Ticket'; }
-      else if (relCat === 'Passes') { icon = '🪪'; title = 'Related Pass'; }
-      else if (relCat === 'Programs') { icon = '📖'; title = 'Related Program'; }
-
-      const relFile = (rel.SOUBOR_SKEN || '').split(',')[0].trim();
-      iconsHTML += `
-        <button class="icon-btn" title="${title}" onclick="event.stopPropagation(); openQuickImageModal('${relFile}');">
-          ${icon}
-        </button>`;
-    });
-
-    let collapsibleHTML = '';
-    if (hasSetlist) {
-      const rawItems = t.SETLIST.split(',').map(s => s.trim()).filter(Boolean);
-      let cardSongCount = 0;
-      let listItemsHTML = '';
-
-      rawItems.forEach(item => {
-        if (item.startsWith('[Encore') || item.startsWith('[Set')) {
-          const title = item.replace(/^\[|\]$/g, '');
-          listItemsHTML += `<li style="list-style-type: none; font-weight: 700; color: #38bdf8; margin-top: 8px; margin-left: -15px;">${title}</li>`;
-        } else {
-          cardSongCount++;
-          listItemsHTML += `<li value="${cardSongCount}">${item}</li>`;
-        }
-      });
-
-      collapsibleHTML += `<div class="collapsible-content" id="setlist-${globalIndex}">
-                           <ol style="padding-left: 20px;">${listItemsHTML}</ol>
-                         </div>`;
-    }
-    if (hasLineup) {
-      const members = t.LINEUP.split(/[;/]/).map(m => m.trim()).filter(Boolean);
-      collapsibleHTML += `<div class="collapsible-content" id="lineup-${globalIndex}"><ul>${members.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
-    }
-
-    card.innerHTML = `
-      <div class="card-img-wrapper">
-        ${imgSrc ? `<img src="${imgSrc}" alt="Scan" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IxMDAlIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDAwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMzMzMiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZSBOb3QgRm91bmQ8L3RleHQ+PC9zdmc+='">` : ''}
-      </div>
-      <div class="card-content">
-        <div class="card-main-row">
-          <div class="card-info-left">
-            ${t.DATUM ? `<div class="card-date">${formatDisplayDate(t.DATUM)}</div>` : ''}
-            <div class="info-text">${locationText}</div>
-          </div>
-          ${iconsHTML ? `<div class="card-icon-col">${iconsHTML}</div>` : ''}
-        </div>
-        ${collapsibleHTML}
-      </div>
-    `;
-    
-    container.appendChild(card);
-  });
-}
-
-function renderPaginationControls() {
-  const container = document.getElementById('paginationContainer');
-  if (!container) return;
-  container.innerHTML = '';
-  if (pageSize === 'ALL' || filteredTickets.length <= pageSize) return;
-
-  const totalPages = Math.ceil(filteredTickets.length / pageSize);
-
-  const prevBtn = document.createElement('button');
-  prevBtn.className = 'page-btn'; prevBtn.textContent = '◄ Prev';
-  prevBtn.disabled = currentPage === 1;
-  prevBtn.onclick = () => { currentPage--; renderPaginated(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-  container.appendChild(prevBtn);
-
-  for (let i = 1; i <= totalPages; i++) {
-    if (totalPages > 10 && Math.abs(i - currentPage) > 3 && i !== 1 && i !== totalPages) {
-      if (i === 2 || i === totalPages - 1) {
-        const dots = document.createElement('span'); dots.textContent = '...'; dots.style.color = 'var(--text-muted)';
-        container.appendChild(dots);
-      }
-      continue;
-    }
-    const pageBtn = document.createElement('button');
-    pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`; pageBtn.textContent = i;
-    pageBtn.onclick = () => { currentPage = i; renderPaginated(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-    container.appendChild(pageBtn);
+  // Najde všechny položky se stejným SHOW_ID
+  const related = allData.filter(i => i.SHOW_ID === currentItem.SHOW_ID);
+  
+  if (related.length <= 1) {
+    container.style.display = 'none';
+    return;
   }
 
-  const nextBtn = document.createElement('button');
-  nextBtn.className = 'page-btn'; nextBtn.textContent = 'Next ►';
-  nextBtn.disabled = currentPage === totalPages;
-  nextBtn.onclick = () => { currentPage++; renderPaginated(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
-  container.appendChild(nextBtn);
+  container.style.display = 'flex';
+  container.innerHTML = related.map(rel => {
+    const thumbUrl = getTileImageUrl(rel.FILE_NAME);
+    const isActive = rel === currentItem;
+    return `
+      <img src="${thumbUrl}" 
+           class="modal-thumb ${isActive ? 'active' : ''}" 
+           onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}';" 
+           title="${rel.CATEGORY || 'Scan'}"
+           onclick="switchModalToItem('${rel.SHOW_ID}', '${rel.FILE_NAME}')">
+    `;
+  }).join('');
 }
 
-function toggleCollapsible(id) {
-  const el = document.getElementById(id);
-  if (el) el.classList.toggle('open');
+function switchModalToItem(showId, fileName) {
+  const targetIdx = filteredData.findIndex(i => i.SHOW_ID === showId && i.FILE_NAME === fileName);
+  if (targetIdx !== -1) {
+    openModal(targetIdx);
+  }
 }
+
+function navigateModal(direction) {
+  let newIdx = currentModalIndex + direction;
+  if (newIdx < 0) newIdx = filteredData.length - 1;
+  if (newIdx >= filteredData.length) newIdx = 0;
+  openModal(newIdx);
+}
+
+function closeModal() {
+  const modal = document.getElementById('detailModal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  if (modalViewer) {
+    modalViewer.destroy();
+    modalViewer = null;
+  }
+}
+
+function closeModalOnOverlay(e) {
+  if (e.target.id === 'detailModal') {
+    closeModal();
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Vykreslení dvousloupcové sekce (Line-up a Setlist)
+   -------------------------------------------------------------------------- */
+function renderFlashcardColumns(item) {
+  const container = document.getElementById('modalColumnsSection');
+  if (!container) return;
+
+  const hasLineup = item.BAND_LINEUP && item.BAND_LINEUP.trim() !== '';
+  const hasSetlist = item.SETLIST && item.SETLIST.trim() !== '';
+
+  if (!hasLineup && !hasSetlist) {
+    container.innerHTML = '';
+    return;
+  }
+
+  let lineupHtml = '';
+  if (hasLineup) {
+    const lineupFormatted = item.BAND_LINEUP.split(';')
+      .map(member => `<li>${member.trim()}</li>`)
+      .join('');
+    lineupHtml = `
+      <div class="flashcard-col">
+        <h4>🎷 Band Line-up</h4>
+        <ul>${lineupFormatted}</ul>
+      </div>
+    `;
+  }
+
+  let setlistHtml = '';
+  if (hasSetlist) {
+    const setlistFormatted = item.SETLIST.split('\n')
+      .map(song => {
+        if (song.trim().toLowerCase().includes('[encore]')) {
+          return `<li class="setlist-encore"><strong>${song.trim()}</strong></li>`;
+        }
+        return `<li>${song.trim()}</li>`;
+      })
+      .join('');
+    setlistHtml = `
+      <div class="flashcard-col">
+        <h4>🎵 Setlist</h4>
+        <ol class="setlist-list">${setlistFormatted}</ol>
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="flashcard-grid">
+      ${lineupHtml}
+      ${setlistHtml}
+    </div>
+  `;
+}
+
+/* --------------------------------------------------------------------------
+   Media Container & Video Player Modal
+   -------------------------------------------------------------------------- */
+function renderMediaSection(item) {
+  const container = document.getElementById('modalMediaContainer');
+  if (!container) return;
+
+  if (item.YOUTUBE_URL && item.YOUTUBE_URL.trim() !== '') {
+    container.innerHTML = `
+      <button class="btn-play-video" onclick="openVideoModal('${encodeURIComponent(JSON.stringify(item))}')">
+        ▶ Play Video Recording & Setlist
+      </button>
+    `;
+  } else {
+    container.innerHTML = '';
+  }
+}
+
+function openVideoModal(itemJsonString) {
+  const item = JSON.parse(decodeURIComponent(itemJsonString));
+  const videoModal = document.getElementById('videoModal');
+  const iframe = document.getElementById('youtubeIframe');
+  const lineupBox = document.getElementById('videoLineupContainer');
+  const setlistBox = document.getElementById('videoSetlistContainer');
+
+  // Formátování YouTube Embed URL
+  let embedUrl = item.YOUTUBE_URL;
+  if (embedUrl.includes('watch?v=')) {
+    embedUrl = embedUrl.replace('watch?v=', 'embed/');
+  } else if (embedUrl.includes('youtu.be/')) {
+    embedUrl = embedUrl.replace('youtu.be/', 'www.youtube.com/embed/');
+  }
+  iframe.src = embedUrl;
+
+  // Levý sloupec: Lineup
+  if (item.BAND_LINEUP && item.BAND_LINEUP.trim() !== '') {
+    const lineupItems = item.BAND_LINEUP.split(';')
+      .map(m => `<li>${m.trim()}</li>`).join('');
+    lineupBox.innerHTML = `<h3>🎷 Band Line-up</h3><ul>${lineupItems}</ul>`;
+  } else {
+    lineupBox.innerHTML = `<h3>🎷 Band Line-up</h3><p style="color:var(--text-muted)">No lineup info available.</p>`;
+  }
+
+  // Pravý sloupec: Setlist
+  if (item.SETLIST && item.SETLIST.trim() !== '') {
+    const setlistItems = item.SETLIST.split('\n')
+      .map(s => {
+        if (s.trim().toLowerCase().includes('[encore]')) {
+          return `<li style="color:var(--accent-yellow); font-weight:bold; margin-top:8px;">${s.trim()}</li>`;
+        }
+        return `<li>${s.trim()}</li>`;
+      }).join('');
+    setlistBox.innerHTML = `<h3>🎵 Setlist</h3><ol>${setlistItems}</ol>`;
+  } else {
+    setlistBox.innerHTML = `<h3>🎵 Setlist</h3><p style="color:var(--text-muted)">No setlist available.</p>`;
+  }
+
+  videoModal.style.display = 'flex';
+}
+
+function closeVideoModal() {
+  const videoModal = document.getElementById('videoModal');
+  const iframe = document.getElementById('youtubeIframe');
+  if (iframe) iframe.src = '';
+  if (videoModal) videoModal.style.display = 'none';
+}
+
+function closeVideoModalOnOverlay(e) {
+  if (e.target.id === 'videoModal') {
+    closeVideoModal();
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Klávesové zkratky (Šipky pro navigaci v modálu, ESC pro zavření)
+   -------------------------------------------------------------------------- */
+document.addEventListener('keydown', (e) => {
+  const detailModal = document.getElementById('detailModal');
+  const videoModal = document.getElementById('videoModal');
+
+  if (detailModal && detailModal.style.display === 'flex') {
+    if (e.key === 'ArrowLeft') navigateModal(-1);
+    if (e.key === 'ArrowRight') navigateModal(1);
+    if (e.key === 'Escape') closeModal();
+  }
+
+  if (videoModal && videoModal.style.display === 'flex') {
+    if (e.key === 'Escape') closeVideoModal();
+  }
+});
