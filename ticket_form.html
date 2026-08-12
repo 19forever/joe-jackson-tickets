@@ -167,15 +167,19 @@
       <strong>Help us grow the archive!</strong> Please submit <strong>one concert item per form</strong>.
     </p>
 
-    <form action="https://formspree.io/f/xqpzbzpa" method="POST" enctype="multipart/form-data" class="form-grid">
+    <!-- FormSubmit.co endpoint bezplatně podporující přílohy -->
+    <form action="https://formsubmit.co/marekkraus@gmail.com" method="POST" enctype="multipart/form-data" class="form-grid">
       
-      <!-- Skrytý předmět e-mailu -->
+      <!-- Nastavení pro FormSubmit -->
       <input type="hidden" name="_subject" value="JJMM - addition">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" value="https://19forever.github.io/joe-jackson-tickets/index_short.html">
 
       <!-- Category -->
       <div class="form-group">
         <label for="category">Category <span>*</span></label>
-        <select id="category" name="category" required>
+        <select id="category" name="Category" required>
           <option value="Tickets">Ticket</option>
           <option value="Passes">Pass / Backstage</option>
           <option value="Posters">Poster / Flyer</option>
@@ -188,37 +192,37 @@
       <!-- Concert Date -->
       <div class="form-group">
         <label for="date">Concert Date <span>*</span></label>
-        <input type="date" id="date" name="date" required>
+        <input type="date" id="date" name="Concert Date" required>
       </div>
 
       <!-- City -->
       <div class="form-group">
         <label for="city">City <span>*</span></label>
-        <input type="text" id="city" name="city" placeholder="e.g. London, New York" required>
+        <input type="text" id="city" name="City" placeholder="e.g. London, New York" required>
       </div>
 
       <!-- Country -->
       <div class="form-group">
         <label for="country">Country</label>
-        <input type="text" id="country" name="country" placeholder="e.g. UK, USA, Germany">
+        <input type="text" id="country" name="Country" placeholder="e.g. UK, USA, Germany">
       </div>
 
       <!-- Venue -->
       <div class="form-group full-width">
         <label for="venue">Venue / Club / Hall</label>
-        <input type="text" id="venue" name="venue" placeholder="e.g. Royal Albert Hall, The Bottom Line">
+        <input type="text" id="venue" name="Venue" placeholder="e.g. Royal Albert Hall, The Bottom Line">
       </div>
 
       <!-- Supporting Act -->
       <div class="form-group full-width">
         <label for="supporting_act">Supporting Act / Special Guest</label>
-        <input type="text" id="supporting_act" name="supporting_act" placeholder="e.g. The Members, Lincoln Durham">
+        <input type="text" id="supporting_act" name="Supporting Act" placeholder="e.g. The Members, Lincoln Durham">
       </div>
 
       <!-- Contributor Name -->
       <div class="form-group">
         <label for="contributor">Your Name / Credit <span>*</span></label>
-        <input type="text" id="contributor" name="contributor" placeholder="How you want to be listed" required>
+        <input type="text" id="contributor" name="Contributor Credit" placeholder="How you want to be listed" required>
       </div>
 
       <!-- Contributor Email -->
@@ -227,16 +231,16 @@
         <input type="email" id="email" name="email" placeholder="For verification only (optional)">
       </div>
 
-      <!-- File Upload (Standard single attachment for free Formspree tier) -->
+      <!-- File Upload -->
       <div class="form-group full-width">
         <label for="scan_file">Upload Image Scan / Photo <span>*</span></label>
-        <input type="file" id="scan_file" name="attachment" accept="image/*" required>
+        <input type="file" id="scan_file" name="Attachment" accept="image/*" required>
       </div>
 
       <!-- Additional Notes -->
       <div class="form-group full-width">
         <label for="notes">Additional Information / Notes</label>
-        <textarea id="notes" name="notes" rows="3" placeholder="Setlist details, story behind the ticket, or personal memories..."></textarea>
+        <textarea id="notes" name="Notes" rows="3" placeholder="Setlist details, story behind the ticket, or personal memories..."></textarea>
       </div>
 
       <!-- Submit Button -->
