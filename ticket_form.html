@@ -16,6 +16,8 @@
       --accent-yellow: #facc15;
       --accent-blue: #38bdf8;
       --accent-orange: #f97316;
+      --accent-green: #4ade80;
+      --accent-red: #ef4444;
       --border-color: #1f2937;
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
@@ -141,6 +143,28 @@
       transition: background-color 0.2s, transform 0.1s;
     }
     .btn-submit:hover { background-color: #fde047; transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+    /* Stylování stavové zprávy */
+    #statusMessage {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      display: none;
+      text-align: center;
+      line-height: 1.5;
+    }
+    #statusMessage.success {
+      background: rgba(74, 222, 128, 0.15);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+    }
+    #statusMessage.error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--accent-red);
+      color: var(--accent-red);
+    }
 
     @media (max-width: 600px) {
       body { padding: 15px; }
@@ -167,14 +191,12 @@
       <strong>Help us grow the archive!</strong> Please submit <strong>one concert item per form</strong>.
     </p>
 
-    <!-- FormSubmit.co endpoint bezplatně podporující přílohy -->
-    <form action="https://formsubmit.co/marekkraus@gmail.com" method="POST" enctype="multipart/form-data" class="form-grid">
+    <form id="contribForm" action="https://formsubmit.co/marekkraus@gmail.com" method="POST" enctype="multipart/form-data" class="form-grid">
       
       <!-- Nastavení pro FormSubmit -->
       <input type="hidden" name="_subject" value="JJMM - addition">
       <input type="hidden" name="_captcha" value="false">
       <input type="hidden" name="_template" value="table">
-      <input type="hidden" name="_next" value="https://19forever.github.io/joe-jackson-tickets/index_short.html">
 
       <!-- Category -->
       <div class="form-group">
@@ -245,11 +267,54 @@
 
       <!-- Submit Button -->
       <div class="form-group full-width">
-        <button type="submit" class="btn-submit">🚀 Submit Memorabilia to Archive</button>
+        <button type="submit" id="submitBtn" class="btn-submit">🚀 Submit Memorabilia to Archive</button>
       </div>
 
     </form>
+
+    <div id="statusMessage"></div>
   </div>
 
+  <script>
+    document.getElementById('contribForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const form = this;
+      const submitBtn = document.getElementById('submitBtn');
+      const statusMsg = document.getElementById('statusMessage');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Sending memorabilia...';
+      statusMsg.style.display = 'none';
+
+      try {
+        const formData = new FormData(form);
+
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          statusMsg.className = 'success';
+          statusMsg.style.display = 'block';
+          statusMsg.innerHTML = '🎉 <strong>Thank you!</strong> Your memorabilia contribution has been sent successfully. We will review it shortly.';
+          form.reset();
+        } else {
+          throw new Error(`HTTP ${response.status}`);
+        }
+      } catch (err) {
+        statusMsg.className = 'error';
+        statusMsg.style.display = 'block';
+        statusMsg.innerHTML = '❌ <strong>Submission Error:</strong> Could not send form. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Submit Memorabilia to Archive';
+      }
+    });
+  </script>
 </body>
 </html>
