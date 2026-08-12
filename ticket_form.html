@@ -19,11 +19,7 @@
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: var(--font-family);
@@ -47,11 +43,7 @@
       border-bottom: 1px solid var(--border-color);
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+    .header-left { display: flex; align-items: center; gap: 15px; }
 
     .logo {
       background-color: var(--accent-orange);
@@ -64,19 +56,10 @@
       justify-content: center;
       font-weight: 900;
       font-size: 1.5rem;
-      letter-spacing: -1px;
     }
 
-    .title-area h1 {
-      font-size: 1.4rem;
-      font-weight: 700;
-    }
-
-    .title-area p {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: 4px;
-    }
+    .title-area h1 { font-size: 1.4rem; font-weight: 700; }
+    .title-area p { color: var(--text-muted); font-size: 0.85rem; margin-top: 4px; }
 
     .btn-back {
       background-color: var(--bg-panel);
@@ -89,11 +72,7 @@
       text-decoration: none;
       transition: all 0.2s;
     }
-
-    .btn-back:hover {
-      border-color: var(--accent-yellow);
-      color: var(--accent-yellow);
-    }
+    .btn-back:hover { border-color: var(--accent-yellow); color: var(--accent-yellow); }
 
     .form-container {
       width: 100%;
@@ -111,10 +90,7 @@
       color: var(--text-muted);
       font-size: 0.95rem;
     }
-
-    .form-intro strong {
-      color: var(--accent-yellow);
-    }
+    .form-intro strong { color: var(--accent-yellow); }
 
     .form-grid {
       display: grid;
@@ -122,31 +98,13 @@
       gap: 20px;
     }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full-width { grid-column: 1 / -1; }
 
-    .form-group.full-width {
-      grid-column: 1 / -1;
-    }
+    label { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+    label span { color: var(--accent-orange); }
 
-    label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    label span {
-      color: var(--accent-orange);
-    }
-
-    input[type="text"],
-    input[type="date"],
-    input[type="email"],
-    select,
-    textarea {
+    input[type="text"], input[type="date"], input[type="email"], select, textarea {
       background-color: var(--bg-card);
       border: 1px solid var(--border-color);
       color: var(--text-main);
@@ -154,12 +112,9 @@
       border-radius: 8px;
       font-size: 0.9rem;
       outline: none;
-      transition: border-color 0.2s;
     }
 
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--accent-blue);
-    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent-blue); }
 
     input[type="file"] {
       background-color: var(--bg-card);
@@ -181,12 +136,17 @@
       cursor: pointer;
       width: 100%;
       margin-top: 10px;
-      transition: transform 0.1s, background-color 0.2s;
     }
+    .btn-submit:hover { background-color: #fde047; }
+    .btn-submit:disabled { opacity: 0.5; cursor: wait; }
 
-    .btn-submit:hover {
-      background-color: #fde047;
-      transform: translateY(-1px);
+    #statusMessage {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: none;
+      text-align: center;
     }
 
     @media (max-width: 600px) {
@@ -211,14 +171,11 @@
   <div class="form-container">
     <p class="form-intro">
       Do you possess a Joe Jackson concert ticket, pass, poster, or program scan not yet featured in our museum? 
-      <strong>Help us grow the archive!</strong> Fill in the details below and attach your scan. Your contribution will be credited to your name in our global database.
+      <strong>Help us grow the archive!</strong> Fill in the details below and attach your scan.
     </p>
 
-    <!--
-      Můžete zdarma použít např. https://formspree.io/f/{YOUR_FORM_ID} 
-      Nebo jakýkoliv jiný zdarma e-mailový endpoint pro statické weby.
-    -->
-    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" enctype="multipart/form-data" class="form-grid">
+    <!-- Nahraďte YOUR_FORM_ID vaším kódem z Formspree -->
+    <form id="contribForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="form-grid">
       
       <!-- Category -->
       <div class="form-group">
@@ -275,25 +232,136 @@
         <input type="email" id="email" name="email" placeholder="For verification only (optional)">
       </div>
 
-      <!-- File Upload -->
+      <!-- File Upload (Multiple) -->
       <div class="form-group full-width">
-        <label for="scan_file">Upload Image Scan / Photo <span>*</span></label>
-        <input type="file" id="scan_file" name="scan_file" accept="image/*" required>
+        <label for="scan_file">Upload Image Scan(s) / Photo(s) <span>*</span></label>
+        <input type="file" id="scan_file" accept="image/*" multiple required>
+        <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">
+          ⚡ Images will be auto-optimized before sending. You can select multiple files.
+        </small>
       </div>
 
       <!-- Additional Notes -->
       <div class="form-group full-width">
         <label for="notes">Additional Information / Notes</label>
-        <textarea id="notes" name="notes" rows="3" placeholder="Setlist details, story behind the ticket, or seat number..."></textarea>
+        <textarea id="notes" name="notes" rows="3" placeholder="Setlist details, story behind the ticket..."></textarea>
       </div>
 
       <!-- Submit Button -->
       <div class="form-group full-width">
-        <button type="submit" class="btn-submit">🚀 Submit Memorabilia to Archive</button>
+        <button type="submit" id="submitBtn" class="btn-submit">🚀 Submit Memorabilia to Archive</button>
       </div>
 
     </form>
+
+    <div id="statusMessage"></div>
   </div>
 
+  <script>
+    // Pomocná funkce pro zmenšení a kompresi jednoho obrázku
+    function resizeAndCompressImage(file, maxDimension = 1600, quality = 0.8) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            let width = img.width;
+            let height = img.height;
+
+            // Zachování poměru stran, zmenšení delší strany na maxDimension
+            if (width > maxDimension || height > maxDimension) {
+              if (width > height) {
+                height = Math.round((height * maxDimension) / width);
+                width = maxDimension;
+              } else {
+                width = Math.round((width * maxDimension) / height);
+                height = maxDimension;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const resizedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                  type: 'image/jpeg',
+                  lastModified: Date.now()
+                });
+                resolve(resizedFile);
+              } else {
+                reject(new Error('Canvas blob generation failed'));
+              }
+            }, 'image/jpeg', quality);
+          };
+          img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+      });
+    }
+
+    // Odchycení odeslání formuláře
+    document.getElementById('contribForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submitBtn');
+      const statusMsg = document.getElementById('statusMessage');
+      const fileInput = document.getElementById('scan_file');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please select at least one image file!");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Optimizing images & sending...';
+      statusMsg.style.display = 'none';
+
+      try {
+        const formData = new FormData(this);
+
+        // Zpracování a zmenšení všech vybraných fotek
+        for (let i = 0; i < fileInput.files.length; i++) {
+          const originalFile = fileInput.files[i];
+          const optimizedBlob = await resizeAndCompressImage(originalFile, 1600, 0.8);
+          formData.append('attachment', optimizedBlob, optimizedBlob.name);
+        }
+
+        // Odeslání na Formspree skrze fetch API
+        const response = await fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          statusMsg.style.display = 'block';
+          statusMsg.style.background = 'rgba(74, 222, 128, 0.15)';
+          statusMsg.style.border = '1px solid #4ade80';
+          statusMsg.style.color = '#4ade80';
+          statusMsg.textContent = '🎉 Thank you! Your contribution has been submitted successfully.';
+          this.reset();
+        } else {
+          throw new Error('Form submission failed');
+        }
+
+      } catch (err) {
+        statusMsg.style.display = 'block';
+        statusMsg.style.background = 'rgba(239, 68, 68, 0.15)';
+        statusMsg.style.border = '1px solid #ef4444';
+        statusMsg.style.color = '#f87171';
+        statusMsg.textContent = '❌ Error submitting form. Please try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Submit Memorabilia to Archive';
+      }
+    });
+  </script>
 </body>
 </html>
