@@ -1,61 +1,88 @@
+To je skvělá zpráva! Vlastní doména **`joejackson.band`** dodá celému muzeu maximální kredibilitu a profesionální vzhled.
+
+Tady je kompletní, finální verze roadmapy aktualizovaná o vaši doménu a všechny dosud realizované kroky:
+
+---
+
 # 🗺️ Joe Jackson Memorabilia Museum – Development Roadmap
 
-Archiv koncertních lístků, plakátů, programů a memorabilií Joe Jacksona.
+Archiv koncertních lístků, plakátů, programů a memorabilií Joe Jacksona na doméně **`joejackson.band`**.
 
 ---
 
-## 🚀 Planované Funkcionality (To-Do List)
+## 🚀 Stav vývoje & Plánované funkcionality
 
 ### 📸 1. Správa médií a obrázků
-- [ ] **Automatický Watermarking**
-  - Implementovat skript/funkci (v Pythonu nebo přípravě dat), která automaticky vloží diskrétní vodoznak/logo *Joe Jackson Memorabilia Museum* do skenů před publikací.
-  - Ochrana originálních skenů před neautorizovaným přebíráním.
+
+* [x] **Automatická komprese příloh** (Integrována do `ticket_form.html` pomocí HTML5 Canvas na max. 1600 px).
+* [ ] **Automatický Watermarking**
+* Implementovat skript/funkci, která automaticky vloží diskrétní vodoznak/logo *Joe Jackson Memorabilia Museum* do skenů před publikací.
+
+
 
 ### 🔒 2. Bezpečnost a Správa dat
-- [ ] **Oddělení veřejné části a administrace**
-  - Oddělit `index.html` (veřejný čtenářský režim) od editačního rozhraní (`edit_ticket.html`).
-  - Zabezpečit editační část (např. pomocí GitHub Actions + Netlify CMS / Decap CMS, příp. password-protected admin rozhraním), aby úpravy mohl provádět pouze autorizovaný správce.
 
-### 🔗 3. Architektura dat a Relace (Prolinky)
-- [ ] **Refaktorování relací mezi předměty (ID-based Relink)**
-  - Nahradit stávající nepraktické párování přes shodný text `INFO_TEXT`.
-  - Zvést nový sloupec (např. `SHOW_ID` nebo `EVENT_ID`), který jednoznačně propojí lístek, plakát, program i tričko k jedné konkrétní koncertní události.
+* [x] **Oddělení veřejné části a administrace** (Veřejné muzeum `index_short.html` vs. administrátorský editor `edit_ticket_new.html` propojený přes GitHub PAT API).
+* [x] **Veřejná podatelna příspěvků** (`ticket_form.html` s odesíláním přes FormSubmit.co na váš e-mail bez rizika přepsání databáze cizími lidmi).
+
+### 🔗 3. Architektura dat a Relace
+
+* [x] **Párování přes `SHOW_ID**` (Jednoznačný klíč propojuje lístek, plakát, program i videa ke stejnému koncertu).
 
 ### 🎲 4. Interaktivita a UX
-- [ ] **Tlačítko "Surprise Me!" (Náhodný záznam)** HOTOVO
-  - Přidat do horní lišty tlačítko, které náhodně vybere a otevře detail jednoho koncertu/memorabilie z celé databáze.
-  - Skvělý prvek pro objevování méně známých koncertů a bootlegů.
 
-### 📱 5. PWA (Progressive Web App) & Launch
-- [ ] **PWA Funkcionalita** *(Až při přechodu na finální doménu)*
-  - Přidat `manifest.json` a Service Worker pro offline prohlížení, instalaci na plochu mobilu a rychlé načítání.
-- [ ] **Příprava na produkční doménu**
-  - Nastavení Vercel / GitHub Pages s vlastní doménou.
+* [x] **Tlačítko "Surprise Me!" & "Reshuffle"** (Náhodný výběr a promíchání záznamů).
+* [x] **Banner "On This Day In History"** (Automatická detekce koncertních výročí pro daný kalendářní den).
+* [x] **Třísloupcový Video Player** (Zobrazení videa, Line-upu a strukturovaného setlistu s oddělenými sekcemi `[Encore]`).
 
----
+### 📊 5. Statistiky a Vizualizace
 
-## 💡 Další návrhy na zlepšení (K diskusi)
+* [x] **Interaktivní mapa koncertů & statistik** (`stats.html` se zobrazením koncertních mís na mapě a grafy).
 
-### 📊 📊 Vizualizace a Statistiky (Dashboard)
-- [ ] **Interaktivní mapa koncertů (Leaflet.js / Mapbox)**
-  - Zobrazení špendlíků na mapě světa, kde všude Joe Jackson hrál (a ze kterých míst máme lístky).
-- [ ] **Statistický přehled (Stats Tab)**
-  - Grafy: *Top 5 nejčastějších měst*, *Top 5 navštívených hal*, *Počet záznamů podle dekád (70s, 80s, 90s...)*.
+### 🌐 6. Nasazení na vlastní doménu & PWA
 
-### 🎧 🎧 Zvukové a Vizuální zážitky
-- [ ] **Spotify / Apple Music Embed**
-  - Pokud je u koncertu známý setlist, přidat tlačítko *"Přehrát studiový playlist turné"* na Spotify.
-- [ ] **Audio Bootleg Player**
-  - Možnost připojit přímý odkaz na mp3/audio záznam koncertu (pokud existuje v archivu).
+* [ ] **Propojení zakoupené domény `joejackson.band**`
+* Nastavení DNS CNAME/A záznamů u registrátora a propojení s GitHub Pages (soubor `CNAME`).
 
-### 🔍 🔍 Pokročilé vyhledávání a Filtry
-- [ ] **Filtr podle zemí (Country Filter)**
-  - Kromě měst přidat i filtr podle států (USA, UK, Germany, Czechia...).
-- [ ] **Tagy událostí**
-  - Štítky typu: `Festival`, `TV Appearance`, `Acoustic Show`, `Cancelled Show`.
+
+* [ ] **PWA Funkcionalita (Progressive Web App)**
+* Přidat `manifest.json` a Service Worker pro možnost instalace webu jako aplikace na plochu mobilu/PC a rychlé offline načítání.
+
+
 
 ---
 
-## 🛠️ Architektura Kódu & Refaktoring
-- [ ] **Extrakce JS a CSS do samostatných souborů**
-  - Rozdělit `index.html` na `styles.css` a `app.js` pro snazší údržbu a rychlejší načítání.
+## 🧩 Přehled Komponent a Jejich Funkčnost
+
+* **`index_short.html` (Veřejné Muzeum):** Hlavní rozhraní pro návštěvníky. Obsahuje hlavičku s tlačítkem pro přispění, výroční banner, filtry, vyhledávání, záložky kategorií a mřížku karet.
+* **`app.js` (Jádro aplikační logiky):** Zajišťuje načítání CSV přes PapaParse, filtruje a řadí data, generuje karty, spravuje zobrazení skenů v Viewer.js a otvírá 3-sloupcové video okno.
+* **`styles.css` (Design systém):** Tmavé téma (Dark Mode), CSS Grid/Flexbox rozvržení, responzivita pro mobilní zařízení a vizuální stavové odznaky.
+* **`edit_ticket_new.html` (Správcovský Editor):** Dvousloupcová administrace s živým náhledem obrázků. Umožňuje procházet, upravovat, přidávat, duplikovat i mazat záznamy a ukládat změny přímo do GitHub repozitáře.
+* **`ticket_form.html` (Veřejný formulář):** Formulář pro fanoušky. Na pozadí zkomprimuje fotky a odešle data s přílohou na váš e-mail přes FormSubmit.co.
+* **`stats.html` (Statistiky a Mapa):** Geografické zobrazení odehraných koncertů a sbírkových předmětů na interaktivní mapě společně s přehlednými grafy.
+* **`joe_jackson_tickets_cleaned.csv` (Master Databáze):** Jediný zdroj pravdy (SSOT) se všemi strukturovanými daty o koncertech a sbírkových předmětech.
+* **Cloudflare Proxy Worker (`jj-setlist-proxy`):** Bezpečnostní mezikus zprostředkovávající komunikaci se Setlist.fm API bez odhalení API klíče.
+
+---
+
+## 💡 Nové Nápady pro Další Vývoj
+
+**1. Contributor Hall of Fame (Síň slávy dárců)**
+
+* Vytvořit samostatnou záložku nebo modal s přehledem všech fanoušků, kteří do muzea přispěli (vygenerováno automaticky z pole `CONTRIBUTOR`).
+
+**2. Generator Spotify Playlistu (One-Click Playlist)**
+
+* U koncertů s vyplněným setlistem přidat tlačítko, které vygeneruje přímý odkaz na otevření odpovídajícího playlistu ve Spotify.
+
+**3. "Missing Items" Wishlist (Seznam hledaných lístků)**
+
+* Sekce pro sběratele zobrazující známé koncerty podle Tour listů, u kterých v muzeu zatím **chybí jakýkoliv sken**. Motivuje fanoušky k prohledání domácích archívů.
+
+**4. Export koncertní karty jako Obrázek / PDF**
+
+* Možnost vygenerovat líbivou souhrnnou kartu koncertu (Datum + Město + Sken + Setlist + Lineup) do jednoho PNG obrázku pro snadné sdílení na sociálních sítích nebo ve fanklubu.
+
+---
+
+Až budete chtít doménu **`joejackson.band`** na GitHub Pages nasměrovat, stačí říct — nastavíme soubor `CNAME` a správné IP adresy pro DNS!
